@@ -3,32 +3,54 @@
 <!--- Anything on lines wrapped in comments like these will not show up in the final text. -->
 
 ## Description
+<!-- Please provide a detailed description of your changes -->
 
-<!--- Describe your changes in detail here. -->
+## Type of Change
+<!-- Please delete options that are not relevant -->
 
-## Types of Changes
+- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
+- [ ] ✨ New feature (non-breaking change which adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] 📝 Documentation update
+- [ ] 🔧 Build/CI improvement
+- [ ] ♻️ Code refactoring
 
-<!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply. -->
-- [ ] Core
-- [ ] Bugfix
-- [ ] New feature
-- [ ] Enhancement/optimization
-- [ ] Keyboard (addition or update)
-- [ ] Keymap/layout (addition or update)
-- [ ] Documentation
+## Testing
+<!-- Please describe how you tested your changes -->
 
-## Issues Fixed or Closed by This PR
+- [ ] I have tested the firmware builds successfully
+- [ ] I have tested on actual hardware (please specify):
+  - Hardware: <!-- e.g., Lily58 with trackball left, TPS43 right -->
+  - Side(s) tested: <!-- e.g., both, left only, right only -->
 
-* 
+## Device Configurations Tested
+<!-- Check all that apply -->
+
+- [ ] Trackball (left)
+- [ ] Trackball (right)
+- [ ] TPS43 (left)
+- [ ] TPS43 (right)
+- [ ] Trackpoint (left)
+- [ ] Trackpoint (right)
+- [ ] OLED
+- [ ] No pointing device
 
 ## Checklist
+<!-- Please check all that apply -->
 
-<!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
-<!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
-- [ ] My code follows the code style of this project: [**C**](https://docs.qmk.fm/#/coding_conventions_c), [**Python**](https://docs.qmk.fm/#/coding_conventions_python)
-- [ ] I have read the [**PR Checklist** document](https://docs.qmk.fm/#/pr_checklist) and have made the appropriate changes.
-- [ ] My change requires a change to the documentation.
-- [ ] I have updated the documentation accordingly.
-- [ ] I have read the [**CONTRIBUTING** document](https://docs.qmk.fm/#/contributing).
-- [ ] I have added tests to cover my changes.
-- [ ] I have tested the changes and verified that they work and don't break anything (as well as I can manage).
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have checked my code and corrected any misspellings
+
+## Additional Notes
+<!-- Any additional information that might be helpful for reviewers -->
+
+---
+<!-- 
+Commands available in PR comments:
+- `/ready` - Mark PR as ready for review
+- `/build` - Trigger a test build
+-->

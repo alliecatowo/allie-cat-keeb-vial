@@ -1,0 +1,72 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+categories:
+  - title: "🚀 Features"
+    labels:
+      - "feature"
+      - "enhancement"
+  - title: "🐛 Bug Fixes"
+    labels:
+      - "fix"
+      - "bugfix"
+      - "bug"
+  - title: "📝 Documentation"
+    labels:
+      - "documentation"
+      - "docs"
+  - title: "🔧 Maintenance"
+    labels:
+      - "chore"
+      - "maintenance"
+      - "ci/cd"
+      - "build"
+  - title: "⬆️ Dependencies"
+    labels:
+      - "dependencies"
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+change-title-escapes: '\<*_&'
+version-resolver:
+  major:
+    labels:
+      - "major"
+      - "breaking"
+  minor:
+    labels:
+      - "minor"
+      - "feature"
+      - "enhancement"
+  patch:
+    labels:
+      - "patch"
+      - "fix"
+      - "bugfix"
+      - "bug"
+      - "documentation"
+      - "chore"
+      - "dependencies"
+  default: patch
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+  ## 📦 Pre-built Firmware
+
+  Download pre-built firmware files from the assets below. Each `.uf2` file is labeled with its configuration:
+  - `trackball_tps43` - Trackball on left, TPS43 touchpad on right
+  - `trackball_only` - Trackball only configuration
+  - `tps43_only` - TPS43 touchpad only configuration
+
+  ### Installation
+  1. Download the appropriate `.uf2` file for your configuration
+  2. Enter bootloader mode (double-tap RESET)
+  3. Copy the `.uf2` file to the `RPI-RP2` drive
+  4. Repeat for both keyboard halves
+
+  ## Contributors
+
+  $CONTRIBUTORS
+
+  ---
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION

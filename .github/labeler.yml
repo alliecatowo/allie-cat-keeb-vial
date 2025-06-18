@@ -1,60 +1,36 @@
-core:
-  - changed-files:
-    - any-glob-to-any-file:
-      - quantum/**
-      - tmk_core/**
-      - drivers/**
-      - tests/**
-      - util/**
-      - platforms/**
-      - builddefs/*.mk
-      - Makefile
-      - '*.mk'
-dependencies:
-  - changed-files:
-    - all-globs-to-any-file:
-      - lib/**
-      - '!lib/python/**'
-keyboard:
-  - changed-files:
-    - all-globs-to-any-file:
-      - keyboards/**
-      - '!keyboards/**/keymaps/**'
-keymap:
-  - changed-files:
-    - any-glob-to-any-file:
-      - users/**
-      - layouts/**
-      - keyboards/**/keymaps/**
-via:
-  - changed-files:
-    - any-glob-to-any-file:
-      - keyboards/**/keymaps/via/*
-cli:
-  - changed-files:
-    - any-glob-to-any-file:
-      - requirements.txt
-      - lib/python/**
-python:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.py'
+# Configuration for PR auto-labeling
+
 documentation:
-  - changed-files:
-    - any-glob-to-any-file:
-      - docs/**
-      - builddefs/docsgen/**
-CI:
-  - changed-files:
-    - any-glob-to-any-file:
-      - .github/**
-dd:
-  - changed-files:
-    - any-glob-to-any-file:
-      - data/constants/**
-      - data/mappings/**
-      - data/schemas/**
-community_module:
-  - changed-files:
-    - any-glob-to-any-file:
-      - modules/**
+  - "**/*.md"
+  - "docs/**"
+
+firmware:
+  - "keyboards/**"
+  - "quantum/**"
+  - "tmk_core/**"
+  - "drivers/**"
+
+build:
+  - "builddefs/**"
+  - "build.py"
+  - "Makefile"
+  - "**/*.mk"
+
+ci/cd:
+  - ".github/workflows/**"
+  - ".github/actions/**"
+
+dependencies:
+  - "requirements*.txt"
+  - "lib/**"
+  - ".gitmodules"
+
+pointing-device:
+  - "**/pointing_device*"
+  - "**/trackball*"
+  - "**/tps43*"
+  - "**/trackpoint*"
+
+vial:
+  - "**/vial*"
+  - "**/via*"

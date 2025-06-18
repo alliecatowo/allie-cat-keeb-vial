@@ -1,0 +1,26 @@
+# CODEOWNERS for Allie Cat Keeb Vial Fork
+# This file defines who should review PRs for different parts of the codebase
+
+# Default owner for everything
+* @alliecatowo
+
+# Build system and CI/CD
+/build.py @alliecatowo
+/.github/ @alliecatowo
+/builddefs/ @alliecatowo
+
+# Documentation
+*.md @alliecatowo
+/docs/ @alliecatowo
+
+# Keyboard-specific code
+/keyboards/lily58/ @alliecatowo
+
+# Core holykeebs functionality
+/users/holykeebs/ @alliecatowo
+
+# Pointing device drivers
+**/pointing_device* @alliecatowo
+**/trackball* @alliecatowo
+**/tps43* @alliecatowo
+**/trackpoint* @alliecatowo

@@ -1,0 +1,126 @@
+name: PR Assistant
+
+on:
+  pull_request:
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  # Auto-label PRs based on files changed
+  auto-label:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/labeler@v4
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  # Generate PR suggestions
+  pr-suggestions:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Analyze PR and provide suggestions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+
+            let suggestions = [];
+
+            // Check for large PRs
+            if (files.data.length > 10) {
+              suggestions.push("📊 This PR changes many files. Consider breaking it into smaller PRs for easier review.");
+            }
+
+            // Check for missing tests
+            const hasTestFiles = files.data.some(f => f.filename.includes('test'));
+            const hasCodeChanges = files.data.some(f => f.filename.endsWith('.c') || f.filename.endsWith('.h'));
+            if (hasCodeChanges && !hasTestFiles) {
+              suggestions.push("🧪 Consider adding tests for your code changes.");
+            }
+
+            // Check for documentation updates
+            const hasDocsChanges = files.data.some(f => f.filename.endsWith('.md') || f.filename.includes('docs/'));
+            if (hasCodeChanges && !hasDocsChanges) {
+              suggestions.push("📝 Consider updating documentation for your changes.");
+            }
+
+            if (suggestions.length > 0) {
+              const body = `## 🤖 PR Assistant Suggestions\n\n${suggestions.map(s => `- ${s}`).join('\n')}\n\n---\n*These are automated suggestions. Feel free to ignore if not applicable.*`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: body
+              });
+            }
+
+  # Respond to PR commands
+  command-handler:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issue_comment' && github.event.issue.pull_request
+    steps:
+      - name: Handle commands
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment.body.toLowerCase();
+            const isPRAuthor = context.payload.issue.user.login === context.payload.comment.user.login;
+            const isMaintainer = context.payload.comment.author_association === 'OWNER' ||
+                               context.payload.comment.author_association === 'COLLABORATOR';
+
+            // Handle /ready command
+            if (comment.includes('/ready') && isPRAuthor) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: 'work-in-progress'
+              }).catch(() => {});
+
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['ready-for-review']
+              });
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: '✅ This PR is now marked as ready for review!'
+              });
+            }
+
+            // Handle /build command
+            if (comment.includes('/build') && (isPRAuthor || isMaintainer)) {
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'build-firmware.yml',
+                ref: context.payload.issue.head_ref || 'main'
+              });
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: '🔨 Build triggered! Check the Actions tab for progress.'
+              });
+            }
