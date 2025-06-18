@@ -7,7 +7,9 @@
         "**/.build": true,
         "**/*.hex": true,
         "**/*.bin": true,
-        "**/*.uf2": true
+        "**/*.uf2": true,
+        // "keyboards/**": true,
+        // "!keyboards/lily58/**": false
     },
     "files.associations": {
         "*.h": "c",

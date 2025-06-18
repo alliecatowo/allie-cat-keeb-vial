@@ -31,6 +31,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define QUICK_TAP_TERM 0
 #define TAPPING_TERM 100
 
+// Vial configuration
+#define VIAL_KEYBOARD_UID {0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6, 0x01, 0x23}
+#define VIAL_UNLOCK_COMBO_ROWS { 0, 2 }
+#define VIAL_UNLOCK_COMBO_COLS { 0, 1 }
+
 // Underglow
 /*
 #undef RGBLIGHT_LED_COUNT

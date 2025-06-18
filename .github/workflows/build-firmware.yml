@@ -1,0 +1,49 @@
+name: Build Firmware
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate Matrix
+        id: generate-matrix
+        run: |
+          matrix=$(python3 build_lily.py --generate-matrix)
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  build-firmware:
+    runs-on: ubuntu-latest
+    needs: generate-matrix
+    container: ghcr.io/qmk/qmk_cli
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Checkout QMK firmware (this repo)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build
+        run: |
+          python3 build_lily.py --build-single --keymap ${{ matrix.keymap }} --left-device ${{ matrix.left_device }} --right-device ${{ matrix.right_device }} --side ${{ matrix.side }}
+
+      - name: Archive Firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.keymap }}-${{ matrix.left_device || 'none' }}-${{ matrix.right_device || 'none' }}-${{ matrix.side }}
+          path: build_lily/*.uf2

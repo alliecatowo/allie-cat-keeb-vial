@@ -1,3 +1,40 @@
+# alliecatowo/qmk_firmware Fork
+
+This is my personal fork of QMK firmware for tinkering with my lily58 keyboard.
+
+## Branch Structure
+
+-   **main**: Kept in sync with upstream.
+-   **develop**: Primary development branch for my custom lily58 keymaps and features. All work is done here.
+-   **hk-master**: A mirror of the `holykeebs-master` branch for reference and easier rebasing.
+
+## Automated Firmware Builds
+
+This repository is configured with a GitHub Actions workflow to automatically build lily58 firmware.
+
+### Workflow Triggers
+
+The build process is automatically triggered on:
+
+-   **Pull requests** targeting the `main` branch.
+-   **Pushes of tags** matching the `v*` pattern (e.g., `v1.0`, `v1.1`).
+-   **Manual triggers** from the GitHub Actions tab (`workflow_dispatch`).
+
+This ensures that builds are only run when preparing a release, keeping resource usage to a minimum.
+
+### Build Script
+
+The builds are orchestrated by the `build_lily.py` script. You can also run this script locally to build firmware without relying on the GitHub Actions workflow.
+
+`python3 build_lily.py`
+
+This will generate the defined firmware variations and place them in the `build_lily/` directory.
+
+## Upstream Documentation
+
+-   [QMK official documentation](https://docs.qmk.fm)
+-   [holykeebs/qmk_firmware](https://github.com/holykeebs/qmk_firmware#readme)
+
 # Quantum Mechanical Keyboard Firmware
 
 [![Current Version](https://img.shields.io/github/tag/qmk/qmk_firmware.svg)](https://github.com/qmk/qmk_firmware/tags)
