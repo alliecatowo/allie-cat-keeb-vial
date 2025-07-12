@@ -18,6 +18,28 @@ Visit the **[Holykeebs Store](https://holykeebs.com)** to purchase trackballs, t
 - **[Vial](https://get.vial.today)** - Real-time keyboard configuration without flashing
 - **[Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)** - Pre-built firmware with Vial support
 
+## 🧪 Running Tests
+
+To run the unit tests locally:
+
+1. Initialize submodules:
+   ```bash
+   git submodule update --init --recursive
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+
+3. Run the suite:
+   ```bash
+   ORIG_CWD=$PWD PYTHONPATH=lib/python python3 -m nose2 -v --log-level WARN \
+       qmk.tests.test_qmk_keymap qmk.tests.test_qmk_errors qmk.tests.test_qmk_path
+   ```
+
+This mirrors the GitHub Actions test job.
+
 ## 🎯 Why This Fork Exists
 
 The holykeebs QMK repository provides excellent support for various pointing devices (trackballs, touchpads, trackpoints) but is based on an older QMK version that lacks modern Vial support. This fork bridges that gap by:
