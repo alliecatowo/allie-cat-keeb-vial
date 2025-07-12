@@ -1,0 +1,28 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang make python3
+      - name: Run unit tests
+        run: make test
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-tests
+          path: tests/BUILD/
+          retention-days: 30
