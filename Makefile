@@ -493,6 +493,15 @@ pytest:
 format-and-pytest:
 	RUNTIME=docker ./util/docker_cmd.sh bash -lic "$(CONTAINER_PREAMBLE); qmk format-c --core-only -a && qmk format-python -a && qmk pytest"
 	
-.PHONY: callgraph
+.PHONY: callgraph callgraph-trackpoint callgraph-cirque callgraph-pimoroni
 callgraph:
-	python3 tools/callgraph.py
+	python3 tools/callgraph.py --driver azoteq
+
+callgraph-trackpoint:
+	python3 tools/callgraph.py --driver trackpoint
+
+callgraph-cirque:
+	python3 tools/callgraph.py --driver cirque
+
+callgraph-pimoroni:
+	python3 tools/callgraph.py --driver pimoroni
