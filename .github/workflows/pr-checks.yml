@@ -104,3 +104,21 @@ jobs:
           # Ensure no files have executable bit set unnecessarily
           find . -type f -name "*.c" -o -name "*.h" -o -name "*.md" | xargs ls -la | grep -E "^-rwx" && \
             echo "::warning::Found source files with executable permissions" || true
+
+  # Generate call graph for Azoteq driver
+  callgraph:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang graphviz
+          pip3 install pydot
+      - name: Build call graph
+        run: python3 tools/callgraph.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: azoteq-callgraph
+          path: docs/azoteq_callgraph.svg
