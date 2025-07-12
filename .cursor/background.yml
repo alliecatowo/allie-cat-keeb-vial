@@ -1,0 +1,10 @@
+name: bug-bot
+root: .
+watch:
+  - path: ".github/workflows/build.yml"
+    on_fail: "open_github_issue('CI build failed on {{commit}}')"
+  - path: "scripts/check_size.sh"
+    on_fail: "open_github_issue('Binary too large after {{commit}}')"
+env: { BOT_PAT: '${{ secrets.BOT_PAT }}' }
+setup: []
+command: "true"
