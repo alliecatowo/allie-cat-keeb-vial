@@ -224,10 +224,20 @@ We welcome contributions! Whether you want to:
 
 ## 📊 Driver Call Graph
 
-The Azoteq IQS5xx touchpad driver call graph is generated automatically during
-the CI workflow. You can view the latest graph below:
+These graphs are generated automatically during the CI workflow and show the
+internal interactions for each pointing device driver.
 
+### Azoteq IQS5xx Touchpad
 ![Azoteq driver call graph](docs/azoteq_callgraph.svg)
+
+### PS/2 Trackpoint
+![Trackpoint driver call graph](docs/trackpoint_callgraph.svg)
+
+### Cirque Pinnacle Touchpad
+![Cirque driver call graph](docs/cirque_callgraph.svg)
+
+### Pimoroni Trackball
+![Pimoroni driver call graph](docs/pimoroni_callgraph.svg)
 
 ## 📈 Project Status
 
