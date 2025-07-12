@@ -222,6 +222,13 @@ We welcome contributions! Whether you want to:
 - Run `qmk doctor` to check your environment
 - Ensure submodules are initialized: `git submodule update --init`
 
+## 📊 Driver Call Graph
+
+The Azoteq IQS5xx touchpad driver call graph is generated automatically during
+the CI workflow. You can view the latest graph below:
+
+![Azoteq driver call graph](docs/azoteq_callgraph.svg)
+
 ## 📈 Project Status
 
 This project is actively maintained and regularly synced with upstream holykeebs changes. We aim to:
