@@ -684,3 +684,12 @@ void                       eeconfig_init_user(void) {
 
     printf("eeconfig_init_user: eeprom data written\n");
 }
+
+__attribute__((weak)) void matrix_scan_keymap(void) {}
+void matrix_scan_user(void) {
+    matrix_scan_keymap();
+    if (g_hk_state.dirty) {
+        write_eeconfig();
+        g_hk_state.dirty = false;
+    }
+}

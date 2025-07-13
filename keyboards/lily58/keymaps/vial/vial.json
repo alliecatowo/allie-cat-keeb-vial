@@ -30,5 +30,18 @@
       [{"y":-0.975,"x":4},"4,2",{"x":7.5},"9,2", "9,1"],
       [{"y":-0.9,"x":5},"4,3",{"x":0.5, "h":1.5},"4,4",{"x":2.5,"h":1.5},"9,4",{"x":0.5},"9,3"]
     ]
-  }
+  },
+  "features": [
+    { "id":"scroll_mul_main",  "name":"Main Speed",      "type":"int",  "min":25,  "max":500, "step":5,  "default":125 },
+    { "id":"snipe_mul_main",   "name":"Main Sniping",    "type":"int",  "min":10,  "max":200, "step":5,  "default":100 },
+    { "id":"scroll_buf_main",  "name":"Main Scroll Buf", "type":"int",  "min":0,   "max":20,  "step":1,  "default":5  },
+    { "id":"drag_main",        "name":"Main Drag Scroll","type":"bool",                        "default":false },
+    { "id":"lock_main",        "name":"Main ScrollLock", "type":"enum", "options":["Off","H","V"], "default":0 },
+
+    { "id":"scroll_mul_peri",  "name":"Peri Speed",      "type":"int",  "min":25,  "max":500, "step":5,  "default":150 },
+    { "id":"snipe_mul_peri",   "name":"Peri Sniping",    "type":"int",  "min":10,  "max":200, "step":5,  "default":100 },
+    { "id":"scroll_buf_peri",  "name":"Peri Scroll Buf", "type":"int",  "min":0,   "max":20,  "step":1,  "default":5  },
+    { "id":"drag_peri",        "name":"Peri Drag Scroll","type":"bool",                        "default":true },
+    { "id":"lock_peri",        "name":"Peri ScrollLock", "type":"enum", "options":["Off","H","V"], "default":0 }
+  ]
 }
