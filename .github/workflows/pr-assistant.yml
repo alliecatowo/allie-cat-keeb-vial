@@ -114,7 +114,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 workflow_id: 'build-firmware.yml',
-                ref: context.payload.issue.head_ref || 'main'
+                ref: context.payload.issue.head_ref || 'dev'
               });
 
               await github.rest.issues.createComment({
