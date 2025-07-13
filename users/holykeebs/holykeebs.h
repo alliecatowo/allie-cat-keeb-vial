@@ -43,6 +43,12 @@ enum hk_keycodes {
     // Scroll lock filters out any scroll movement that is not in the specified direction. This cycles through the
     // possible modes: off, horizontal, vertical.
     HK_CYCLE_SCROLL_LOCK, // 0x7E0A
+
+    // Enters encoder mode. Pointer movements trigger key presses instead of cursor actions.
+    HK_ENCODER_MODE, // 0x7E0B
+
+    // Toggles encoder mode.
+    HK_ENCODER_MODE_TOGGLE, // 0x7E0C
 };
 
 #define HK_SAVE      HK_SAVE_SETTINGS
@@ -56,6 +62,8 @@ enum hk_keycodes {
 #define HK_D_MODE    HK_DRAGSCROLL_MODE
 #define HK_D_MODE_T  HK_DRAGSCROLL_MODE_TOGGLE
 #define HK_C_SCROLL  HK_CYCLE_SCROLL_LOCK
+#define HK_E_MODE    HK_ENCODER_MODE
+#define HK_E_MODE_T  HK_ENCODER_MODE_TOGGLE
 
 // #define ENABLE_DRIFT_DETECTION
 // #define ENABLE_PIMORONI_ADAPTIVE_MOTION
