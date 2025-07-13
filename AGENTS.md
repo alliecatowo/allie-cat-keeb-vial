@@ -3,7 +3,8 @@
 
 - Run `pytest -q` before committing changes to verify unit tests.
 - If tests fail due to missing dependencies, install them with `pip install -r requirements-dev.txt`.
-- The CI workflows build firmware from the `dev` branch by default, so ensure pull requests target `dev` unless otherwise noted.
+- The CI workflows run on the `dev` branch for regular testing. Create pull requests against `dev`.
+- Firmware releases are produced only when `dev` is merged into `main`.
 
 # Repo Guide for Codex Agents
 
@@ -44,7 +45,7 @@ This file provides instructions for OpenAI Codex (and similar agents) when worki
   ```
 - Manual make example:
   ```bash
-  make lily58/rev1:via -e USER_NAME=holykeebs \
+  make lily58/rev1:vial -e USER_NAME=holykeebs \
       -e POINTING_DEVICE=trackball_tps43 \
       -e SIDE=left \
       -e TRACKBALL_RGB_RAINBOW=yes \
