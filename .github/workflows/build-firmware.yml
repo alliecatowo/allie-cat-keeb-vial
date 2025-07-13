@@ -61,10 +61,10 @@ jobs:
             unzip \
             wget \
             zip \
-            python3-pip
+            curl
 
-          pip3 install --upgrade pip
-          pip3 install qmk
+          curl -Ls https://astral.sh/uv/install.sh | bash
+          uv pip install qmk
 
       - name: Build firmware
         run: |

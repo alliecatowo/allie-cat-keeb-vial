@@ -21,5 +21,6 @@ _qmk_install() {
         python3 \
         avrdude dfu-programmer dfu-util teensy_loader_cli
 
-    python3 -m pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
+    curl -Ls https://astral.sh/uv/install.sh | bash
+    uv pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
 }

@@ -13,7 +13,7 @@ _qmk_install() {
 
     sudo apt-get --quiet --yes install \
         build-essential clang-format diffutils gcc git unzip wget zip \
-        python3-pip binutils-avr gcc-avr avr-libc binutils-arm-none-eabi \
+        curl binutils-avr gcc-avr avr-libc binutils-arm-none-eabi \
         gcc-arm-none-eabi libnewlib-arm-none-eabi avrdude dfu-programmer \
         dfu-util teensy-loader-cli libhidapi-hidraw0 libusb-dev
 
@@ -24,5 +24,6 @@ _qmk_install() {
             binutils-riscv64-unknown-elf
     fi
 
-    python3 -m pip install --user -r "$QMK_FIRMWARE_DIR"/requirements.txt
+    curl -Ls https://astral.sh/uv/install.sh | bash
+    uv pip install --user -r "$QMK_FIRMWARE_DIR"/requirements.txt
 }

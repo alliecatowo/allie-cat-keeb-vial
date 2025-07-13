@@ -85,20 +85,20 @@ brew install qmk/qmk/qmk
 
 You will need to install Git and Python. It's very likely that you already have both, but if not, one of the following commands should install them:
 
-* Debian / Ubuntu / Devuan: `sudo apt install -y git python3-pip`
-* Fedora / Red Hat / CentOS: `sudo yum -y install git python3-pip`
-* Arch / Manjaro: `sudo pacman --needed --noconfirm -S git python-pip libffi`
-* Void: `sudo xbps-install -y git python3-pip`
-* Solus: `sudo eopkg -y install git python3`
-* Sabayon: `sudo equo install dev-vcs/git dev-python/pip`
-* Gentoo: `sudo emerge dev-vcs/git dev-python/pip`
+* Debian / Ubuntu / Devuan: `sudo apt install -y git curl`
+* Fedora / Red Hat / CentOS: `sudo yum -y install git curl`
+* Arch / Manjaro: `sudo pacman --needed --noconfirm -S git curl libffi`
+* Void: `sudo xbps-install -y git curl`
+* Solus: `sudo eopkg -y install git curl`
+* Sabayon: `sudo equo install dev-vcs/git net-misc/curl`
+* Gentoo: `sudo emerge dev-vcs/git net-misc/curl`
 
 #### Installation
 
 Install the QMK CLI by running:
 
 ```sh
-python3 -m pip install --user qmk
+uv pip install --user qmk
 ```
 
 #### Community Packages
