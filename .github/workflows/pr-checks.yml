@@ -145,3 +145,24 @@ jobs:
             docs/trackpoint_callgraph.svg
             docs/cirque_callgraph.svg
             docs/pimoroni_callgraph.svg
+
+  keymap-diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          pip3 install qmk keymap-drawer
+      - name: Generate keymap diagrams
+        run: |
+          python3 tools/draw_keymaps.py
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: keymap-diagrams
+          path: |
+            docs/keymap_lily58.svg
+            docs/keymap_sweeq.svg
+            docs/keymap_spankbd.svg
+            docs/keymap_corne.svg
