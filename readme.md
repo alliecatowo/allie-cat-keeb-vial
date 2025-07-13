@@ -95,7 +95,7 @@ Each release includes:
 
 ### Firmware Naming Convention:
 ```
-lily58_rev1_via_[configuration]_[side].uf2
+lily58_rev1_vial_[configuration]_[side].uf2
 ```
 - `configuration`: The pointing device setup (e.g., `trackball_tps43`)
 - `side`: Either `left` or `right` for split keyboards
@@ -136,7 +136,7 @@ The `build.py` script supports various configurations:
 # Build specific configuration
 python build.py --build-single \
   --keyboard lily58/rev1 \
-  --keymap via \
+  --keymap vial \
   --left-device trackball \
   --right-device tps43
 
@@ -163,7 +163,7 @@ For direct QMK commands:
 
 ```bash
 # Dual pointing devices with Vial
-make lily58/rev1:via -e USER_NAME=holykeebs \
+make lily58/rev1:vial -e USER_NAME=holykeebs \
   -e POINTING_DEVICE=trackball_tps43 \
   -e SIDE=left \
   -e TRACKBALL_RGB_RAINBOW=yes \
@@ -178,7 +178,7 @@ When you fork this repository, you get automated firmware builds for free!
 1. Go to your fork's Settings → Actions
 2. Enable GitHub Actions if not already enabled
 3. The build workflow triggers on:
-   - Pull requests to `dev` or `main`
+   - Pushes to `main`
    - Tags matching `v*` pattern
    - Manual triggers via GitHub UI
 
@@ -201,6 +201,10 @@ We welcome contributions! Whether you want to:
 - Improve Vial integration
 - Fix bugs or optimize code
 - Add new keyboard layouts
+
+### Branch Workflow
+- Daily development occurs on the `dev` branch. Submit pull requests to `dev` so CI can test your changes.
+- When `dev` is merged into `main`, the firmware is built and a new release is created.
 
 ### How to Contribute:
 1. Fork this repository
