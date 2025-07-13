@@ -22,7 +22,7 @@ jobs:
       - name: Generate build matrix
         id: set-matrix
         run: |
-          matrix=$(python build.py --generate-matrix-release)
+          matrix=$(python build.py --generate-matrix-release --variants-file variants.json)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   build:
