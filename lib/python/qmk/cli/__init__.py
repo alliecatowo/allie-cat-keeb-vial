@@ -100,7 +100,7 @@ def _install_deps(requirements):
 
     If we detect that we are running in a virtualenv we can't write into we'll use sudo to perform the pip install.
     """
-    command = [sys.executable, '-m', 'pip', 'install']
+    command = [sys.executable, '-m', 'uv', 'pip', 'install']
 
     if sys.prefix != sys.base_prefix:
         # We are in a virtualenv, check to see if we need to use sudo to write to it
@@ -218,7 +218,7 @@ milc_version = __VERSION__.split('.')
 if int(milc_version[0]) < 2 and int(milc_version[1]) < 4:
     requirements = Path('requirements.txt').resolve()
 
-    _eprint(f'Your MILC library is too old! Please upgrade: python3 -m pip install -U -r {str(requirements)}')
+    _eprint(f'Your MILC library is too old! Please upgrade: uv venv && uv pip install -U -r {str(requirements)}')
     exit(127)
 
 # Make sure we can run binaries in the same directory as our Python interpreter
@@ -228,7 +228,7 @@ if python_dir not in os.environ['PATH'].split(os.pathsep):
     os.environ['PATH'] = os.pathsep.join((python_dir, os.environ['PATH']))
 
 # Check to make sure we have all our dependencies
-msg_install = f'\nPlease run `{sys.executable} -m pip install -r %s` to install required python dependencies.'
+msg_install = f'\nPlease run `uv venv` and `{sys.executable} -m uv pip install -r %s` to install required python dependencies.'
 args = sys.argv[1:]
 while args and args[0][0] == '-':
     del args[0]

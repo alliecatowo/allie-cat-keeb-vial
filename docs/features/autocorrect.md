@@ -80,7 +80,7 @@ The solution is to set a word break : before and/or after the typo to constrain 
 
 :thier: is most restrictive, matching only when thier is a whole word.
 
-The `qmk generate-autocorrect-data` commands can make an effort to check for entries that would false trigger as substrings of correct words. It searches each typo against a dictionary of 25K English words from the english_words Python package, provided it’s installed. (run `python3 -m pip install english_words` to install it.)
+The `qmk generate-autocorrect-data` commands can make an effort to check for entries that would false trigger as substrings of correct words. It searches each typo against a dictionary of 25K English words from the english_words Python package, provided it’s installed. (run `uv pip install english_words` to install it.)
 
 ::: tip
 Unfortunately, this is limited to just english words, at this point.

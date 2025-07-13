@@ -98,7 +98,9 @@ You will need to install Git and Python. It's very likely that you already have 
 Install the QMK CLI by running:
 
 ```sh
-python3 -m pip install --user qmk
+uv venv
+source .venv/bin/activate
+uv pip install qmk
 ```
 
 #### Community Packages

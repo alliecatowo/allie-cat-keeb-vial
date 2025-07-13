@@ -95,7 +95,7 @@ The prettified file is written to `output.c`. See the section Tweaks for non-def
 ### Without docker
 Requirements:
 * python3 (tested on 3.7.4)
-* python module `pycparser` installed (with `pip install pycparser`)
+* python module `pycparser` installed (with `uv pip install pycparser`)
 
 To run:
 ```

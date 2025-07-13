@@ -89,8 +89,11 @@ You can use these commands in PR comments:
 brew install qmk/qmk/qmk
 
 # Install dependencies (Linux)
-sudo apt-get install -y git python3-pip
-pip3 install qmk
+sudo apt-get install -y git
+pip3 install uv
+uv venv
+source .venv/bin/activate
+uv pip install qmk
 qmk setup -y
 ```
 

@@ -30,5 +30,7 @@ _qmk_install() {
     sudo crossdev -s4 --stable --g \<9 --portage --verbose --target avr
     sudo crossdev -s4 --stable --g \<9 --portage --verbose --target arm-none-eabi
 
-    python3 -m pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
+    uv venv "$QMK_FIRMWARE_DIR/.venv"
+    source "$QMK_FIRMWARE_DIR/.venv/bin/activate"
+    uv pip install -r $QMK_FIRMWARE_DIR/requirements.txt
 }

@@ -62,8 +62,10 @@ jobs:
             zip \
             python3-pip
 
-          pip3 install --upgrade pip
-          pip3 install qmk
+          pip3 install uv
+          uv venv
+          source .venv/bin/activate
+          uv pip install qmk
 
       - name: Build firmware
         run: |

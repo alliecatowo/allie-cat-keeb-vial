@@ -11,5 +11,7 @@ _qmk_install() {
         avrdude dfu-programmer dfu-util teensy_loader_cli \
         libusb-compat-devel
 
-    python3 -m pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
+    uv venv "$QMK_FIRMWARE_DIR/.venv"
+    source "$QMK_FIRMWARE_DIR/.venv/bin/activate"
+    uv pip install -r $QMK_FIRMWARE_DIR/requirements.txt
 }

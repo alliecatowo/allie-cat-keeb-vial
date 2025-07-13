@@ -20,7 +20,7 @@ This firmware was tested on the duckyon2mini 1861ST version. To enter the 1861ST
 
 There are then two ways to flash the keyboard:
 
-    pip install --user nuvoton-isp
+    uv pip install --user nuvoton-isp
     nuvoisp -f ducky_one2mini_default.bin
 
 Alternatively you can use elfmimi's [nu-isp-cli](https://lib.rs/crates/nu-isp-cli) which is more complete than nuvoisp and allows flashing .hex files as well.
