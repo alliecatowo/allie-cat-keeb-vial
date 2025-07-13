@@ -178,7 +178,7 @@ When you fork this repository, you get automated firmware builds for free!
 1. Go to your fork's Settings → Actions
 2. Enable GitHub Actions if not already enabled
 3. The build workflow triggers on:
-   - Pull requests to `main`
+   - Pull requests to `dev` or `main`
    - Tags matching `v*` pattern
    - Manual triggers via GitHub UI
 
