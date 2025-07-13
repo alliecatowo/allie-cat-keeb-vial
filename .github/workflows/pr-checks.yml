@@ -22,16 +22,29 @@ jobs:
               core.setFailed('PR description must be at least 50 characters long');
             }
 
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          matrix=$(python build.py --generate-matrix-release --variants-file variants.json)
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
   # Build firmware to ensure changes compile
   build-test:
+    needs: generate-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        config:
-          - { left: "trackball", right: "tps43" }
-          - { left: "trackball", right: "None" }
-          - { left: "None", right: "tps43" }
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
 
     steps:
       - name: Checkout PR
@@ -69,11 +82,11 @@ jobs:
         run: |
           qmk config user.qmk_home=$GITHUB_WORKSPACE
           python build.py --build-single \
-            --keyboard lily58/rev1 \
-            --keymap via \
-            --left-device "${{ matrix.config.left }}" \
-            --right-device "${{ matrix.config.right }}" \
-            --side left
+            --keyboard "${{ matrix.keyboard }}" \
+            --keymap "${{ matrix.keymap }}" \
+            --left-device "${{ matrix.left_device }}" \
+            --right-device "${{ matrix.right_device }}" \
+            --side "${{ matrix.side }}"
 
       - name: Check firmware size
         run: |
