@@ -32,6 +32,7 @@ hk_eeprom_config_t hk_eeprom_config;
 static void deserialize_eeconfig_to_state(const hk_eeprom_config_t* config) {
     g_hk_state.main.cursor_mode = config->pointing.main_cursor_mode;
     g_hk_state.main.drag_scroll = config->pointing.main_drag_scroll;
+    g_hk_state.main.encoder_mode = config->pointing.main_encoder_mode;
     g_hk_state.main.scroll_lock = config->pointing.main_scroll_lock;
     g_hk_state.main.pointer_default_multiplier = config->pointing.main_default_multiplier / 100.0;
     g_hk_state.main.pointer_sniping_multiplier = config->pointing.main_sniping_multiplier / 100.0;
@@ -39,6 +40,7 @@ static void deserialize_eeconfig_to_state(const hk_eeprom_config_t* config) {
 
     g_hk_state.peripheral.cursor_mode = config->pointing.peripheral_cursor_mode;
     g_hk_state.peripheral.drag_scroll = config->pointing.peripheral_drag_scroll;
+    g_hk_state.peripheral.encoder_mode = config->pointing.peripheral_encoder_mode;
     g_hk_state.peripheral.scroll_lock = config->pointing.peripheral_scroll_lock;
     g_hk_state.peripheral.pointer_default_multiplier = config->pointing.peripheral_default_multiplier / 100.0;
     g_hk_state.peripheral.pointer_sniping_multiplier = config->pointing.peripheral_sniping_multiplier / 100.0;
@@ -48,6 +50,7 @@ static void deserialize_eeconfig_to_state(const hk_eeprom_config_t* config) {
 static void serialize_state_to_eeconfig(hk_eeprom_config_t* config) {
     config->pointing.main_cursor_mode = g_hk_state.main.cursor_mode;
     config->pointing.main_drag_scroll = g_hk_state.main.drag_scroll;
+    config->pointing.main_encoder_mode = g_hk_state.main.encoder_mode;
     config->pointing.main_scroll_lock = g_hk_state.main.scroll_lock;
     config->pointing.main_default_multiplier = (int16_t)(g_hk_state.main.pointer_default_multiplier * 100);
     config->pointing.main_sniping_multiplier = (int16_t)(g_hk_state.main.pointer_sniping_multiplier * 100);
@@ -55,6 +58,7 @@ static void serialize_state_to_eeconfig(hk_eeprom_config_t* config) {
 
     config->pointing.peripheral_cursor_mode = g_hk_state.peripheral.cursor_mode;
     config->pointing.peripheral_drag_scroll = g_hk_state.peripheral.drag_scroll;
+    config->pointing.peripheral_encoder_mode = g_hk_state.peripheral.encoder_mode;
     config->pointing.peripheral_scroll_lock = g_hk_state.peripheral.scroll_lock;
     config->pointing.peripheral_default_multiplier = (int16_t)(g_hk_state.peripheral.pointer_default_multiplier * 100);
     config->pointing.peripheral_sniping_multiplier = (int16_t)(g_hk_state.peripheral.pointer_sniping_multiplier * 100);
@@ -104,6 +108,7 @@ static hk_state_t init_state(void) {
             .pointer_kind = POINTER_KIND_NONE,
             .cursor_mode = CURSOR_MODE_DEFAULT,
             .drag_scroll = false,
+            .encoder_mode = false,
             .scroll_lock = SCROLL_LOCK_OFF,
             .pointer_default_multiplier = 0,
             .pointer_sniping_multiplier = 0,
@@ -113,6 +118,7 @@ static hk_state_t init_state(void) {
             .pointer_kind = POINTER_KIND_NONE,
             .cursor_mode = CURSOR_MODE_DEFAULT,
             .drag_scroll = false,
+            .encoder_mode = false,
             .scroll_lock = SCROLL_LOCK_OFF,
             .pointer_default_multiplier = 0,
             .pointer_sniping_multiplier = 0,
@@ -291,6 +297,10 @@ static hk_cursor_mode hk_get_dragscroll(bool side_peripheral) {
     return side_peripheral ? g_hk_state.peripheral.drag_scroll : g_hk_state.main.drag_scroll;
 }
 
+static bool hk_get_encoder_mode(bool side_peripheral) {
+    return side_peripheral ? g_hk_state.peripheral.encoder_mode : g_hk_state.main.encoder_mode;
+}
+
 static void hk_set_cursor_mode(hk_cursor_mode target_mode, bool enabled, bool side_peripheral) {
     hk_pointer_state_t* state = side_peripheral ? &g_hk_state.peripheral : &g_hk_state.main;
     if (enabled) {
@@ -305,6 +315,12 @@ static void hk_set_cursor_mode(hk_cursor_mode target_mode, bool enabled, bool si
 static void hk_set_dragscroll(bool enabled, bool side_peripheral) {
     hk_pointer_state_t* state = side_peripheral ? &g_hk_state.peripheral : &g_hk_state.main;
     state->drag_scroll = enabled;
+    g_hk_state.dirty = true;
+}
+
+static void hk_set_encoder_mode(bool enabled, bool side_peripheral) {
+    hk_pointer_state_t* state = side_peripheral ? &g_hk_state.peripheral : &g_hk_state.main;
+    state->encoder_mode = enabled;
     g_hk_state.dirty = true;
 }
 
@@ -423,6 +439,18 @@ void hk_process_mouse_report(const hk_pointer_state_t* pointer_state, report_mou
     }
     mouse_report->x = x;
     mouse_report->y = y;
+
+    if (pointer_state->encoder_mode) {
+        if (x != 0 || y != 0) {
+            mouse_report->x = 0;
+            mouse_report->y = 0;
+            if (abs(x) > abs(y)) {
+                tap_code16(x > 0 ? KC_RIGHT : KC_LEFT);
+            } else {
+                tap_code16(y > 0 ? KC_DOWN : KC_UP);
+            }
+        }
+    }
 
     hk_process_scroll(pointer_state, mouse_report);
 
@@ -578,6 +606,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             if (record->event.pressed) {
                 bool is_on = hk_get_dragscroll(/*side_peripheral=*/has_shift_mod());
                 hk_set_dragscroll(/*enabled=*/!is_on, /*side_peripheral=*/has_shift_mod());
+                state_changed = true;
+            }
+            break;
+        case HK_ENCODER_MODE:
+            hk_set_encoder_mode(/*enabled=*/record->event.pressed, /*side_peripheral=*/has_shift_mod());
+            state_changed = true;
+            break;
+        case HK_ENCODER_MODE_TOGGLE:
+            if (record->event.pressed) {
+                bool is_on = hk_get_encoder_mode(/*side_peripheral=*/has_shift_mod());
+                hk_set_encoder_mode(/*enabled=*/!is_on, /*side_peripheral=*/has_shift_mod());
                 state_changed = true;
             }
             break;
