@@ -1,0 +1,10 @@
+{
+  "variants": [
+    {"keyboard": "lily58/rev1", "keymap": "vial", "left_device": "trackball", "right_device": "tps43", "side": "left", "debug": false},
+    {"keyboard": "lily58/rev1", "keymap": "vial", "left_device": "trackball", "right_device": "tps43", "side": "right", "debug": false},
+    {"keyboard": "lily58/rev1", "keymap": "vial", "left_device": "trackball", "right_device": "None", "side": "left", "debug": false},
+    {"keyboard": "lily58/rev1", "keymap": "vial", "left_device": "None", "right_device": "trackball", "side": "right", "debug": false},
+    {"keyboard": "lily58/rev1", "keymap": "vial", "left_device": "None", "right_device": "tps43", "side": "right", "debug": false},
+    {"keyboard": "lily58/rev1", "keymap": "vial", "left_device": "tps43", "right_device": "None", "side": "left", "debug": false}
+  ]
+}

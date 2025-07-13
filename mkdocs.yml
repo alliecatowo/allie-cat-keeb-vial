@@ -1,4 +1,7 @@
 site_name: Allie Cat Keeb Vial
 nav:
   - Home: docs/index.md
-  - Call-Graph: docs/azoteq_callgraph.svg
+  - Azoteq Call Graph: docs/azoteq_callgraph.svg
+  - Trackpoint Call Graph: docs/trackpoint_callgraph.svg
+  - Cirque Call Graph: docs/cirque_callgraph.svg
+  - Pimoroni Call Graph: docs/pimoroni_callgraph.svg
