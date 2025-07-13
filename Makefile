@@ -479,7 +479,7 @@ distclean_userspace: clean
 endif
 
 # Extra targets for formatting and/or pytest, running within the qmk/qmk_cli container to match GHA.
-CONTAINER_PREAMBLE := export HOME="/tmp"; export PATH="/tmp/.local/bin:\$$PATH"; python3 -m pip install --upgrade pip; python3 -m pip install -r requirements-dev.txt
+CONTAINER_PREAMBLE := export HOME="/tmp"; export PATH="/tmp/.local/bin:\$$PATH"; curl -Ls https://astral.sh/uv/install.sh | bash; uv pip install --system --break-system-packages -r requirements-dev.txt
 
 .PHONY: format-core
 format-core:
