@@ -2,7 +2,7 @@
 # Repository Guidelines
 
 - Run `pytest -q` before committing changes to verify unit tests.
-- If tests fail due to missing dependencies, install them with `uv pip install -r requirements-dev.txt`.
+- If tests fail due to missing dependencies, install them with `uv pip install --system -r requirements-dev.txt`.
 - The CI workflows run on the `dev` branch for regular testing. Create pull requests against `dev`.
 - Firmware releases are produced only when `dev` is merged into `main`.
 
@@ -22,7 +22,7 @@ This file provides instructions for OpenAI Codex (and similar agents) when worki
    sudo apt-get update
    sudo apt-get install -y git curl
    curl -Ls https://astral.sh/uv/install.sh | bash
-   uv pip install qmk
+   uv pip install --user qmk
    qmk setup -y
    ```
 2. Optionally use `shell.nix` for a reproducible environment (`nix-shell`).
@@ -58,7 +58,7 @@ This file provides instructions for OpenAI Codex (and similar agents) when worki
 - Install dev requirements and init submodules first:
   ```bash
   scripts/init_submodules.sh
-  uv pip install -r requirements-dev.txt
+  uv pip install --system -r requirements-dev.txt
   ```
 - Run tests and lint checks with `qmk pytest` (uses `nose2`, `flake8`, and `yapf`).
 - Format Python code with `qmk format-python`.

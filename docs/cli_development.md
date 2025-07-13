@@ -15,7 +15,7 @@ If you intend to maintain keyboards and/or contribute to QMK, you can enable the
 This will allow you to see all available subcommands.  
 **Note:** You will have to install additional requirements:  
 ```
-uv pip install -r requirements-dev.txt
+uv pip install --system -r requirements-dev.txt
 ```
 
 # Subcommands

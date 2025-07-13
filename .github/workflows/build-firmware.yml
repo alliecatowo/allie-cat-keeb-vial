@@ -64,7 +64,7 @@ jobs:
             curl
 
           curl -Ls https://astral.sh/uv/install.sh | bash
-          uv pip install qmk
+          uv pip install --system qmk
 
       - name: Build firmware
         run: |

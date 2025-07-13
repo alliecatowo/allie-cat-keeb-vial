@@ -91,7 +91,7 @@ brew install qmk/qmk/qmk
 # Install dependencies (Linux)
 sudo apt-get install -y git curl
 curl -Ls https://astral.sh/uv/install.sh | bash
-uv pip install qmk
+uv pip install --user qmk
 qmk setup -y
 ```
 

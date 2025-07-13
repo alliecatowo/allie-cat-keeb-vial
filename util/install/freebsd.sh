@@ -15,5 +15,5 @@ _qmk_install() {
         avrdude dfu-programmer dfu-util
 
     curl -Ls https://astral.sh/uv/install.sh | bash
-    sudo uv pip install -r $QMK_FIRMWARE_DIR/requirements.txt
+    sudo uv pip install --system -r $QMK_FIRMWARE_DIR/requirements.txt
 }
