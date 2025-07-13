@@ -560,9 +560,12 @@ ifeq ($(strip $(OLED_FLIP)), yes)
 endif
 
 ifeq ($(strip $(TRACKBALL_RGB_RAINBOW)), yes)
-	OPT_DEFS += -DHK_PIMORONI_TRACKBALL_RGB_RAINBOW
-	SRC += quantum/color.c
+        OPT_DEFS += -DHK_PIMORONI_TRACKBALL_RGB_RAINBOW
+        SRC += quantum/color.c
 endif
+
+SRC += hk_vial.c
+VIAL_ENABLE = yes
 
 print-summary: cpfirmware
 	printf "\n%s" ' _           _       _             _         ' >&2
