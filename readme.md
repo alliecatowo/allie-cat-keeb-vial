@@ -272,6 +272,22 @@ internal interactions for each pointing device driver.
 ### Pimoroni Trackball
 ![Pimoroni driver call graph](docs/pimoroni_callgraph.svg)
 
+## ⌨️ Keymap Diagrams
+
+These diagrams show the default **Vial** keymaps for the Holykeebs boards in this repository.
+
+### Lily58
+![Lily58 keymap](docs/keymap_lily58.svg)
+
+### Sweeq
+![Sweeq keymap](docs/keymap_sweeq.svg)
+
+### Span
+![Span keymap](docs/keymap_spankbd.svg)
+
+### Corne
+![Corne keymap](docs/keymap_corne.svg)
+
 ## 📈 Project Status
 
 This project is actively maintained and regularly synced with upstream holykeebs changes. We aim to:

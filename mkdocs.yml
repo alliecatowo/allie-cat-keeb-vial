@@ -5,3 +5,7 @@ nav:
   - Trackpoint Call Graph: docs/trackpoint_callgraph.svg
   - Cirque Call Graph: docs/cirque_callgraph.svg
   - Pimoroni Call Graph: docs/pimoroni_callgraph.svg
+  - Lily58 Keymap: docs/keymap_lily58.svg
+  - Sweeq Keymap: docs/keymap_sweeq.svg
+  - Span Keymap: docs/keymap_spankbd.svg
+  - Corne Keymap: docs/keymap_corne.svg
