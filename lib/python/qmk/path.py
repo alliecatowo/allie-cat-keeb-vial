@@ -8,6 +8,10 @@ from pathlib import Path, PureWindowsPath, PurePosixPath
 from qmk.constants import MAX_KEYBOARD_SUBFOLDERS, QMK_FIRMWARE, QMK_USERSPACE, HAS_QMK_USERSPACE
 from qmk.errors import NoSuchKeyboardError
 
+# Ensure tests run outside the QMK CLI by providing ORIG_CWD
+if 'ORIG_CWD' not in os.environ:
+    os.environ['ORIG_CWD'] = os.getcwd()
+
 
 def is_keyboard(keyboard_name):
     """Returns True if `keyboard_name` is a keyboard we can compile.
