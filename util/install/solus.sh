@@ -15,5 +15,7 @@ _qmk_install() {
         arm-none-eabi-binutils arm-none-eabi-gcc arm-none-eabi-newlib \
         avrdude dfu-programmer dfu-util
 
-    python3 -m pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
+    uv venv "$QMK_FIRMWARE_DIR/.venv"
+    source "$QMK_FIRMWARE_DIR/.venv/bin/activate"
+    uv pip install -r $QMK_FIRMWARE_DIR/requirements.txt
 }

@@ -69,12 +69,12 @@ def parse_file(file_name: str) -> List[Tuple[str, str]]:
         from english_words import english_words_lower_alpha_set as correct_words
         if not cli.args.quiet:
             cli.echo('The english_words package is outdated, update by running:')
-            cli.echo('  {fg_cyan}python3 -m pip install english_words --upgrade')
+            cli.echo('  {fg_cyan}uv pip install english_words --upgrade')
     except ImportError:
         if not cli.args.quiet:
             cli.echo('Autocorrection will falsely trigger when a typo is a substring of a correctly spelled word.')
             cli.echo('To check for this, install the english_words package and rerun this script:')
-            cli.echo('  {fg_cyan}python3 -m pip install english_words')
+            cli.echo('  {fg_cyan}uv pip install english_words')
         # Use a minimal word list as a fallback.
         correct_words = ('information', 'available', 'international', 'language', 'loosest', 'reference', 'wealthier', 'entertainment', 'association', 'provides', 'technology', 'statehood')
 

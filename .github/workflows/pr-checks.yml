@@ -63,7 +63,10 @@ jobs:
             gcc-arm-none-eabi \
             gcc-avr \
             python3-pip
-          pip3 install qmk
+          pip3 install uv
+          uv venv
+          source .venv/bin/activate
+          uv pip install qmk
 
       - name: Test build configuration
         run: |
@@ -114,7 +117,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang graphviz
-          pip3 install pydot
+          pip3 install uv
+          uv venv
+          source .venv/bin/activate
+          uv pip install pydot
       - name: Build call graph
         run: python3 tools/callgraph.py
       - name: Upload artifact

@@ -23,7 +23,7 @@ To enter the 1967ST bootloader to flash, boot the keyboard while holding D+L.
 
 There are then two ways to flash the keyboard:
 
-    pip install --user nuvoton-isp
+    uv pip install --user nuvoton-isp
     nuvoisp -f ducky_one2sf_ansi.bin
 
 Alternatively you can use elfmimi's [nu-isp-cli](https://lib.rs/crates/nu-isp-cli) which is more complete than nuvoisp and allows flashing .hex files as well.

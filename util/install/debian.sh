@@ -24,5 +24,7 @@ _qmk_install() {
             binutils-riscv64-unknown-elf
     fi
 
-    python3 -m pip install --user -r "$QMK_FIRMWARE_DIR"/requirements.txt
+    uv venv "$QMK_FIRMWARE_DIR/.venv"
+    source "$QMK_FIRMWARE_DIR/.venv/bin/activate"
+    uv pip install -r "$QMK_FIRMWARE_DIR"/requirements.txt
 }

@@ -89,10 +89,13 @@ lily58_rev1_via_[configuration]_[side].uf2
    brew install qmk/qmk/qmk
    
    # Linux/WSL
-   sudo apt-get update
-   sudo apt-get install -y git python3-pip
-   pip3 install qmk
-   qmk setup -y
+  sudo apt-get update
+  sudo apt-get install -y git
+  pip3 install uv
+  uv venv
+  source .venv/bin/activate
+  uv pip install qmk
+  qmk setup -y
    ```
 
 ### Quick Build
