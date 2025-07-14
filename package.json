@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "docs": "node scripts/generate-docs.js && vitepress build docs"
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs"
   },
-  "dependencies": {
-    "shelljs": "^0.8.5"
-  },
+  "type": "module",
   "devDependencies": {
     "moxygen": "^0.8.0",
+    "shelljs": "^0.8.5",
     "vitepress": "^1.6.3"
   },
-  "type": "module"
+  "dependencies": {}
 }
