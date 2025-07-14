@@ -23,9 +23,10 @@ qmk setup  # This will clone `qmk/qmk_firmware` and optionally set up your build
 If your system is not listed above you can install QMK manually. First ensure that you have Python 3.7 (or later) installed and have installed [uv](https://github.com/astral-sh/uv). Then install QMK with this command:
 
 ```
-uv pip install --user qmk
+uv venv
+uv pip install -p .venv/bin/python qmk
 export QMK_HOME='~/qmk_firmware' # Optional, set the location for `qmk_firmware`
-qmk setup  # This will clone `qmk/qmk_firmware` and optionally set up your build environment
+.venv/bin/qmk setup  # This will clone `qmk/qmk_firmware` and optionally set up your build environment
 ```
 
 ### Packaging For Other Operating Systems {#packaging-for-other-operating-systems}

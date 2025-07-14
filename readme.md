@@ -29,7 +29,8 @@ To run the unit tests locally:
 
 2. Install dependencies:
    ```bash
-   uv pip install --system -r requirements-dev.txt
+   uv venv
+   uv pip install -p .venv/bin/python -r requirements-dev.txt
    ```
 
 3. Run the suite:
@@ -114,8 +115,9 @@ lily58_rev1_vial_[configuration]_[side].uf2
    sudo apt-get update
    sudo apt-get install -y git curl
    curl -Ls https://astral.sh/uv/install.sh | bash
-   uv pip install --user qmk
-   qmk setup -y
+   uv venv
+   uv pip install -p .venv/bin/python qmk
+   .venv/bin/qmk setup -y
    ```
 
 ### Quick Build
