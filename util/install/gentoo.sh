@@ -30,5 +30,6 @@ _qmk_install() {
     sudo crossdev -s4 --stable --g \<9 --portage --verbose --target avr
     sudo crossdev -s4 --stable --g \<9 --portage --verbose --target arm-none-eabi
 
-    python3 -m pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
+    curl -Ls https://astral.sh/uv/install.sh | bash
+    uv pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
 }

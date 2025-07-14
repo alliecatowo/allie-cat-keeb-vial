@@ -2,7 +2,11 @@
 # Repository Guidelines
 
 - Run `pytest -q` before committing changes to verify unit tests.
-- If tests fail due to missing dependencies, install them with `pip install -r requirements-dev.txt`.
+- If tests fail due to missing dependencies, create a uv virtual environment and install them:
+  ```bash
+  uv venv
+  uv pip install -p .venv/bin/python -r requirements-dev.txt
+  ```
 - The CI workflows run on the `dev` branch for regular testing. Create pull requests against `dev`.
 - Firmware releases are produced only when `dev` is merged into `main`.
 
@@ -20,9 +24,11 @@ This file provides instructions for OpenAI Codex (and similar agents) when worki
 1. Install QMK dependencies. Example for Debian/Ubuntu:
    ```bash
    sudo apt-get update
-   sudo apt-get install -y git python3-pip
-   pip3 install qmk
-   qmk setup -y
+   sudo apt-get install -y git curl
+   curl -Ls https://astral.sh/uv/install.sh | bash
+   uv venv
+   uv pip install -p .venv/bin/python qmk
+   .venv/bin/qmk setup -y
    ```
 2. Optionally use `shell.nix` for a reproducible environment (`nix-shell`).
 3. Clone with submodules:
@@ -57,7 +63,8 @@ This file provides instructions for OpenAI Codex (and similar agents) when worki
 - Install dev requirements and init submodules first:
   ```bash
   scripts/init_submodules.sh
-  pip install -r requirements-dev.txt
+  uv venv
+  uv pip install -p .venv/bin/python -r requirements-dev.txt
   ```
 - Run tests and lint checks with `qmk pytest` (uses `nose2`, `flake8`, and `yapf`).
 - Format Python code with `qmk format-python`.

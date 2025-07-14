@@ -89,9 +89,11 @@ You can use these commands in PR comments:
 brew install qmk/qmk/qmk
 
 # Install dependencies (Linux)
-sudo apt-get install -y git python3-pip
-pip3 install qmk
-qmk setup -y
+sudo apt-get install -y git curl
+curl -Ls https://astral.sh/uv/install.sh | bash
+uv venv
+uv pip install -p .venv/bin/python qmk
+.venv/bin/qmk setup -y
 ```
 
 ### Building Firmware

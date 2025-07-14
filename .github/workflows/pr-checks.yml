@@ -63,7 +63,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/.cache/pip
+            ~/.cache/uv
             ~/qmk_firmware/.build
           key: ${{ runner.os }}-qmk-${{ hashFiles('**/requirements.txt') }}
 
@@ -77,12 +77,14 @@ jobs:
             binutils-avr \
             gcc-arm-none-eabi \
             gcc-avr \
-            python3-pip
-          pip3 install qmk
+            curl
+          curl -Ls https://astral.sh/uv/install.sh | bash
+          uv venv
+          uv pip install -p .venv/bin/python qmk
 
       - name: Test build configuration
         run: |
-          qmk config user.qmk_home=$GITHUB_WORKSPACE
+          .venv/bin/qmk config user.qmk_home=$GITHUB_WORKSPACE
           python build.py --build-single \
             --keyboard "${{ matrix.keyboard }}" \
             --keymap "${{ matrix.keymap }}" \
@@ -128,8 +130,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang graphviz
-          pip3 install pydot
+          sudo apt-get install -y clang graphviz curl
+          curl -Ls https://astral.sh/uv/install.sh | bash
+          uv venv
+          uv pip install -p .venv/bin/python pydot
       - name: Build call graphs
         run: |
           make callgraph

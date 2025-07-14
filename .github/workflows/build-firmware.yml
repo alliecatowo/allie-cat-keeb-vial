@@ -61,17 +61,18 @@ jobs:
             unzip \
             wget \
             zip \
-            python3-pip
+            curl
 
-          pip3 install --upgrade pip
-          pip3 install qmk
+          curl -Ls https://astral.sh/uv/install.sh | bash
+          uv venv
+          uv pip install -p .venv/bin/python qmk
 
       - name: Build firmware
         run: |
           # Use the current repository as the QMK environment
-          qmk config user.qmk_home=$GITHUB_WORKSPACE
-          qmk config user.keyboard=${{ matrix.keyboard }}
-          qmk config user.keymap=${{ matrix.keymap }}
+          .venv/bin/qmk config user.qmk_home=$GITHUB_WORKSPACE
+          .venv/bin/qmk config user.keyboard=${{ matrix.keyboard }}
+          .venv/bin/qmk config user.keymap=${{ matrix.keymap }}
 
           # Run the build
           python build.py --build-single \

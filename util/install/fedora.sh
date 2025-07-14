@@ -21,5 +21,6 @@ _qmk_install() {
         || sudo dnf $SKIP_PROMPT install libusb1-devel libusb-compat-0.1-devel \
         || sudo dnf $SKIP_PROMPT install libusb0-devel
 
-    python3 -m pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
+    curl -Ls https://astral.sh/uv/install.sh | bash
+    uv pip install --user -r $QMK_FIRMWARE_DIR/requirements.txt
 }

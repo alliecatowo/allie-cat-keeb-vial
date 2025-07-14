@@ -14,5 +14,6 @@ _qmk_install() {
         arm-none-eabi-binutils arm-none-eabi-gcc arm-none-eabi-newlib \
         avrdude dfu-programmer dfu-util
 
-    sudo python3 -m pip install -r $QMK_FIRMWARE_DIR/requirements.txt
+    curl -Ls https://astral.sh/uv/install.sh | bash
+    sudo uv pip install --system -r $QMK_FIRMWARE_DIR/requirements.txt
 }
