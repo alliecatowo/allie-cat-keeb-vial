@@ -122,3 +122,8 @@ compile_commands.json
 # /keyboards/**/keymaps/vial/*
 build_all/
 keyboards/crkbd/keymaps/idank/pass.h
+docs/_api/
+docs/.vitepress/dist
+node_modules/
+docs/.vitepress/auto_sidebar.json
+docs/_doxygen/

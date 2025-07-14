@@ -25,3 +25,6 @@
 	path = lib/lvgl
 	url = https://github.com/qmk/lvgl.git
 	branch = release/v8.2
+[submodule "docs/holykeebs"]
+	path = docs/holykeebs
+	url = https://github.com/idank/holykeebs-docs
