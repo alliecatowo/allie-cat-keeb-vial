@@ -1,38 +1,27 @@
-# Quantum Mechanical Keyboard Firmware
+---
+layout: home
+hero:
+  name: Allie Cat Keebs
+  text: Documentation
+  tagline: Your comprehensive guide to Holykeebs keyboards powered by Allie Cat Keebs QMK firmware.
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /guide/
+---
 
-## What is QMK Firmware?
+<script setup>
+import { VPFeatures } from 'vitepress/theme'
+</script>
 
-QMK (*Quantum Mechanical Keyboard*) is an open source community centered around developing computer input devices. The community encompasses all sorts of input devices, such as keyboards, mice, and MIDI devices. A core group of collaborators maintains [QMK Firmware](https://github.com/qmk/qmk_firmware), [QMK Configurator](https://config.qmk.fm), [QMK Toolbox](https://github.com/qmk/qmk_toolbox), [qmk.fm](https://qmk.fm), and this documentation with the help of community members like you.
-
-## Get Started
-
-::: tip Basic
-[QMK Configurator](newbs_building_firmware_configurator)
-
-User friendly graphical interfaces, no programming knowledge required.
-:::
-
-::: warning Advanced
-[Use The Source](newbs)
-
-More powerful, but harder to use.
-:::
-
-## Make It Yours
-
-QMK has lots of features to explore, and a good deal of reference documentation to dig through. Most features are taken advantage of by modifying your [keymap](keymap), and changing the [keycodes](keycodes).
-
-## Need help?
-
-Check out the [support page](support) to see how you can get help using QMK.
-
-## Give Back
-
-There are a lot of ways you can contribute to the QMK Community. The easiest way to get started is to use it and spread the word to your friends.
-
-* Help people out on our forums and chat rooms:
-    * [/r/olkb](https://www.reddit.com/r/olkb/)
-    * [Discord Server](https://discord.gg/qmk)
-* Contribute to our documentation by clicking "Edit This Page" at the bottom
-* [Report a bug](https://github.com/qmk/qmk_firmware/issues/new/choose)
-* [Open a Pull Request](contributing)
+<VPFeatures
+  :features="[
+    { icon: '🐾', title: 'Setting Up Your Development Environment', details: 'Get your system ready for firmware development.', link: '/guide/setup_tooling' },
+    { icon: '✨', title: 'Key Features and Modifications', details: 'Understand the unique aspects of this QMK fork.', link: '/guide/fork_features' },
+    { icon: '🐈', title: 'Vial Integration', details: 'Learn how to use Vial for real-time keymap configuration.', link: '/guide/vial' },
+    { icon: '⚙️', title: 'Building Your Firmware', details: 'Step-by-step instructions for compiling your firmware.', link: '/guide/building_firmware' },
+    { icon: '🎨', title: 'HKS Driver Modifications', details: 'Dive into the specific driver changes and view automated call graphs.', link: '/guide/hks_driver_modifications' },
+    { icon: '🚀', title: 'CI/CD Workflow', details: 'Understand our automated build and testing processes.', link: '/guide/ci_cd' },
+    { icon: '🤝', title: 'Contributing to the Project', details: 'Guidelines for contributing to this repository.', link: '/guide/contributing' },
+  ]"
+/> 

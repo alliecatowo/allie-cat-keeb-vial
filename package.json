@@ -1,0 +1,16 @@
+{
+  "name": "allie-cat-keeps-docs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "docs:build": "vitepress build docs",
+    "docs:dev": "vitepress dev docs"
+  },
+  "type": "module",
+  "devDependencies": {
+    "moxygen": "^0.8.0",
+    "shelljs": "^0.8.5",
+    "vitepress": "^1.6.3"
+  },
+  "dependencies": {}
+}
