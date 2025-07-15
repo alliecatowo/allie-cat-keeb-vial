@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  base: '/',
   title: 'Allie Cat Keebs',
   ignoreDeadLinks: true,
   outDir: '../.build/docs', // This will output to qmk_firmware/.build/docs
@@ -11,9 +12,7 @@ export default defineConfig({
         text: 'Allie Cat\'s Docs',
         items: [
           // Assuming your personal markdown files are in docs/guide/
-          { text: 'Overview', link: '/guide/overview' },
-          { text: 'Features', link: '/guide/features' },
-          { text: 'README', link: '/guide/README' },
+          { text: 'Overview', link: '/guide/index' },
           { text: 'Setting Up Development Environment', link: '/guide/setup_tooling' },
           { text: 'HKS Driver Modifications', link: '/guide/hks_driver_modifications' },
           { text: 'Vial Integration', link: '/guide/vial' },
