@@ -87,6 +87,8 @@ tags
 *.apng
 *.mng
 *.svg
+!/docs/*.svg
+
 *.webp
 *.webm
 *.avi

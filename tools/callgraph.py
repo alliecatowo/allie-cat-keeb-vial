@@ -29,6 +29,7 @@ DRIVERS = {
     },
 }
 
+
 def run_clang(files, defines=None, extra=None):
     """Invoke clang static analyzer and return raw output."""
     cmd = [
@@ -63,6 +64,7 @@ def run_clang(files, defines=None, extra=None):
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return result.stdout
 
+
 def parse_graph(output):
     """Parse clang output into call graph edges."""
     edges = []
@@ -76,11 +78,13 @@ def parse_graph(output):
                 edges.append((func, callee))
     return edges
 
+
 def build_graph(edges):
     graph = pydot.Dot(graph_type="digraph", rankdir="LR")
     for src, dst in edges:
         graph.add_edge(pydot.Edge(src, dst))
     return graph
+
 
 def gen_callgraph(files, output, defines=None, extra=None):
     """Generate a call graph SVG from source files."""
@@ -96,12 +100,17 @@ def gen_callgraph(files, output, defines=None, extra=None):
     print(f"Failed to write call graph to {output}")
     return False
 
+
 def main():
     parser = argparse.ArgumentParser(description="Generate call graph using clang")
     parser.add_argument("files", nargs="*", help="C source files")
     parser.add_argument("-o", "--output", help="Output SVG path")
-    parser.add_argument("-D", "--define", dest="defines", action="append", metavar="MACRO", help="Macro definition for clang")
-    parser.add_argument("--driver", choices=DRIVERS.keys(), default="azoteq", help="Use predefined settings for a driver")
+    parser.add_argument(
+        "-D", "--define", dest="defines", action="append", metavar="MACRO", help="Macro definition for clang"
+    )
+    parser.add_argument(
+        "--driver", choices=DRIVERS.keys(), default="azoteq", help="Use predefined settings for a driver"
+    )
     args = parser.parse_args()
 
     cfg = DRIVERS.get(args.driver, {})
@@ -113,6 +122,7 @@ def main():
         parser.error("No source files or output specified")
 
     gen_callgraph(files, output, defines=defines)
+
 
 if __name__ == "__main__":
     main()

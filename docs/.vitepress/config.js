@@ -14,20 +14,23 @@ export default defineConfig({
           { text: 'Overview', link: '/guide/overview' },
           { text: 'Features', link: '/guide/features' },
           { text: 'README', link: '/guide/README' },
+          { text: 'Setting Up Development Environment', link: '/guide/setup_tooling' },
+          { text: 'HKS Driver Modifications', link: '/guide/hks_driver_modifications' },
+          { text: 'Vial Integration', link: '/guide/vial' },
+          { text: 'Building Your Firmware', link: '/guide/building_firmware' },
+          { text: 'CI/CD Workflow', link: '/guide/ci_cd' },
+          { text: 'Contributing to the Project', link: '/guide/contributing' },
+          { text: 'Key Features and Modifications', link: '/guide/fork_features' },
           // Add other personal doc links here as needed
         ]
       },
       {
-        text: 'Holykeebs Docs',
+        text: 'HKS Driver Modifications',
         items: [
-          // Links to Holykeebs docs within the submodule.
-          // The paths here should reflect the relative paths of the markdown files
-          // within the `docs/holykeebs` submodule, as they will be transformed by VitePress.
-          // For example, if holykeebs has a `docs/introduction.md`, it would be `/holykeebs/introduction`.
-          // You may need to inspect the `docs/holykeebs` submodule to get the exact paths.
-          { text: 'Holykeebs Home', link: '/holykeebs/' },
-          // Add more specific holykeebs links here if known, e.g.:
-          // { text: 'Holykeebs Guide', link: '/holykeebs/guide/some_page' },
+          { text: 'Azoteq Call Graph', link: '/azoteq_callgraph.svg' },
+          { text: 'Cirque Call Graph', link: '/cirque_callgraph.svg' },
+          { text: 'Pimoroni Call Graph', link: '/pimoroni_callgraph.svg' },
+          { text: 'Trackpoint Call Graph', link: '/trackpoint_callgraph.svg' },
         ]
       },
       {

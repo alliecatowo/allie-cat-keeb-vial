@@ -5,7 +5,15 @@
 [![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord)](https://discord.gg/qmk)
 [![License](https://img.shields.io/badge/license-GPL2+-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb/blob/main/LICENSE)
 
-This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository, bringing modern Vial support to holykeebs' amazing pointing device implementations for keyboards.
+This repository hosts the **Vial-enabled QMK firmware for Allie Cat Keebs**, specifically tailored to integrate modern Vial support with Holykeebs' excellent pointing device implementations. This is *your* opinionated fork, with all modifications and comprehensive setup guides detailed in our custom documentation.
+
+### 📚 **Start Here: Allie Cat Keebs Documentation**
+
+For a complete and self-sufficient guide to this repository, including setup, building, features, and all specific modifications, please visit our custom documentation site:
+
+**[Allie Cat Keebs Documentation](https://alliecatowo.github.io/allie-cat-keeb/)**
+
+This documentation covers everything you need to know to get started and understand the unique aspects of this project.
 
 ## 🛍️ Get Your Holykeebs Hardware
 
@@ -13,7 +21,7 @@ Visit the **[Holykeebs Store](https://holykeebs.com)** to purchase trackballs, t
 
 ## 📚 Resources
 
-- **[Allie Cat Keebs Documentation](https://alliecatowo.github.io/allie-cat-keeb/)** - My custom documentation for this fork
+- **[Allie Cat Keebs Documentation](https://alliecatowo.github.io/allie-cat-keeb/)** - My custom documentation for this fork, including dynamically generated content like call graphs that are committed to this repository.
 - **[Holykeebs Documentation](https://docs.holykeebs.com)** - Complete guides for holykeebs hardware installation and configuration
 - **[Holykeebs Repository](https://github.com/idank/qmk_firmware)** - The original holykeebs QMK firmware (branch: `holykeebs-master`)
 - **[Vial](https://get.vial.today)** - Real-time keyboard configuration without flashing
@@ -115,30 +123,21 @@ lily58_rev1_vial_[configuration]_[side].uf2
 
 ## 🛠️ Building Your Own Firmware
 
-### Prerequisites
+For a comprehensive guide on setting up your development environment, installing necessary tools (like `uv` and `qmk` CLI), and detailed instructions on building your firmware, please refer to our dedicated documentation page:
 
-1.  **Fork this repository** (not the base QMK or holykeebs repo)
-2.  Install QMK dependencies:
-    ```bash
-    # macOS
-    brew install qmk/qmk/qmk
-    
-    # Linux/WSL
-    sudo apt-get update
-    sudo apt-get install -y git python3-pip
-    pip3 install qmk
-    qmk setup -y
-    ```
+**[Setting Up Your Development Environment](docs/guide/setup_tooling.md)**
 
 ### Quick Build
 
+Once your environment is set up, you can quickly build the firmware:
+
 ```bash
-# Clone your fork
+# Clone your fork (if you haven't already)
 git clone --recurse-submodules https://github.com/YOUR_USERNAME/allie-cat-keeb.git
 cd allie-cat-keeb
 
-# Build firmware with our convenient build script
-python build.py
+# Build firmware with our convenient build script (ensure your uv environment is active)
+.venv/bin/python3 build.py
 ```
 
 ### Build Options

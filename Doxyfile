@@ -21,7 +21,7 @@ DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "QMK Firmware"
 PROJECT_NUMBER         = https://github.com/qmk/qmk_firmware
 PROJECT_BRIEF          = "Keyboard controller firmware for Atmel AVR and ARM USB families"
-OUTPUT_DIRECTORY       = docs/_doxygen
+OUTPUT_DIRECTORY       = .build/docs/doxygen
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -130,7 +130,7 @@ WARN_LOGFILE           =
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
 
-INPUT                  = tmk_core quantum drivers keyboards users
+INPUT                  = drivers keyboards/ users/
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -139,11 +139,20 @@ FILE_PATTERNS          = *.c \
                          *.c++ \
                          *.h \
                          *.hh \
-                         *.hxx \
+                         *.hxx \2
                          *.hpp \
                          *.h++
 RECURSIVE              = YES
-EXCLUDE                = qmk_firmware/*
+EXCLUDE                = docs/ \
+                         lib/ \
+                         platforms/ \
+                         util/ \
+                         tests/ \
+                         data/ \
+                         .github/ \
+                         .vscode/ \
+                         builddefs/ \
+                         .git/
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        =
@@ -183,7 +192,7 @@ IGNORE_PREFIX          =
 # Configuration options related to disabled outputs
 #---------------------------------------------------------------------------
 
-GENERATE_HTML          = NO
+GENERATE_HTML          = YES
 GENERATE_LATEX         = NO
 GENERATE_RTF           = NO
 GENERATE_MAN           = NO
