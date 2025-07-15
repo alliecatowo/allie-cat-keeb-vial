@@ -79,6 +79,8 @@ jobs:
             gcc-avr \
             python3-pip
           pip3 install qmk
+          pip3 install -r requirements.txt
+          qmk setup -y
 
       - name: Test build configuration
         run: |

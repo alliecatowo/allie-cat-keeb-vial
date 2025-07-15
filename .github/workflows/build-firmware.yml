@@ -65,6 +65,8 @@ jobs:
 
           pip3 install --upgrade pip
           pip3 install qmk
+          pip3 install -r requirements.txt
+          qmk setup -y
 
       - name: Build firmware
         run: |
