@@ -63,13 +63,19 @@ jobs:
             zip \
             python3-pip
 
-          pip3 install --upgrade pip
-          pip3 install qmk
+          pip install uv
+          uv venv
+          source .venv/bin/activate
+          uv tool install qmk
+          uv pip install -r requirements.txt
+          qmk setup -y
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Build firmware
         run: |
           # Use the current repository as the QMK environment
           qmk config user.qmk_home=$GITHUB_WORKSPACE
+          qmk config user.userspace=holykeebs
           qmk config user.keyboard=${{ matrix.keyboard }}
           qmk config user.keymap=${{ matrix.keymap }}
 
