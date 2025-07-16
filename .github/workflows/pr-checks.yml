@@ -90,6 +90,7 @@ jobs:
         run: |
           qmk config user.qmk_home=$GITHUB_WORKSPACE
           qmk config user.userspace=holykeebs
+          qmk setup -y
           python build.py --build-single \
             --keyboard "${{ matrix.keyboard }}" \
             --keymap "${{ matrix.keymap }}" \
