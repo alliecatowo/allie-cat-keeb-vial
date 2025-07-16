@@ -69,6 +69,7 @@ jobs:
           uv tool install qmk
           uv pip install -r requirements.txt
           qmk setup -y
+          scripts/init_submodules.sh
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Build firmware

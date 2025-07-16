@@ -78,12 +78,14 @@ jobs:
             gcc-arm-none-eabi \
             gcc-avr \
             python3-pip
+
           pip install uv
           uv venv
           source .venv/bin/activate
           uv tool install qmk
           uv pip install -r requirements.txt
           qmk setup -y
+          scripts/init_submodules.sh
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
       - name: Test build configuration
