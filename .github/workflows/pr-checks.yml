@@ -78,7 +78,10 @@ jobs:
             gcc-arm-none-eabi \
             gcc-avr \
             python3-pip
-          pip3 install qmk
+          pip3 install --user -U pipx
+          pipx install --force qmk
+          pipx runpip qmk install -r requirements.txt
+          pipx run qmk setup -y
 
       - name: Test build configuration
         run: |
