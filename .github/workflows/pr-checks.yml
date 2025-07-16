@@ -78,14 +78,16 @@ jobs:
             gcc-arm-none-eabi \
             gcc-avr \
             python3-pip
-          pip3 install --user -U pipx
-          pipx install --force qmk
-          pipx runpip qmk install -r requirements.txt
-          pipx run qmk setup -y
+          uv venv
+          source .venv/bin/activate
+          uv tool install qmk
+          uv pip install -r requirements.txt
+          qmk setup -y
 
       - name: Test build configuration
         run: |
           qmk config user.qmk_home=$GITHUB_WORKSPACE
+          qmk config user.userspace=holykeebs
           python build.py --build-single \
             --keyboard "${{ matrix.keyboard }}" \
             --keymap "${{ matrix.keymap }}" \
