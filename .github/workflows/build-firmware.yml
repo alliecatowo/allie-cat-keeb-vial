@@ -79,6 +79,8 @@ jobs:
           qmk config user.keyboard=${{ matrix.keyboard }}
           qmk config user.keymap=${{ matrix.keymap }}
 
+          qmk setup -y
+
           # Run the build
           python build.py --build-single \
             --keyboard "${{ matrix.keyboard }}" \
