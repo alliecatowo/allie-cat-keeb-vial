@@ -78,6 +78,7 @@ jobs:
             gcc-arm-none-eabi \
             gcc-avr \
             python3-pip
+          pip install uv
           uv venv
           source .venv/bin/activate
           uv tool install qmk
