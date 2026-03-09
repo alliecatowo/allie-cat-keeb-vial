@@ -1,0 +1,63 @@
+name: Build Vial firmware
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'keyboards/**'
+      - 'users/**'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: qmkfm/qmk_cli
+
+    steps:
+      - name: Checkout userspace
+        uses: actions/checkout@v4
+        with:
+          path: userspace
+
+      - name: Clone Vial-QMK
+        run: git clone --depth=1 https://github.com/vial-kb/vial-qmk.git qmk
+
+      - name: Install Python dependencies
+        run: |
+          cd qmk
+          pip3 install -r requirements.txt
+
+      - name: Copy userspace files into Vial-QMK
+        run: |
+          # Lily58 vial keymap
+          mkdir -p qmk/keyboards/lily58/keymaps/vial
+          cp -r userspace/keyboards/lily58/keymaps/vial/. qmk/keyboards/lily58/keymaps/vial/
+
+          # Sofle vial keymap
+          mkdir -p qmk/keyboards/sofle/keymaps/vial
+          cp -r userspace/keyboards/sofle/keymaps/vial/. qmk/keyboards/sofle/keymaps/vial/
+
+          # holykeebs userspace
+          mkdir -p qmk/users/holykeebs
+          cp -r userspace/users/holykeebs/. qmk/users/holykeebs/
+
+      - name: Build Lily58 vial firmware
+        run: |
+          cd qmk
+          qmk compile -kb lily58/rev1 -km vial
+
+      - name: Build Sofle vial firmware
+        run: |
+          cd qmk
+          qmk compile -kb sofle/rev1 -km vial
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vial-firmware
+          path: |
+            qmk/*.hex
+            qmk/*.uf2
+          if-no-files-found: warn
