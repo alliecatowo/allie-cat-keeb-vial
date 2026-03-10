@@ -103,7 +103,7 @@ def main():
     options = parser.add_argument_group('Build Options')
     options.add_argument('--keyboard', default='lily58/rev1', help='Keyboard to build.')
     options.add_argument('--keymap', default='vial', help='Keymap to build.')
-    options.add_argument('--user-name', default='holykeebs', help='QMK user name.')
+    options.add_argument('--user-name', default='alliecatowo', help='QMK user name.')
     options.add_argument('--left-device', default='None', help='Left device.')
     options.add_argument('--right-device', default='None', help='Right device.')
     options.add_argument('--side', choices=['left', 'right'], help='Side to build.')
@@ -171,7 +171,7 @@ def main():
         # Build both sides of trackball_tsp43
         for side in ('left', 'right'):
             command = Command(kb, 'vial')
-            command.prepend_argument('USER_NAME=holykeebs')
+            command.prepend_argument('USER_NAME=alliecatowo')
             command.add_argument('POINTING_DEVICE=trackball_tps43')
             command.add_argument(f'SIDE={side}')
             command.add_argument('TRACKBALL_RGB_RAINBOW=yes')

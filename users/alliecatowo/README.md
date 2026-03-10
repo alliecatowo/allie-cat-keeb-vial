@@ -1,9 +1,10 @@
 # users/alliecatowo
 
-Allie's personal QMK userspace additions for `allie-cat-keeb-vial`.
+Primary QMK userspace for `allie-cat-keeb-vial`.
 
-These files complement (and sometimes wrap) the [holykeebs](../holykeebs/)
-userspace used by the Lily58 keymap.
+This directory now contains the full pointing-device userspace that was
+previously built from `users/holykeebs/`. Builds should prefer
+`USER_NAME=alliecatowo`.
 
 ---
 
@@ -11,7 +12,9 @@ userspace used by the Lily58 keymap.
 
 | File | Purpose |
 |------|---------|
-| `pointing_device_config.h` | Unified pointing device selector header (ALLIE-202) |
+| `config.h` / `rules.mk` | Main userspace entrypoints loaded by `USER_NAME=alliecatowo` |
+| `holykeebs.h` | HK_* keycodes and userspace declarations |
+| `pointing_device_config.h` | Unified standalone pointing-device selector header (ALLIE-202) |
 
 ---
 
@@ -51,11 +54,12 @@ gesture config defines.
 | `HK_POINTING_PMW3360` | PMW3360 optical | SPI | — |
 | `HK_POINTING_AZOTEQ` | Azoteq IQS5xx | I2C | tap, 2-finger tap, scroll, hold |
 
-### Relationship with holykeebs
+### Relationship with the main userspace
 
-If you are using `POINTING_DEVICE=cirque40` (or any other holykeebs sensor
-variable) in `rules.mk`, the holykeebs userspace already handles config
-for you — you do **not** need to include `pointing_device_config.h`.
+If you are using `USER_NAME=alliecatowo` with `POINTING_DEVICE=cirque40`
+(or any other supported sensor variable) in `rules.mk`, the main userspace
+already handles config for you — you do **not** need to include
+`pointing_device_config.h`.
 
 This header is for standalone builds or for quickly switching sensors
 without modifying `rules.mk` at the make invocation level.
