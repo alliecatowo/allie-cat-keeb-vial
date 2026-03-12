@@ -119,6 +119,8 @@ def main():
         # Build single configuration for CI
         command = Command(args.keyboard, args.keymap)
         command.prepend_argument(f'USER_NAME={args.user_name}')
+        if args.keymap == 'vial':
+            command.add_argument('VIAL_ENABLE=yes')
 
         if args.debug:
             command.add_argument('CONSOLE=yes')
@@ -172,6 +174,7 @@ def main():
         for side in ('left', 'right'):
             command = Command(kb, 'vial')
             command.prepend_argument('USER_NAME=holykeebs')
+            command.add_argument('VIAL_ENABLE=yes')
             command.add_argument('POINTING_DEVICE=trackball_tps43')
             command.add_argument(f'SIDE={side}')
             command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
