@@ -42,3 +42,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGBLIGHT_LED_COUNT 14    // Number of LEDs
 #define RGBLIGHT_SLEEP
 */
+
+// ---------------------------------------------------------------------------
+// Pointing device — Cirque Pinnacle (ALLIE-201)
+//
+// Uncomment the block below if you have a Cirque Pinnacle trackpad wired to
+// this keyboard.  Pointing device enable + driver selection lives in rules.mk
+// (POINTING_DEVICE_ENABLE = yes / POINTING_DEVICE_DRIVER = cirque_pinnacle_spi
+// or cirque_pinnacle_i2c).  These defines tune gesture behaviour.
+//
+// To use via holykeebs userspace, set POINTING_DEVICE=cirque40 (or cirque35)
+// and POINTING_DEVICE_POSITION=right (or left) in rules.mk instead — holykeebs
+// will set most of the defines below automatically.  This block is provided
+// as a standalone reference for builds that bypass holykeebs.
+// ---------------------------------------------------------------------------
+/*
+// Cirque Pinnacle — gesture configuration
+// ----------------------------------------
+// Physical trackpad diameter. Common sizes: 35 or 40 mm.
+#define CIRQUE_PINNACLE_DIAMETER_MM 40
+
+// 1-finger tap = left click.
+#define CIRQUE_PINNACLE_TAP_ENABLE
+
+// Drag a finger around the outer ring of the pad to scroll.
+// Requires CIRQUE_PINNACLE_POSITION_MODE (absolute mode) — enabled by default
+// in QMK when CIRQUE_PINNACLE_TAP_ENABLE is set.
+#define CIRQUE_PINNACLE_CIRCULAR_SCROLL_ENABLE
+
+// Uncomment if your trackpad is mounted at a non-standard angle.
+// Increments of 90° CW: _90, _180, _270.
+// #define POINTING_DEVICE_ROTATION_90
+
+// Scroll sensitivity — higher divisor = slower scroll (default: 4).
+#define POINTING_DEVICE_SCROLL_DIVISOR_H 8
+#define POINTING_DEVICE_SCROLL_DIVISOR_V 8
+*/
