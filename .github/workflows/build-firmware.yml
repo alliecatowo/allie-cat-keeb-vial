@@ -65,27 +65,24 @@ jobs:
           pip3 install --upgrade pip
           pip3 install qmk
 
+      - name: Configure QMK userspace
+        run: qmk config user.qmk_home=$GITHUB_WORKSPACE
+
       - name: Build firmware
         run: |
-          # Use the current repository as the QMK environment
-          qmk config user.qmk_home=$GITHUB_WORKSPACE
-          qmk config user.keyboard=${{ matrix.keyboard }}
-          qmk config user.keymap=${{ matrix.keymap }}
-
-          # Run the build
           python build.py --build-single \
             --keyboard "${{ matrix.keyboard }}" \
             --keymap "${{ matrix.keymap }}" \
-            --left-device "${{ matrix.left_device }}" \
-            --right-device "${{ matrix.right_device }}" \
-            --side "${{ matrix.side }}" \
-            ${{ matrix.debug && '--debug' || '' }}
+            --pointing-device "${{ matrix.pointing_device }}" \
+            --side "${{ matrix.side }}"
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ matrix.side }}
-          path: build_lily58/*.uf2
+          name: firmware-${{ matrix.keyboard_safe }}-${{ matrix.pointing_device || 'plain' }}${{ matrix.side && format('-{0}', matrix.side) || '' }}
+          path: |
+            build_lily58/*.uf2
+            build_sofle/*.hex
           retention-days: 30
 
   release:
@@ -99,15 +96,12 @@ jobs:
         with:
           path: firmware
 
-      - name: List downloaded files
-        run: |
-          echo "Downloaded artifacts structure:"
-          find firmware -type f -name "*.uf2" | head -20
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: firmware/*/*.uf2
+          files: |
+            firmware/**/*.uf2
+            firmware/**/*.hex
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

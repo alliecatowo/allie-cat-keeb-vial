@@ -121,4 +121,6 @@ compile_commands.json
 # /keyboards/**/keymaps/via/*
 # /keyboards/**/keymaps/vial/*
 build_all/
+build_lily58/
+build_sofle/
 keyboards/crkbd/keymaps/idank/pass.h
