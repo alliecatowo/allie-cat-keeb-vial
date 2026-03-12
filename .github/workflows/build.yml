@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - feat/slim-userspace
+  pull_request:
+    branches:
+      - feat/slim-userspace
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install QMK CLI
+        run: pip3 install qmk
+
+      - name: Run QMK Setup
+        run: qmk setup --yes --home "${{ github.workspace }}"
+
+      - name: Compile firmware for Lily58
+        run: qmk compile -kb lily58/rev1 -km vial
+
+      - name: Compile firmware for Sofle
+        run: qmk compile -kb sofle/rev1 -km vial
+
+      - name: Upload Firmware Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            *.hex
+            *.bin
+            *.uf2
