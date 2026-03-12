@@ -80,11 +80,11 @@ jobs:
             --left-device "${{ matrix.left_device }}" \
             --right-device "${{ matrix.right_device }}" \
             --side "${{ matrix.side }}" \
-            ${{ matrix.debug && '--debug' || '' }}
+            ${{ matrix.debug == true && '--debug' || '' }}
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ matrix.side }}
-          path: build_lily58/*.uf2
+          name: firmware-${{ matrix.keyboard_name }}-${{ matrix.keymap }}-${{ matrix.side }}
+          path: build_*/*.uf2
           retention-days: 7
