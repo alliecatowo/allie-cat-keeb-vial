@@ -13,39 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout QMK Vial
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          repository: vial-kb/vial-qmk
+          submodules: recursive
 
-      - name: Copy userspace files
-        run: |
-          cp -R keyboards/lily58/keymaps/vial .
-          cp -R keyboards/sofle/keymaps/vial .
-          cp -R users/holykeebs .
-          cp qmk.json .
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-      - name: Setup QMK Dependencies
-        run: |
-          sudo apt-get install python3 python3-pip
-          pip3 install qmk
+      - name: Install QMK CLI
+        run: pip3 install qmk
 
       - name: Run QMK Setup
-        run: |
-          qmk setup --non-interactive
+        run: qmk setup --yes --home "${{ github.workspace }}"
 
       - name: Compile firmware for Lily58
-        run: |
-          qmk compile -kb lily58 -km vial
+        run: qmk compile -kb lily58/rev1 -km vial
 
       - name: Compile firmware for Sofle
-        run: |
-          qmk compile -kb sofle -km vial
+        run: qmk compile -kb sofle/rev1 -km vial
 
       - name: Upload Firmware Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: firmware
           path: |
-            lily58_rev1_vial.hex
-            sofle_rev1_vial.hex
+            *.hex
+            *.bin
+            *.uf2
