@@ -1,28 +1,51 @@
-# Build Workflow
-
 name: Build
 
 on:
   push:
     branches:
       - feat/slim-userspace
+  pull_request:
+    branches:
+      - feat/slim-userspace
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout QMK Vial
         uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          repository: vial-kb/vial-qmk
 
-      - name: Install Dependencies
+      - name: Copy userspace files
         run: |
-          npm install
+          cp -R keyboards/lily58/keymaps/vial .
+          cp -R keyboards/sofle/keymaps/vial .
+          cp -R users/holykeebs .
+          cp qmk.json .
 
-      - name: Run Build
+      - name: Setup QMK Dependencies
         run: |
-          npm run build
+          sudo apt-get install python3 python3-pip
+          pip3 install qmk
+
+      - name: Run QMK Setup
+        run: |
+          qmk setup --non-interactive
+
+      - name: Compile firmware for Lily58
+        run: |
+          qmk compile -kb lily58 -km vial
+
+      - name: Compile firmware for Sofle
+        run: |
+          qmk compile -kb sofle -km vial
+
+      - name: Upload Firmware Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: firmware
+          path: |
+            lily58_rev1_vial.hex
+            sofle_rev1_vial.hex
