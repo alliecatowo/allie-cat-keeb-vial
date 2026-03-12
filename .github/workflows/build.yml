@@ -3,13 +3,9 @@ name: Build
 on:
   push:
     branches:
-      - main
       - feat/slim-userspace
-      - 'feat/**'
-      - 'copilot/**'
   pull_request:
     branches:
-      - main
       - feat/slim-userspace
 
 jobs:

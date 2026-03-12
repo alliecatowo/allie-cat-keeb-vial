@@ -1,0 +1,60 @@
+name: Changelog
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@v2
+        id: git-cliff
+        with:
+          config: .github/cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+
+      - name: Check if changelog changed
+        id: check-changes
+        run: |
+          if git diff --exit-code CHANGELOG.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check-changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update changelog"
+          title: "chore: automated changelog update"
+          body: |
+            ## 📝 Automated Changelog Update
+
+            This PR contains an automated update to the CHANGELOG.md file based on recent commits.
+
+            ### Changes
+            - Updated CHANGELOG.md with latest commits
+            - Organized by conventional commit types
+
+            ---
+            *This is an automated PR. Please review the changelog for accuracy before merging.*
+          branch: chore/update-changelog
+          delete-branch: true
+          labels: |
+            documentation
+            automated
