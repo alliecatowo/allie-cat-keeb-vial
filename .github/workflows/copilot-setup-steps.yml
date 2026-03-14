@@ -1,0 +1,107 @@
+name: "Copilot Setup Steps"
+
+# Run automatically when this file changes (for validation), and allow manual runs.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      # Copilot will re-checkout the repo after these steps, but we need it now
+      # to install Python dependencies from requirements-dev.txt.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # Python toolchain
+      # -----------------------------------------------------------------------
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: python3 -m pip install --upgrade pip && python3 -m pip install -r requirements-dev.txt
+
+      # -----------------------------------------------------------------------
+      # QMK environment variables — set persistently for all subsequent steps
+      # and for the agent's working session via $GITHUB_ENV / $GITHUB_PATH.
+      # These mirror the bootstrap block in AGENTS.md exactly.
+      # -----------------------------------------------------------------------
+      - name: Set QMK environment variables
+        run: |
+          echo "ORIG_CWD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "QMK_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "QMK_FIRMWARE=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "PYTHONPATH=$GITHUB_WORKSPACE/lib/python" >> $GITHUB_ENV
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
+      # -----------------------------------------------------------------------
+      # ARM / AVR cross-compiler toolchain (needed for firmware builds)
+      # -----------------------------------------------------------------------
+      - name: Install firmware build toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            avr-libc \
+            binutils-arm-none-eabi \
+            binutils-avr \
+            dfu-programmer \
+            dfu-util \
+            gcc-arm-none-eabi \
+            gcc-avr \
+            git \
+            libnewlib-arm-none-eabi \
+            unzip \
+            wget \
+            zip
+
+      # -----------------------------------------------------------------------
+      # Call-graph tooling (clang + graphviz for tools/callgraph.py)
+      # -----------------------------------------------------------------------
+      - name: Install call-graph tools
+        run: |
+          sudo apt-get install -y clang graphviz
+          python3 -m pip install pydot
+
+      # -----------------------------------------------------------------------
+      # QMK CLI (used by build.py --build-single and qmk config)
+      # -----------------------------------------------------------------------
+      - name: Install QMK CLI
+        run: python3 -m pip install qmk
+
+      # -----------------------------------------------------------------------
+      # Smoke-test: verify the environment is working correctly before handing
+      # control to the agent.
+      # -----------------------------------------------------------------------
+      - name: Smoke test — build.py unit tests
+        run: python3 -m unittest tests.test_build_py -v
+
+      - name: Smoke test — validate CI matrix JSON
+        run: |
+          output=$(python3 build.py --generate-matrix-release)
+          echo "$output" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          assert 'include' in data
+          print(f'Matrix OK: {len(data[\"include\"])} entries')
+          "
+
+      - name: Smoke test — lint Python files
+        run: |
+          flake8 build.py tools/callgraph.py tests/test_build_py.py \
+            --max-line-length=120 --extend-ignore=E501,W503

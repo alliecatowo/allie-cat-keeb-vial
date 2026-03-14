@@ -71,8 +71,9 @@ static uint8_t encoder_resolutions[NUM_ENCODERS] = ENCODER_RESOLUTIONS;
 #endif
 static int8_t encoder_LUT[] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
 
-static uint8_t encoder_state[NUM_ENCODERS]  = {0};
-static int8_t  encoder_pulses[NUM_ENCODERS] = {0};
+enum { ENCODER_STATE_SIZE = (NUM_ENCODERS > 0 ? NUM_ENCODERS : 1) };
+static uint8_t encoder_state[ENCODER_STATE_SIZE]  = {0};
+static int8_t  encoder_pulses[ENCODER_STATE_SIZE] = {0};
 
 // encoder counts
 static uint8_t thisCount;
