@@ -64,9 +64,10 @@ def generate_matrix(matrix_type='all'):
     )
 
     boards = (
-        {'keyboard': 'lily58/rev1', 'keymap': 'vial'},
-        {'keyboard': 'sofle/rev1', 'keymap': 'vial'},
-        {'keyboard': 'crkbd/rev1', 'keymap': 'vial'},
+        # AVR boards overflow when CONSOLE is enabled; skip debug there.
+        {'keyboard': 'lily58/rev1', 'keymap': 'vial', 'allow_debug': True},
+        {'keyboard': 'sofle/rev1', 'keymap': 'vial', 'allow_debug': False},
+        {'keyboard': 'crkbd/rev1', 'keymap': 'vial', 'allow_debug': False},
     )
 
     matrix_entries = []
@@ -76,7 +77,7 @@ def generate_matrix(matrix_type='all'):
             'keyboard': board['keyboard'],
             'keyboard_name': keyboard_name,
             'keymap': board['keymap'],
-            'debug': matrix_type == 'debug',
+            'debug': matrix_type == 'debug' and board.get('allow_debug', True),
         }
 
         # Single-device configs (empty opposite side), with and without OLED.
