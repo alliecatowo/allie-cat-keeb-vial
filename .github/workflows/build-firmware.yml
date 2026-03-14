@@ -22,8 +22,16 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements-dev.txt
+
       - name: Generate build matrix
         id: set-matrix
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
         run: |
           matrix=$(python build.py --generate-matrix-release)
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
@@ -66,9 +74,18 @@ jobs:
             python3-pip
 
           pip3 install --upgrade pip
+          pip3 install -r requirements-dev.txt
           pip3 install qmk
 
+      - name: Add QMK bin to PATH
+        run: echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
       - name: Build firmware
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
         run: |
           # Use the current repository as the QMK environment
           qmk config user.qmk_home=$GITHUB_WORKSPACE

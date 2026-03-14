@@ -67,9 +67,18 @@ jobs:
             gcc-arm-none-eabi \
             gcc-avr \
             python3-pip
+          pip3 install -r requirements-dev.txt
           pip3 install qmk
 
+      - name: Add QMK bin to PATH
+        run: echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
       - name: Test build configuration
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
         run: |
           qmk config user.qmk_home=$GITHUB_WORKSPACE
           python build.py --build-single \
@@ -119,19 +128,38 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
-        run: python -m pip install -r requirements-dev.txt
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements-dev.txt
 
-      - name: Run lint and CLI smoke tests
+      - name: Add QMK bin to PATH
+        run: echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
+      - name: Run build.py unit tests
         env:
           ORIG_CWD: ${{ github.workspace }}
           QMK_HOME: ${{ github.workspace }}
           QMK_FIRMWARE: ${{ github.workspace }}
           PYTHONPATH: ${{ github.workspace }}/lib/python
-          PATH: ${{ github.workspace }}/bin:${{ env.PATH }}
+        run: python -m unittest tests.test_build_py -v
+
+      - name: Lint Python files
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
         run: |
+          flake8 build.py tools/callgraph.py tests/test_build_py.py \
+            --max-line-length=120 --extend-ignore=E501,W503
           flake8 lib/python
-          python -m nose2 -v
+
+      - name: Run QMK CLI smoke tests
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
+        run: python -m nose2 -v
 
   # Generate call graph for Azoteq driver
   callgraph:
@@ -155,7 +183,7 @@ jobs:
   ci-complete:
     name: CI Complete
     if: always()
-    needs: [pr-quality, build-test, code-quality, callgraph]
+    needs: [pr-quality, build-test, code-quality, python-tests, callgraph]
     runs-on: ubuntu-latest
     steps:
       - name: Check all job results
@@ -164,6 +192,7 @@ jobs:
             "${{ needs.pr-quality.result }}" \
             "${{ needs.build-test.result }}" \
             "${{ needs.code-quality.result }}" \
+            "${{ needs.python-tests.result }}" \
             "${{ needs.callgraph.result }}" \
           )
           for r in "${results[@]}"; do
