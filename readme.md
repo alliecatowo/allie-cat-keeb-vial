@@ -141,6 +141,14 @@ make lily58/rev1:via -e USER_NAME=holykeebs \
   -e VIAL_ENABLE=yes
 ```
 
+## 🤖 Codex Setup
+
+Automating with Codex (or bootstrapping a fresh machine)? Follow `docs/codex.md` for a fast start:
+
+- Install Python deps: `python -m pip install -r requirements-dev.txt`
+- Add the local CLI to your PATH: `export PATH=\"$PWD/bin:$PATH\" && export ORIG_CWD=\"$PWD\" && export PYTHONPATH=\"$PWD/lib/python\"`
+- Run `flake8 lib/python` and `python -m nose2 -v` for quick validation
+
 ## 🔄 Using GitHub Actions in Your Fork
 
 When you fork this repository, you get automated firmware builds for free!

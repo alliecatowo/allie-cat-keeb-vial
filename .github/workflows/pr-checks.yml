@@ -105,6 +105,30 @@ jobs:
           find . -type f -name "*.c" -o -name "*.h" -o -name "*.md" | xargs ls -la | grep -E "^-rwx" && \
             echo "::warning::Found source files with executable permissions" || true
 
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run lint and CLI smoke tests
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
+          PATH: ${{ github.workspace }}/bin:${{ env.PATH }}
+        run: |
+          flake8 lib/python
+          python -m nose2 -v
+
   # Generate call graph for Azoteq driver
   callgraph:
     runs-on: ubuntu-latest

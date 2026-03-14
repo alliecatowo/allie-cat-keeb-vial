@@ -9,6 +9,11 @@ from qmk.constants import MAX_KEYBOARD_SUBFOLDERS, QMK_FIRMWARE, QMK_USERSPACE, 
 from qmk.errors import NoSuchKeyboardError
 
 
+def _orig_cwd():
+    """Return the originating working directory even if the environment variable is missing."""
+    return Path(os.environ.get('ORIG_CWD', Path.cwd()))
+
+
 def is_keyboard(keyboard_name):
     """Returns True if `keyboard_name` is a keyboard we can compile.
     """
@@ -28,18 +33,24 @@ def is_keyboard(keyboard_name):
     return rules_mk.exists() or keyboard_json.exists()
 
 
-def under_qmk_firmware(path=Path(os.environ['ORIG_CWD'])):
+def under_qmk_firmware(path=None):
     """Returns a Path object representing the relative path under qmk_firmware, or None.
     """
+    if path is None:
+        path = _orig_cwd()
+
     try:
         return path.relative_to(QMK_FIRMWARE)
     except ValueError:
         return None
 
 
-def under_qmk_userspace(path=Path(os.environ['ORIG_CWD'])):
+def under_qmk_userspace(path=None):
     """Returns a Path object representing the relative path under $QMK_USERSPACE, or None.
     """
+    if path is None:
+        path = _orig_cwd()
+
     try:
         if HAS_QMK_USERSPACE:
             return path.relative_to(QMK_USERSPACE)
@@ -48,9 +59,12 @@ def under_qmk_userspace(path=Path(os.environ['ORIG_CWD'])):
     return None
 
 
-def is_under_qmk_firmware(path=Path(os.environ['ORIG_CWD'])):
+def is_under_qmk_firmware(path=None):
     """Returns a boolean if the input path is a child under qmk_firmware.
     """
+    if path is None:
+        path = _orig_cwd()
+
     if path is None:
         return False
     try:
@@ -59,9 +73,12 @@ def is_under_qmk_firmware(path=Path(os.environ['ORIG_CWD'])):
         return False
 
 
-def is_under_qmk_userspace(path=Path(os.environ['ORIG_CWD'])):
+def is_under_qmk_userspace(path=None):
     """Returns a boolean if the input path is a child under $QMK_USERSPACE.
     """
+    if path is None:
+        path = _orig_cwd()
+
     if path is None:
         return False
     try:
