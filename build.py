@@ -10,19 +10,13 @@ import json
 # once with POINTING_DEVICE_POSITION=right.
 # Dual-device configs are built twice: once with SIDE=left, once with SIDE=right.
 SINGLE_DEVICE_CONFIGS = [
-    'trackball', 'tps43', 'cirque40', 'cirque35', 'trackpoint',
+    'trackball', 'tps43', 'trackpoint',
 ]
 DUAL_DEVICE_CONFIGS = [
-    'tps43_tps43', 'cirque35_cirque35', 'cirque40_cirque40', 'trackball_trackball',
+    'tps43_tps43', 'trackball_trackball',
     'trackball_tps43', 'tps43_trackball',
-    'trackball_cirque35', 'cirque35_trackball',
-    'trackball_cirque40', 'cirque40_trackball',
     'trackpoint_tps43', 'tps43_trackpoint',
     'trackpoint_trackball', 'trackball_trackpoint',
-    'trackpoint_cirque35', 'cirque35_trackpoint',
-    'trackpoint_cirque40', 'cirque40_trackpoint',
-    'cirque40_tps43', 'tps43_cirque40',
-    'cirque35_tps43', 'tps43_cirque35',
 ]
 
 
@@ -30,34 +24,39 @@ def generate_matrix():
     """Generate CI matrix for all valid pointing device configs (lily58) and plain vial (sofle)."""
     matrix = {'include': []}
 
-    # lily58/rev1 — holykeebs userspace, full pointing device matrix
+    # lily58/rev1 — holykeebs userspace, full pointing device matrix × OLED on/off
     for device in SINGLE_DEVICE_CONFIGS:
         for position in ['left', 'right']:
-            matrix['include'].append({
-                'keyboard': 'lily58/rev1',
-                'keyboard_safe': 'lily58_rev1',
-                'keymap': 'vial',
-                'pointing_device': device,
-                'side': position,
-            })
+            for oled in ['yes', 'no']:
+                matrix['include'].append({
+                    'keyboard': 'lily58/rev1',
+                    'keyboard_safe': 'lily58_rev1',
+                    'keymap': 'vial',
+                    'pointing_device': device,
+                    'side': position,
+                    'oled': oled,
+                })
 
     for device in DUAL_DEVICE_CONFIGS:
         for side in ['left', 'right']:
-            matrix['include'].append({
-                'keyboard': 'lily58/rev1',
-                'keyboard_safe': 'lily58_rev1',
-                'keymap': 'vial',
-                'pointing_device': device,
-                'side': side,
-            })
+            for oled in ['yes', 'no']:
+                matrix['include'].append({
+                    'keyboard': 'lily58/rev1',
+                    'keyboard_safe': 'lily58_rev1',
+                    'keymap': 'vial',
+                    'pointing_device': device,
+                    'side': side,
+                    'oled': oled,
+                })
 
-    # sofle/rev1 — plain vial, no pointing device
+    # sofle/rev1 — plain vial, no pointing device, no oled toggle (OLED handled by keymap)
     matrix['include'].append({
         'keyboard': 'sofle/rev1',
         'keyboard_safe': 'sofle_rev1',
         'keymap': 'vial',
         'pointing_device': '',
         'side': '',
+        'oled': '',
     })
 
     print(json.dumps(matrix))
@@ -79,7 +78,7 @@ def run_command_check_output(command):
         raise subprocess.CalledProcessError(return_code, command)
 
 
-def build_single(keyboard, keymap, pointing_device, side, user_name='holykeebs'):
+def build_single(keyboard, keymap, pointing_device, side, oled='', user_name='holykeebs'):
     """Build a single firmware variant."""
     kb_safe = keyboard.replace('/', '_')
     name_parts = [kb_safe, keymap]
@@ -101,6 +100,10 @@ def build_single(keyboard, keymap, pointing_device, side, user_name='holykeebs')
             command += ['-e', 'TRACKBALL_RGB_RAINBOW=yes']
 
         name_parts += [pointing_device, side]
+
+    if oled == 'yes':
+        command += ['-e', 'OLED=yes']
+        name_parts.append('oled')
 
     target = '_'.join(name_parts)
     command += ['-e', f'TARGET={target}', '-j8']
@@ -133,7 +136,8 @@ def main():
     options.add_argument('--keymap', default='vial', help='Keymap to build.')
     options.add_argument('--user-name', default='holykeebs', help='QMK user name for holykeebs userspace.')
     options.add_argument('--pointing-device', default='', help='POINTING_DEVICE value (e.g. trackball, trackball_tps43).')
-    options.add_argument('--side', choices=['left', 'right'], default='', help='Side to build (left/right).')
+    options.add_argument('--side', choices=['left', 'right', ''], default='', help='Side to build (left/right).')
+    options.add_argument('--oled', choices=['yes', 'no', ''], default='', help='Build with OLED support (yes/no).')
 
     args = parser.parse_args()
 
@@ -143,7 +147,7 @@ def main():
 
     if args.build_single:
         try:
-            build_single(args.keyboard, args.keymap, args.pointing_device, args.side, args.user_name)
+            build_single(args.keyboard, args.keymap, args.pointing_device, args.side, args.oled, args.user_name)
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             print(f'❌ Build error: {e}')
             sys.exit(1)
@@ -151,19 +155,21 @@ def main():
 
     if args.build_all:
         errors = []
-        # lily58: all pointing device configs
+        # lily58: all pointing device configs × OLED on/off
         for device in SINGLE_DEVICE_CONFIGS:
             for position in ['left', 'right']:
-                try:
-                    build_single('lily58/rev1', 'vial', device, position, args.user_name)
-                except (subprocess.CalledProcessError, FileNotFoundError) as e:
-                    errors.append(str(e))
+                for oled in ['yes', 'no']:
+                    try:
+                        build_single('lily58/rev1', 'vial', device, position, oled, args.user_name)
+                    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+                        errors.append(str(e))
         for device in DUAL_DEVICE_CONFIGS:
             for side in ['left', 'right']:
-                try:
-                    build_single('lily58/rev1', 'vial', device, side, args.user_name)
-                except (subprocess.CalledProcessError, FileNotFoundError) as e:
-                    errors.append(str(e))
+                for oled in ['yes', 'no']:
+                    try:
+                        build_single('lily58/rev1', 'vial', device, side, oled, args.user_name)
+                    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+                        errors.append(str(e))
         # sofle: plain vial
         try:
             build_single('sofle/rev1', 'vial', '', '')

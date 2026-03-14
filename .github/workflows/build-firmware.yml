@@ -74,12 +74,13 @@ jobs:
             --keyboard "${{ matrix.keyboard }}" \
             --keymap "${{ matrix.keymap }}" \
             --pointing-device "${{ matrix.pointing_device }}" \
-            --side "${{ matrix.side }}"
+            --side "${{ matrix.side }}" \
+            --oled "${{ matrix.oled }}"
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ matrix.keyboard_safe }}-${{ matrix.pointing_device || 'plain' }}${{ matrix.side && format('-{0}', matrix.side) || '' }}
+          name: firmware-${{ matrix.keyboard_safe }}-${{ matrix.pointing_device || 'plain' }}${{ matrix.side && format('-{0}', matrix.side) || '' }}${{ matrix.oled == 'yes' && '-oled' || '' }}
           path: |
             build_lily58/*.uf2
             build_sofle/*.hex

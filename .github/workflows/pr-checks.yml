@@ -29,9 +29,17 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { left: "trackball", right: "tps43" }
-          - { left: "trackball", right: "None" }
-          - { left: "None", right: "tps43" }
+          # single-device: one pointing device on left or right half
+          - { keyboard: "lily58/rev1", pointing_device: "trackball",  side: "left",  oled: "no"  }
+          - { keyboard: "lily58/rev1", pointing_device: "trackball",  side: "right", oled: "yes" }
+          - { keyboard: "lily58/rev1", pointing_device: "tps43",      side: "left",  oled: "no"  }
+          - { keyboard: "lily58/rev1", pointing_device: "trackpoint", side: "left",  oled: "yes" }
+          # dual-device: one device per half
+          - { keyboard: "lily58/rev1", pointing_device: "trackball_tps43",     side: "left",  oled: "no"  }
+          - { keyboard: "lily58/rev1", pointing_device: "trackball_tps43",     side: "right", oled: "yes" }
+          - { keyboard: "lily58/rev1", pointing_device: "trackpoint_trackball", side: "left", oled: "no"  }
+          # sofle: plain vial (no pointing device)
+          - { keyboard: "sofle/rev1",  pointing_device: "",            side: "",      oled: ""    }
 
     steps:
       - name: Checkout PR
@@ -69,22 +77,22 @@ jobs:
         run: |
           qmk config user.qmk_home=$GITHUB_WORKSPACE
           python build.py --build-single \
-            --keyboard lily58/rev1 \
-            --keymap via \
-            --left-device "${{ matrix.config.left }}" \
-            --right-device "${{ matrix.config.right }}" \
-            --side left
+            --keyboard "${{ matrix.config.keyboard }}" \
+            --keymap vial \
+            --pointing-device "${{ matrix.config.pointing_device }}" \
+            --side "${{ matrix.config.side }}" \
+            --oled "${{ matrix.config.oled }}"
 
       - name: Check firmware size
         run: |
-          if [ -f "build_lily58/*.uf2" ]; then
-            size=$(stat -c%s build_lily58/*.uf2 | head -1)
-            echo "Firmware size: $size bytes"
-            # RP2040 has 2MB flash, warn if over 1.5MB
+          for f in build_lily58/*.uf2 build_sofle/*.hex; do
+            [ -f "$f" ] || continue
+            size=$(stat -c%s "$f")
+            echo "Firmware size ($f): $size bytes"
             if [ $size -gt 1572864 ]; then
-              echo "::warning::Firmware size is large ($size bytes), consider optimization"
+              echo "::warning::Firmware $f is large ($size bytes), consider optimization"
             fi
-          fi
+          done
 
   # Code quality checks
   code-quality:
