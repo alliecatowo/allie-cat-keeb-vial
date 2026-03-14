@@ -1,8 +1,6 @@
 """Unit tests for build.py — runs in < 5 seconds without any C toolchain."""
 
 import json
-import sys
-import types
 import unittest
 from io import StringIO
 from unittest.mock import patch

@@ -90,6 +90,82 @@ def run_command_check_output(command):
         raise subprocess.CalledProcessError(return_code, command)
 
 
+def _configure_device(command, args):
+    """Configure pointing device arguments on the command."""
+    if args.left_device != 'None' and args.right_device != 'None':
+        command.add_argument(f'POINTING_DEVICE={args.left_device}_{args.right_device}')
+        command.add_argument(f'SIDE={args.side}')
+        current_device = args.left_device if args.side == 'left' else args.right_device
+        if current_device == 'trackball':
+            command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
+    elif args.left_device != 'None':
+        command.add_argument(f'POINTING_DEVICE={args.left_device}')
+        command.add_argument('POINTING_DEVICE_POSITION=left')
+        if args.left_device == 'trackball':
+            command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
+    elif args.right_device != 'None':
+        command.add_argument(f'POINTING_DEVICE={args.right_device}')
+        command.add_argument('POINTING_DEVICE_POSITION=right')
+        if args.right_device == 'trackball':
+            command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
+
+
+def _build_single(args):
+    """Build a single variant (used by --build-single)."""
+    command = Command(args.keyboard, args.keymap)
+    command.prepend_argument(f'USER_NAME={args.user_name}')
+
+    if args.debug:
+        command.add_argument('CONSOLE=yes')
+
+    _configure_device(command, args)
+
+    # Handle OLED
+    if args.left_device == 'oled' or args.right_device == 'oled':
+        command.add_argument('OLED=yes')
+        if args.left_device not in ['None', 'oled'] or args.right_device not in ['None', 'oled']:
+            command.add_argument('OLED_FLIP=yes')
+
+    build_dir = f"build_{args.keyboard.split('/')[0]}"
+    os.makedirs(build_dir, exist_ok=True)
+
+    command.add_argument_raw('-j8')
+    command.prepend_argument(f'TARGET={command.file_name()}')
+
+    try:
+        print(f"Building {command.file_name()}...")
+        run_command_check_output(command.build().split())
+        os.rename(f'{command.file_name()}.uf2', f'{build_dir}/{command.file_name()}.uf2')
+        print(f"✅ Success! Firmware moved to: {build_dir}/")
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        print(f"❌ Error during build: {e}")
+        sys.exit(1)
+
+
+def _build_default(args):
+    """Build both sides of trackball_tps43 (default/personal/all)."""
+    kb = 'lily58/rev1'
+    os.makedirs('build_lily58', exist_ok=True)
+
+    for side in ('left', 'right'):
+        command = Command(kb, 'vial')
+        command.prepend_argument('USER_NAME=holykeebs')
+        command.add_argument('POINTING_DEVICE=trackball_tps43')
+        command.add_argument(f'SIDE={side}')
+        command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
+        command.add_argument_raw('-j8')
+        command.prepend_argument(f'TARGET={command.file_name()}')
+
+        try:
+            print(f"Building {command.file_name()}...")
+            run_command_check_output(command.build().split())
+            os.rename(f'{command.file_name()}.uf2', f'build_lily58/{command.file_name()}.uf2')
+            print("✅ Success!")
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            print(f"❌ Error building {command.file_name()}: {e}")
+            sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build lily58 firmware configurations.")
 
@@ -116,76 +192,11 @@ def main():
         return
 
     if args.build_single:
-        # Build single configuration for CI
-        command = Command(args.keyboard, args.keymap)
-        command.prepend_argument(f'USER_NAME={args.user_name}')
-
-        if args.debug:
-            command.add_argument('CONSOLE=yes')
-
-        # Handle device configuration
-        if args.left_device != 'None' and args.right_device != 'None':
-            command.add_argument(f'POINTING_DEVICE={args.left_device}_{args.right_device}')
-            command.add_argument(f'SIDE={args.side}')
-            current_device = args.left_device if args.side == 'left' else args.right_device
-            if current_device == 'trackball':
-                command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
-        elif args.left_device != 'None':
-            command.add_argument(f'POINTING_DEVICE={args.left_device}')
-            command.add_argument('POINTING_DEVICE_POSITION=left')
-            if args.left_device == 'trackball':
-                command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
-        elif args.right_device != 'None':
-            command.add_argument(f'POINTING_DEVICE={args.right_device}')
-            command.add_argument('POINTING_DEVICE_POSITION=right')
-            if args.right_device == 'trackball':
-                command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
-
-        # Handle OLED
-        if args.left_device == 'oled' or args.right_device == 'oled':
-            command.add_argument('OLED=yes')
-            if args.left_device not in ['None', 'oled'] or args.right_device not in ['None', 'oled']:
-                command.add_argument('OLED_FLIP=yes')
-
-        build_dir = f"build_{args.keyboard.split('/')[0]}"
-        os.makedirs(build_dir, exist_ok=True)
-
-        command.add_argument_raw('-j8')
-        command.prepend_argument(f'TARGET={command.file_name()}')
-
-        try:
-            print(f"Building {command.file_name()}...")
-            run_command_check_output(command.build().split())
-            os.rename(f'{command.file_name()}.uf2', f'{build_dir}/{command.file_name()}.uf2')
-            print(f"✅ Success! Firmware moved to: {build_dir}/")
-        except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            print(f"❌ Error during build: {e}")
-            sys.exit(1)
+        _build_single(args)
         return
 
-    # Default: build trackball_tsp43 only
     if args.build_personal or args.build_all or not any(vars(args).values()):
-        kb = 'lily58/rev1'
-        os.makedirs('build_lily58', exist_ok=True)
-
-        # Build both sides of trackball_tsp43
-        for side in ('left', 'right'):
-            command = Command(kb, 'vial')
-            command.prepend_argument('USER_NAME=holykeebs')
-            command.add_argument('POINTING_DEVICE=trackball_tps43')
-            command.add_argument(f'SIDE={side}')
-            command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
-            command.add_argument_raw('-j8')
-            command.prepend_argument(f'TARGET={command.file_name()}')
-
-            try:
-                print(f"Building {command.file_name()}...")
-                run_command_check_output(command.build().split())
-                os.rename(f'{command.file_name()}.uf2', f'build_lily58/{command.file_name()}.uf2')
-                print(f"✅ Success!")
-            except (subprocess.CalledProcessError, FileNotFoundError) as e:
-                print(f"❌ Error building {command.file_name()}: {e}")
-                sys.exit(1)
+        _build_default(args)
 
 
 if __name__ == '__main__':
