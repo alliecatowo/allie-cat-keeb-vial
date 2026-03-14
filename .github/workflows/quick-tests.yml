@@ -23,10 +23,26 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements-dev.txt
+
+      - name: Add QMK bin to PATH
+        run: echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+
       - name: Run build.py unit tests
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
         run: python3 -m unittest tests.test_build_py -v
 
       - name: Validate CI matrix JSON
+        env:
+          ORIG_CWD: ${{ github.workspace }}
+          QMK_HOME: ${{ github.workspace }}
+          QMK_FIRMWARE: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}/lib/python
         run: |
           output=$(python3 build.py --generate-matrix-release)
           echo "$output" | python3 -c "import sys, json; data=json.load(sys.stdin); assert 'include' in data; print(f'Matrix OK: {len(data[\"include\"])} entries')"
@@ -42,8 +58,8 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install flake8
-        run: pip install flake8
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements-dev.txt
 
       - name: Lint build.py and tools/
         run: |
