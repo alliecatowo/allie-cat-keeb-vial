@@ -1,0 +1,1 @@
+Build the default firmware configuration (trackball_tps43 for both left and right sides) using the build.py script. Show the build output and confirm the firmware files were generated successfully in the build_lily58/ directory.
