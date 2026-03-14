@@ -122,3 +122,9 @@ compile_commands.json
 # /keyboards/**/keymaps/vial/*
 build_all/
 keyboards/crkbd/keymaps/idank/pass.h
+
+# Claude Code temporary files
+.claude/.history/
+.claude/tmp/
+.claude/*.tmp
+.claude/*.temp
