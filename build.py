@@ -50,27 +50,84 @@ class Command:
 
 
 def generate_matrix(matrix_type='all'):
-    """Generate CI matrix for trackball_tsp43 only"""
-    matrix = {'include': [
+    """Generate CI matrix covering all supported boards and pointing combos."""
+    default_pointing_devices = ('trackball', 'trackpoint', 'tps43')
+    default_dual_device_combinations = (
+        ('trackball', 'trackball'),
+        ('trackball', 'tps43'),
+        ('tps43', 'trackball'),
+        ('trackball', 'trackpoint'),
+        ('trackpoint', 'trackball'),
+        ('tps43', 'tps43'),
+        ('tps43', 'trackpoint'),
+        ('trackpoint', 'tps43'),
+    )
+
+    boards = (
+        # AVR boards overflow when CONSOLE is enabled; skip debug there.
         {
-            "keyboard": "lily58/rev1",
-            "keyboard_name": "lily58_rev1",
-            "keymap": "vial",
-            "left_device": "trackball",
-            "right_device": "tps43",
-            "side": "left",
-            "debug": False,
+            'keyboard': 'lily58/rev1',
+            'keymap': 'vial',
+            'allow_debug': True,
+            'pointing_devices': default_pointing_devices,
+            'dual_device_combinations': default_dual_device_combinations,
         },
         {
-            "keyboard": "lily58/rev1",
-            "keyboard_name": "lily58_rev1",
-            "keymap": "vial",
-            "left_device": "trackball",
-            "right_device": "tps43",
-            "side": "right",
-            "debug": False,
+            'keyboard': 'sofle/rp2040',
+            'keymap': 'vial',
+            'allow_debug': True,
+            'pointing_devices': default_pointing_devices,
+            'dual_device_combinations': default_dual_device_combinations,
+        },
+        {
+            'keyboard': 'crkbd/rev1',
+            'keymap': 'vial',
+            'allow_debug': False,
+            'pointing_devices': default_pointing_devices,
+            'dual_device_combinations': default_dual_device_combinations,
+        },
+    )
+
+    matrix_entries = []
+    for board in boards:
+        keyboard_name = board['keyboard'].replace('/', '_')
+        base_entry = {
+            'keyboard': board['keyboard'],
+            'keyboard_name': keyboard_name,
+            'keymap': board['keymap'],
+            'debug': matrix_type == 'debug' and board.get('allow_debug', True),
         }
-    ]}
+
+        board_pointing_devices = board.get('pointing_devices', default_pointing_devices)
+        board_dual_devices = board.get('dual_device_combinations', default_dual_device_combinations)
+
+        # Single-device configs (empty opposite side), with and without OLED.
+        for device in board_pointing_devices:
+            for side in ('left', 'right'):
+                for oled in (False, True):
+                    entry = {
+                        **base_entry,
+                        'left_device': device if side == 'left' else 'None',
+                        'right_device': device if side == 'right' else 'None',
+                        'side': side,
+                        'oled': oled,
+                    }
+                    matrix_entries.append(entry)
+
+        # Dual-device configs (one per side), with and without OLED.
+        for left_device, right_device in board_dual_devices:
+            for side in ('left', 'right'):
+                for oled in (False, True):
+                    entry = {
+                        **base_entry,
+                        'left_device': left_device,
+                        'right_device': right_device,
+                        'side': side,
+                        'oled': oled,
+                    }
+                    matrix_entries.append(entry)
+
+    matrix = {'include': matrix_entries}
     print(json.dumps(matrix))
 
 
@@ -103,16 +160,17 @@ def main():
     options = parser.add_argument_group('Build Options')
     options.add_argument('--keyboard', default='lily58/rev1', help='Keyboard to build.')
     options.add_argument('--keymap', default='vial', help='Keymap to build.')
-    options.add_argument('--user-name', default='holykeebs', help='QMK user name.')
+    options.add_argument('--user-name', default='alliecatowo', help='QMK user name.')
     options.add_argument('--left-device', default='None', help='Left device.')
     options.add_argument('--right-device', default='None', help='Right device.')
     options.add_argument('--side', choices=['left', 'right'], help='Side to build.')
     options.add_argument('--debug', action='store_true', help='Enable debug.')
+    options.add_argument('--oled', action='store_true', help='Include OLED support.')
 
     args = parser.parse_args()
 
     if args.generate_matrix_debug or args.generate_matrix_release:
-        generate_matrix('release')
+        generate_matrix('debug' if args.generate_matrix_debug else 'release')
         return
 
     if args.build_single:
@@ -124,25 +182,26 @@ def main():
             command.add_argument('CONSOLE=yes')
 
         # Handle device configuration
-        if args.left_device != 'None' and args.right_device != 'None':
-            command.add_argument(f'POINTING_DEVICE={args.left_device}_{args.right_device}')
+        pointing_devices = [d for d in (args.left_device, args.right_device) if d not in ('None', 'oled')]
+        if len(pointing_devices) >= 2:
+            command.add_argument(f'POINTING_DEVICE={pointing_devices[0]}_{pointing_devices[1]}')
             command.add_argument(f'SIDE={args.side}')
             current_device = args.left_device if args.side == 'left' else args.right_device
             if current_device == 'trackball':
                 command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
-        elif args.left_device != 'None':
-            command.add_argument(f'POINTING_DEVICE={args.left_device}')
-            command.add_argument('POINTING_DEVICE_POSITION=left')
-            if args.left_device == 'trackball':
-                command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
-        elif args.right_device != 'None':
-            command.add_argument(f'POINTING_DEVICE={args.right_device}')
-            command.add_argument('POINTING_DEVICE_POSITION=right')
-            if args.right_device == 'trackball':
+        elif len(pointing_devices) == 1:
+            device = pointing_devices[0]
+            command.add_argument(f'POINTING_DEVICE={device}')
+            if args.left_device == device:
+                command.add_argument('POINTING_DEVICE_POSITION=left')
+            elif args.right_device == device:
+                command.add_argument('POINTING_DEVICE_POSITION=right')
+            if device == 'trackball':
                 command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
 
         # Handle OLED
-        if args.left_device == 'oled' or args.right_device == 'oled':
+        has_oled = args.oled or args.left_device == 'oled' or args.right_device == 'oled'
+        if has_oled:
             command.add_argument('OLED=yes')
             if args.left_device not in ['None', 'oled'] or args.right_device not in ['None', 'oled']:
                 command.add_argument('OLED_FLIP=yes')
@@ -165,8 +224,9 @@ def main():
 
     # Default: build trackball_tsp43 only
     if args.build_personal or args.build_all or not any(vars(args).values()):
-        kb = 'lily58/rev1'
-        os.makedirs('build_lily58', exist_ok=True)
+        kb = args.keyboard
+        build_dir = f'build_{kb.split("/")[0]}'
+        os.makedirs(build_dir, exist_ok=True)
 
         # Build both sides of trackball_tsp43
         for side in ('left', 'right'):
@@ -181,7 +241,7 @@ def main():
             try:
                 print(f"Building {command.file_name()}...")
                 run_command_check_output(command.build().split())
-                os.rename(f'{command.file_name()}.uf2', f'build_lily58/{command.file_name()}.uf2')
+                os.rename(f'{command.file_name()}.uf2', f'{build_dir}/{command.file_name()}.uf2')
                 print(f"✅ Success!")
             except (subprocess.CalledProcessError, FileNotFoundError) as e:
                 print(f"❌ Error building {command.file_name()}: {e}")

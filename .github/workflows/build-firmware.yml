@@ -79,13 +79,14 @@ jobs:
             --left-device "${{ matrix.left_device }}" \
             --right-device "${{ matrix.right_device }}" \
             --side "${{ matrix.side }}" \
-            ${{ matrix.debug && '--debug' || '' }}
+            ${{ matrix.debug && '--debug' || '' }} \
+            ${{ matrix.oled && '--oled' || '' }}
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ matrix.side }}
-          path: build_lily58/*.uf2
+          name: firmware-${{ matrix.keyboard_name }}-${{ matrix.left_device }}-${{ matrix.right_device }}-${{ matrix.side }}${{ matrix.oled && '-oled' || '' }}
+          path: ${{ format('build_{0}/*.uf2', matrix.keyboard.split('/')[0]) }}
           retention-days: 30
 
   release:

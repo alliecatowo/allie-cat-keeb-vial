@@ -9,6 +9,17 @@
 
 #include <hal.h>
 
+#if !defined(SOFT_SERIAL_PIN)
+// When no soft-serial pin is configured (e.g. RP2040 split builds that use USB),
+// provide stubs so the driver still compiles but is effectively disabled.
+void soft_serial_initiator_init(void) {}
+void soft_serial_target_init(void) {}
+bool soft_serial_transaction(int sstd_index) {
+    (void)sstd_index;
+    return false;
+}
+#else
+
 // TODO: resolve/remove build warnings
 #if defined(RGBLIGHT_ENABLE) && defined(RGBLED_SPLIT) && defined(PROTOCOL_CHIBIOS) && defined(WS2812_BITBANG)
 #    warning "RGBLED_SPLIT not supported with bitbang WS2812 driver"
@@ -295,3 +306,5 @@ static inline bool initiate_transaction(uint8_t sstd_index) {
 bool soft_serial_transaction(int sstd_index) {
     return initiate_transaction((uint8_t)sstd_index);
 }
+
+#endif // SOFT_SERIAL_PIN
