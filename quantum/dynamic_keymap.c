@@ -461,12 +461,14 @@ void dynamic_keymap_macro_reset(void) {
     }
 }
 
+#ifdef VIAL_ENABLE
 static uint16_t decode_keycode(uint16_t kc) {
     /* map 0xFF01 => 0x0100; 0xFF02 => 0x0200, etc */
     if (kc > 0xFF00)
         return (kc & 0xFF) << 8;
     return kc;
 }
+#endif
 
 void dynamic_keymap_macro_send(uint8_t id) {
     if (id >= DYNAMIC_KEYMAP_MACRO_COUNT) {
@@ -522,6 +524,7 @@ void dynamic_keymap_macro_send(uint8_t id) {
                 data[2] = eeprom_read_byte(p++);
                 if (data[2] != 0)
                     send_string(data);
+#ifdef VIAL_ENABLE
             } else if (data[1] == VIAL_MACRO_EXT_TAP || data[1] == VIAL_MACRO_EXT_DOWN || data[1] == VIAL_MACRO_EXT_UP) {
                 data[2] = eeprom_read_byte(p++);
                 if (data[2] != 0) {
@@ -543,6 +546,7 @@ void dynamic_keymap_macro_send(uint8_t id) {
                         }
                     }
                 }
+#endif
             } else if (data[1] == SS_DELAY_CODE) {
                 // For delay, decode the delay and wait_ms for that amount
                 uint8_t d0 = eeprom_read_byte(p++);

@@ -2,6 +2,10 @@
   "userspace_version": "1.0",
   "build_targets": [
     ["lily58/rev1", "vial"],
-    ["sofle/rev1", "vial"]
+    ["sofle/rev1", "vial"],
+    ["holykeebs/aztec42", "vial"],
+    ["holykeebs/spankbd", "vial"],
+    ["holykeebs/sweeq", "vial"],
+    ["crkbd/rev1", "vial"]
   ]
 }
