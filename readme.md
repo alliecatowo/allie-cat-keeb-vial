@@ -52,6 +52,8 @@ Use the Vial **QMK Settings → Mouse keys** tab to live-tune holykeebs pointer 
 - `Maximum number of scroll steps per scroll action` → Peripheral drag scroll on/off (`0` off, `1` on)
 - `Time until maximum scroll speed is reached` → Peripheral scroll buffer threshold
 
+All holykeebs helper keycodes now appear in Vial’s custom keycodes list with readable names (e.g., “HK Scroll Lock Cycle” instead of `HK_CYCLE_SCROLL_LOCK`).
+
 ## 🔧 What We Changed
 
 To enable Vial support on the holykeebs firmware, we made the following modifications:
