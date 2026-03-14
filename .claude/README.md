@@ -33,7 +33,7 @@ This is a **Vial-enabled QMK firmware** fork specifically designed for holykeebs
 ### Critical Build Requirements
 - When building `keymap=vial`, **MUST** pass `VIAL_ENABLE=yes` to avoid build errors
 - Holykeebs userspace only builds when `POINTING_DEVICE` is set
-- Build generates 55 matrix entries for all device combinations
+- CI matrix currently generates **2 entries** (left + right sides of `trackball_tps43` on `lily58/rev1`)
 
 ## Project Structure
 
@@ -58,10 +58,10 @@ This is a **Vial-enabled QMK firmware** fork specifically designed for holykeebs
 
 ```bash
 # Build default trackball_tps43 configuration (both sides)
-python build.py
+python3 build.py
 
 # Build specific configuration
-python build.py --build-single \
+python3 build.py --build-single \
   --keyboard lily58/rev1 \
   --keymap vial \
   --left-device trackball \
@@ -69,7 +69,7 @@ python build.py --build-single \
   --side left
 
 # Build with debug output
-python build.py --build-single \
+python3 build.py --build-single \
   --left-device trackball \
   --right-device tps43 \
   --side left \
@@ -79,17 +79,22 @@ python build.py --build-single \
 ### Testing Changes
 
 ```bash
-# Run QMK tests
-make test:all
+# Fast Python unit tests (no ARM toolchain needed, < 5 seconds)
+python3 -m unittest tests.test_build_py -v
+# or with pytest:
+python3 -m pytest tests/test_build_py.py -v
 
-# Build specific test
-make test:basic
+# Validate CI matrix JSON
+python3 build.py --generate-matrix-release
 
 # Lint Python code
-flake8 build.py
+flake8 build.py tools/callgraph.py tests/test_build_py.py
 
 # Format Python code
 yapf -i build.py
+
+# Full QMK C unit tests (requires ARM toolchain)
+make test:all
 ```
 
 ### Firmware Flashing

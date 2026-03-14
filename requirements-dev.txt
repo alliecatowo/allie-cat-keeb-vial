@@ -3,6 +3,7 @@
 
 # Python development requirements
 nose2
+pytest
 flake8
 pep8-naming
 pyflakes

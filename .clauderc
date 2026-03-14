@@ -6,8 +6,8 @@
     "primary_language": "c"
   },
   "build": {
-    "primary_command": "python build.py",
-    "test_command": "make test:basic",
+    "primary_command": "python3 build.py",
+    "test_command": "python3 -m unittest tests.test_build_py -v",
     "clean_command": "rm -rf build_lily58/ .build/ *.uf2 *.hex *.bin",
     "output_directory": "build_lily58"
   },
@@ -47,10 +47,10 @@
     "quantum/vial/ - Vial integration"
   ],
   "common_commands": {
-    "build_default": "python build.py",
-    "build_single": "python build.py --build-single --left-device trackball --right-device tps43 --side left",
-    "generate_matrix": "python build.py --generate-matrix-release",
-    "test": "make test:basic",
+    "build_default": "python3 build.py",
+    "build_single": "python3 build.py --build-single --left-device trackball --right-device tps43 --side left",
+    "generate_matrix": "python3 build.py --generate-matrix-release",
+    "test": "python3 -m unittest tests.test_build_py -v",
     "setup_env": "qmk config user.qmk_home=$PWD"
   },
   "warnings": [
