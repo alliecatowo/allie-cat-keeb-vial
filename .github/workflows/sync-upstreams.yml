@@ -27,7 +27,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  sync-branches:
+  sync-and-merge:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -38,118 +38,300 @@ jobs:
 
       - name: Configure git
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Add remotes
+      - name: Add upstream remotes and fetch
         run: |
-          # Add all upstreams if not already present
-          git remote add holykeebs https://github.com/idank/qmk_firmware.git || true
-          git remote add vial https://github.com/vial-kb/vial-qmk.git || true
-          git remote add qmk https://github.com/qmk/qmk_firmware.git || true
-
-      - name: Fetch all remotes
-        run: |
+          git remote add holykeebs https://github.com/idank/qmk_firmware.git 2>/dev/null || true
+          git remote add vial https://github.com/vial-kb/vial-qmk.git 2>/dev/null || true
+          git remote add qmk https://github.com/qmk/qmk_firmware.git 2>/dev/null || true
           git fetch --all --prune
 
-      - name: Sync idank/holykeebs-master to mirror/holykeebs
-        if: github.event.inputs.sync_holykeebs != 'false'
-        continue-on-error: true
+      - name: Sync mirror branches
+        id: mirrors
         run: |
-          echo "Syncing idank/holykeebs-master..."
-          git checkout -B mirror/holykeebs
-          git reset --hard holykeebs/holykeebs-master
-          git push origin mirror/holykeebs --force
-          echo "✅ holykeebs sync complete"
+          # Default to true for scheduled runs (inputs are empty)
+          SYNC_HOLYKEEBS="${{ github.event.inputs.sync_holykeebs }}"
+          SYNC_HOLYKEEBS="${SYNC_HOLYKEEBS:-true}"
+          SYNC_VIAL="${{ github.event.inputs.sync_vial }}"
+          SYNC_VIAL="${SYNC_VIAL:-true}"
+          SYNC_QMK="${{ github.event.inputs.sync_qmk }}"
+          SYNC_QMK="${SYNC_QMK:-true}"
 
-      - name: Sync vial-kb/vial to mirror/vial
-        if: github.event.inputs.sync_vial != 'false'
-        continue-on-error: true
-        run: |
-          echo "Syncing vial-kb/vial..."
-          git checkout -B mirror/vial
-          git reset --hard vial/vial
-          git push origin mirror/vial --force
-          echo "✅ vial sync complete"
+          holykeebs_mirror="skipped"
+          vial_mirror="skipped"
+          qmk_mirror="skipped"
 
-      - name: Sync qmk/master to mirror/qmk
-        if: github.event.inputs.sync_qmk != 'false'
-        continue-on-error: true
-        run: |
-          echo "Syncing qmk/master..."
-          git checkout -B mirror/qmk
-          git reset --hard qmk/master
-          git push origin mirror/qmk --force
-          echo "✅ QMK sync complete"
-
-      - name: Create sync summary
-        if: always()
-        run: |
-          echo "## Sync Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- holykeebs: mirror/holykeebs" >> $GITHUB_STEP_SUMMARY
-          echo "- vial: mirror/vial" >> $GITHUB_STEP_SUMMARY
-          echo "- qmk: mirror/qmk" >> $GITHUB_STEP_SUMMARY
-
-  attempt-merge:
-    needs: sync-branches
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-      - name: Attempt to merge updates
-        id: merge
-        continue-on-error: true
-        run: |
-          # Create a test branch for merging
-          git checkout main
-          git checkout -b auto-merge/test-$(date +%Y%m%d-%H%M%S)
-
-          # Try to merge holykeebs updates
-          echo "Attempting to merge holykeebs updates..."
-          git merge origin/mirror/holykeebs -m "chore: merge holykeebs updates" || echo "HOLYKEEBS_MERGE=failed" >> $GITHUB_ENV
-
-          # Only try vial merge if holykeebs succeeded
-          if [ -z "$HOLYKEEBS_MERGE" ]; then
-            echo "Attempting to merge vial updates..."
-            git merge origin/mirror/vial -m "chore: merge vial updates" -X theirs || echo "VIAL_MERGE=failed" >> $GITHUB_ENV
+          if [ "$SYNC_HOLYKEEBS" != "false" ]; then
+            echo "::group::Syncing holykeebs mirror"
+            if git checkout -B mirror/holykeebs && \
+               git reset --hard holykeebs/holykeebs-master && \
+               git push origin mirror/holykeebs --force; then
+              holykeebs_mirror="success"
+              echo "✅ holykeebs mirror synced"
+            else
+              holykeebs_mirror="failed"
+              echo "❌ holykeebs mirror sync failed"
+            fi
+            echo "::endgroup::"
           fi
 
-      - name: Create PR if merge has conflicts
-        if: env.HOLYKEEBS_MERGE == 'failed' || env.VIAL_MERGE == 'failed'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: manual merge required for upstream updates"
-          title: "[Auto] Manual merge required for upstream updates"
-          body: |
-            ## ⚠️ Manual Merge Required
+          if [ "$SYNC_VIAL" != "false" ]; then
+            echo "::group::Syncing vial mirror"
+            if git checkout -B mirror/vial && \
+               git reset --hard vial/vial && \
+               git push origin mirror/vial --force; then
+              vial_mirror="success"
+              echo "✅ vial mirror synced"
+            else
+              vial_mirror="failed"
+              echo "❌ vial mirror sync failed"
+            fi
+            echo "::endgroup::"
+          fi
 
-            Automatic merge failed due to conflicts. Please review and resolve conflicts manually.
+          if [ "$SYNC_QMK" != "false" ]; then
+            echo "::group::Syncing QMK mirror"
+            if git checkout -B mirror/qmk && \
+               git reset --hard qmk/master && \
+               git push origin mirror/qmk --force; then
+              qmk_mirror="success"
+              echo "✅ QMK mirror synced"
+            else
+              qmk_mirror="failed"
+              echo "❌ QMK mirror sync failed"
+            fi
+            echo "::endgroup::"
+          fi
 
-            ### Merge Status:
-            - holykeebs: ${{ env.HOLYKEEBS_MERGE == 'failed' && '❌ Failed' || '✅ Success' }}
-            - vial: ${{ env.VIAL_MERGE == 'failed' && '❌ Failed' || '✅ Success' }}
+          echo "holykeebs=$holykeebs_mirror" >> "$GITHUB_OUTPUT"
+          echo "vial=$vial_mirror" >> "$GITHUB_OUTPUT"
+          echo "qmk=$qmk_mirror" >> "$GITHUB_OUTPUT"
 
-            ### Mirror branches:
-            - `mirror/holykeebs` - Latest from idank/holykeebs-master
-            - `mirror/vial` - Latest from vial-kb/vial
-            - `mirror/qmk` - Latest from qmk/master
+      - name: Attempt auto-merge
+        id: merge
+        run: |
+          git checkout main
 
-            ### To resolve:
-            1. Check out this branch
-            2. Resolve conflicts
-            3. Test build
-            4. Merge when ready
-          branch: auto-merge/upstream-sync
-          labels: |
-            upstream-sync
-            needs-review
+          BRANCH="auto-merge/upstream-sync"
+          git checkout -B "$BRANCH"
+
+          vial_status="skipped"
+          holykeebs_status="skipped"
+
+          # --- Merge vial-qmk (primary upstream, includes QMK base) ---
+          if [ "${{ steps.mirrors.outputs.vial }}" != "success" ]; then
+            vial_status="skipped"
+            echo "⏭️ vial-qmk: mirror sync did not succeed, skipping merge"
+          else
+            VIAL_AHEAD=$(git rev-list --count HEAD..origin/mirror/vial 2>/dev/null || echo "0")
+            if [ "$VIAL_AHEAD" -gt 0 ]; then
+              echo "::group::Merging vial-qmk ($VIAL_AHEAD commits ahead)"
+              if git merge origin/mirror/vial --no-edit -m "chore: merge vial-qmk upstream updates"; then
+                vial_status="merged"
+                echo "✅ vial-qmk merged ($VIAL_AHEAD new commits)"
+              else
+                git merge --abort
+                vial_status="conflict"
+                echo "❌ vial-qmk merge has conflicts"
+              fi
+              echo "::endgroup::"
+            else
+              vial_status="up-to-date"
+              echo "ℹ️ vial-qmk: already up to date"
+            fi
+          fi
+
+          # --- Merge holykeebs (pointing device support) ---
+          if [ "${{ steps.mirrors.outputs.holykeebs }}" != "success" ]; then
+            holykeebs_status="skipped"
+            echo "⏭️ holykeebs: mirror sync did not succeed, skipping merge"
+          else
+            HOLYKEEBS_AHEAD=$(git rev-list --count HEAD..origin/mirror/holykeebs 2>/dev/null || echo "0")
+            if [ "$HOLYKEEBS_AHEAD" -gt 0 ]; then
+              echo "::group::Merging holykeebs ($HOLYKEEBS_AHEAD commits ahead)"
+              if git merge origin/mirror/holykeebs --no-edit -m "chore: merge holykeebs upstream updates"; then
+                holykeebs_status="merged"
+                echo "✅ holykeebs merged ($HOLYKEEBS_AHEAD new commits)"
+              else
+                git merge --abort
+                holykeebs_status="conflict"
+                echo "❌ holykeebs merge has conflicts"
+              fi
+              echo "::endgroup::"
+            else
+              holykeebs_status="up-to-date"
+              echo "ℹ️ holykeebs: already up to date"
+            fi
+          fi
+
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "vial=$vial_status" >> "$GITHUB_OUTPUT"
+          echo "holykeebs=$holykeebs_status" >> "$GITHUB_OUTPUT"
+
+          # Determine if we have changes worth creating a PR for
+          has_merges="false"
+          has_conflicts="false"
+          if [ "$vial_status" = "merged" ] || [ "$holykeebs_status" = "merged" ]; then
+            has_merges="true"
+          fi
+          if [ "$vial_status" = "conflict" ] || [ "$holykeebs_status" = "conflict" ]; then
+            has_conflicts="true"
+          fi
+
+          echo "has_merges=$has_merges" >> "$GITHUB_OUTPUT"
+          echo "has_conflicts=$has_conflicts" >> "$GITHUB_OUTPUT"
+
+      - name: Push and create/update PR
+        if: steps.merge.outputs.has_merges == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ steps.merge.outputs.branch }}"
+          VIAL="${{ steps.merge.outputs.vial }}"
+          HOLYKEEBS="${{ steps.merge.outputs.holykeebs }}"
+          HAS_CONFLICTS="${{ steps.merge.outputs.has_conflicts }}"
+
+          git push origin "$BRANCH" --force
+
+          # Build status display
+          status_cell() {
+            case "$1" in
+              merged)     echo "✅ Merged" ;;
+              conflict)   echo "❌ Conflicts — needs manual merge" ;;
+              up-to-date) echo "ℹ️ Up to date" ;;
+              *)          echo "⏭️ Skipped" ;;
+            esac
+          }
+
+          TITLE="[Upstream Sync] $(date +%Y-%m-%d)"
+          [ "$HAS_CONFLICTS" = "true" ] && TITLE="$TITLE — manual merge needed"
+
+          # Compose PR body using heredoc to avoid indentation issues
+          cat > /tmp/pr-body.md <<EOF
+          ## 🔄 Upstream Sync — $(date +%Y-%m-%d)
+
+          ### Merge Status
+          | Upstream | Mirror Branch | Status |
+          |----------|---------------|--------|
+          | vial-qmk | \`mirror/vial\` | $(status_cell "$VIAL") |
+          | holykeebs | \`mirror/holykeebs\` | $(status_cell "$HOLYKEEBS") |
+
+          ### Mirror Branches
+          - \`mirror/vial\` ← [vial-kb/vial-qmk](https://github.com/vial-kb/vial-qmk) (\`vial\` branch)
+          - \`mirror/holykeebs\` ← [idank/qmk_firmware](https://github.com/idank/qmk_firmware) (\`holykeebs-master\` branch)
+          - \`mirror/qmk\` ← [qmk/qmk_firmware](https://github.com/qmk/qmk_firmware) (\`master\`) — reference only
+          EOF
+
+          if [ "$HAS_CONFLICTS" = "true" ]; then
+            cat >> /tmp/pr-body.md <<EOF
+
+          ### ⚠️ Manual Resolution Needed
+          Some upstreams had merge conflicts that could not be auto-resolved.
+          Auto-merge is **disabled** for this PR — a human must resolve conflicts first.
+
+          To resolve locally:
+          \`\`\`bash
+          git fetch origin
+          git checkout $BRANCH
+          # Merge the conflicting mirror branch:
+          git merge origin/mirror/vial    # if vial had conflicts
+          git merge origin/mirror/holykeebs  # if holykeebs had conflicts
+          # Resolve conflicts, then:
+          git add . && git commit
+          git push origin $BRANCH
+          \`\`\`
+          EOF
+          else
+            cat >> /tmp/pr-body.md <<EOF
+
+          ### ✅ Auto-Merge Enabled
+          All upstreams merged cleanly. This PR will merge into \`main\` automatically once CI checks pass.
+          EOF
+          fi
+
+          cat >> /tmp/pr-body.md <<EOF
+
+          ---
+          > **Safety**: \`main\` is never force-pushed. All upstream changes reach \`main\` only through this PR after CI passes.
+          > Force pushes are only used on \`mirror/*\` tracking branches and the \`auto-merge/upstream-sync\` staging branch.
+          EOF
+
+          # Check for an existing open PR from this branch
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+
+          if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
+            echo "Updating existing PR #$EXISTING_PR"
+            gh pr edit "$EXISTING_PR" --title "$TITLE" --body-file /tmp/pr-body.md
+          else
+            echo "Creating new sync PR"
+            gh pr create \
+              --title "$TITLE" \
+              --body-file /tmp/pr-body.md \
+              --base main \
+              --head "$BRANCH" || true
+          fi
+
+          # Enable auto-merge when all upstreams merged cleanly (no conflicts).
+          # The PR will merge into main automatically once required CI checks pass.
+          # If there are conflicts, skip auto-merge — a human must resolve them first.
+          if [ "$HAS_CONFLICTS" != "true" ]; then
+            PR_NUM=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+            if [ -n "$PR_NUM" ] && [ "$PR_NUM" != "null" ]; then
+              echo "Enabling auto-merge on PR #$PR_NUM"
+              gh pr merge "$PR_NUM" --auto --merge || echo "⚠️ Could not enable auto-merge (check repo settings: Settings → General → Allow auto-merge)"
+            fi
+          else
+            echo "⚠️ Conflicts detected — skipping auto-merge, manual review required"
+          fi
+
+      - name: Sync summary
+        if: always()
+        run: |
+          mirror_status() {
+            case "$1" in
+              success) echo "✅ Synced" ;;
+              failed)  echo "❌ Failed" ;;
+              *)       echo "⏭️ Skipped" ;;
+            esac
+          }
+          merge_status() {
+            case "$1" in
+              merged)     echo "✅ Merged" ;;
+              conflict)   echo "❌ Conflicts" ;;
+              up-to-date) echo "ℹ️ Up to date" ;;
+              *)          echo "⏭️ Skipped" ;;
+            esac
+          }
+
+          {
+            echo "## 🔄 Upstream Sync Summary"
+            echo ""
+            echo "### Mirror Branches"
+            echo "| Upstream | Status |"
+            echo "|----------|--------|"
+            echo "| holykeebs | $(mirror_status "${{ steps.mirrors.outputs.holykeebs }}") |"
+            echo "| vial-qmk | $(mirror_status "${{ steps.mirrors.outputs.vial }}") |"
+            echo "| QMK | $(mirror_status "${{ steps.mirrors.outputs.qmk }}") |"
+            echo ""
+            echo "### Auto-Merge into main"
+            echo "| Upstream | Status |"
+            echo "|----------|--------|"
+            echo "| vial-qmk | $(merge_status "${{ steps.merge.outputs.vial }}") |"
+            echo "| holykeebs | $(merge_status "${{ steps.merge.outputs.holykeebs }}") |"
+            echo ""
+            if [ "${{ steps.merge.outputs.has_merges }}" = "true" ]; then
+              if [ "${{ steps.merge.outputs.has_conflicts }}" = "true" ]; then
+                echo "📋 PR created on branch \`${{ steps.merge.outputs.branch }}\` — **manual merge needed** (conflicts)"
+              else
+                echo "📋 PR created on branch \`${{ steps.merge.outputs.branch }}\` — **auto-merge enabled** (will merge when CI passes)"
+              fi
+            elif [ "${{ steps.merge.outputs.has_conflicts }}" = "true" ]; then
+              echo "⚠️ Conflicts detected but no clean merges — manual intervention needed"
+            else
+              echo "**✅ All upstreams are up to date. No changes needed.**"
+            fi
+            echo ""
+            echo "> **Safety**: \`main\` is never force-pushed. Changes only reach \`main\` through a PR after CI checks pass."
+          } >> "$GITHUB_STEP_SUMMARY"
