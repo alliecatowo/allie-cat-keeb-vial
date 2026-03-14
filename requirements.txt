@@ -11,3 +11,5 @@ pygments
 pyserial
 pyusb
 pillow
+nose2
+qmk
