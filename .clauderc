@@ -1,0 +1,63 @@
+{
+  "repository": {
+    "name": "allie-cat-keeb-vial",
+    "type": "qmk-firmware",
+    "description": "Vial-enabled QMK firmware for holykeebs pointing devices",
+    "primary_language": "c"
+  },
+  "build": {
+    "primary_command": "python build.py",
+    "test_command": "make test:basic",
+    "clean_command": "rm -rf build_lily58/ .build/ *.uf2 *.hex *.bin",
+    "output_directory": "build_lily58"
+  },
+  "constraints": {
+    "target_mcu": "RP2040",
+    "flash_size": "2MB",
+    "firmware_size_warning": "1.5MB",
+    "memory_critical": true
+  },
+  "coding_standards": {
+    "c_style": "QMK standard",
+    "python_style": "PEP 8",
+    "commit_format": "conventional commits",
+    "max_line_length": 120
+  },
+  "testing": {
+    "required_before_pr": [
+      "Build at least one configuration successfully",
+      "Check firmware size",
+      "Run flake8 on Python changes",
+      "Verify no debug code remains"
+    ],
+    "hardware_testing_recommended": true
+  },
+  "ci_cd": {
+    "provider": "GitHub Actions",
+    "workflows": [
+      "build-firmware.yml - Release builds on tags",
+      "pr-checks.yml - PR validation",
+      "sync-upstreams.yml - Upstream sync"
+    ]
+  },
+  "important_files": [
+    "build.py - Build orchestration",
+    "users/holykeebs/rules.mk - Conditional compilation",
+    "keyboards/lily58/rev1/ - Keyboard definitions",
+    "quantum/vial/ - Vial integration"
+  ],
+  "common_commands": {
+    "build_default": "python build.py",
+    "build_single": "python build.py --build-single --left-device trackball --right-device tps43 --side left",
+    "generate_matrix": "python build.py --generate-matrix-release",
+    "test": "make test:basic",
+    "setup_env": "qmk config user.qmk_home=$PWD"
+  },
+  "warnings": [
+    "Always include VIAL_ENABLE=yes when building vial keymap",
+    "Don't commit build artifacts (.uf2, .hex, build directories)",
+    "Check firmware size - warn if over 1.5MB",
+    "Test on actual hardware when possible",
+    "Memory constraints are critical on RP2040"
+  ]
+}
