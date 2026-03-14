@@ -22,6 +22,26 @@ split keyboards (primarily the Lily58).
 
 ---
 
+## Environment bootstrap (run first in every new session)
+
+Before running any `python3`, `qmk`, or `make` command, set these environment variables:
+
+```bash
+export ORIG_CWD="$PWD"
+export QMK_HOME="$PWD"
+export QMK_FIRMWARE="$PWD"
+export PYTHONPATH="$PWD/lib/python"
+export PATH="$PWD/bin:$PATH"
+```
+
+Install Python dependencies if needed:
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+```
+
+---
+
 ## How to build & test **quickly** (no firmware compile needed)
 
 ```bash
