@@ -73,9 +73,9 @@ def generate_matrix(matrix_type='all'):
             'dual_device_combinations': default_dual_device_combinations,
         },
         {
-            'keyboard': 'sofle/rev1',
+            'keyboard': 'sofle/rp2040',
             'keymap': 'vial',
-            'allow_debug': False,
+            'allow_debug': True,
             'pointing_devices': default_pointing_devices,
             'dual_device_combinations': default_dual_device_combinations,
         },
@@ -178,13 +178,6 @@ def main():
         command = Command(args.keyboard, args.keymap)
         command.prepend_argument(f'USER_NAME={args.user_name}')
 
-        # Force Sofle builds to RP2040 UF2 via converter (promicro footprint).
-        converter = None
-        if args.keyboard.startswith('sofle/'):
-            converter = 'rp2040_ce'
-        if converter:
-            command.add_argument(f'CONVERT_TO={converter}')
-
         if args.debug:
             command.add_argument('CONSOLE=yes')
 
@@ -242,8 +235,6 @@ def main():
             command.add_argument('POINTING_DEVICE=trackball_tps43')
             command.add_argument(f'SIDE={side}')
             command.add_argument('TRACKBALL_RGB_RAINBOW=yes')
-            if kb.startswith('sofle/'):
-                command.add_argument('CONVERT_TO=rp2040_ce')
             command.add_argument_raw('-j8')
             command.prepend_argument(f'TARGET={command.file_name()}')
 
