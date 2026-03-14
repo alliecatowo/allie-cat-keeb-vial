@@ -8,10 +8,34 @@ on:
     branches:
       - feat/slim-userspace
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+permissions:
+  contents: read
 
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          matrix=$(python build.py --generate-matrix-release)
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  build:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,27 +43,49 @@ jobs:
           submodules: recursive
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
-      - name: Install QMK CLI
-        run: pip3 install qmk
+      - name: Install QMK dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            avr-libc \
+            binutils-arm-none-eabi \
+            binutils-avr \
+            dfu-programmer \
+            dfu-util \
+            gcc-arm-none-eabi \
+            gcc-avr \
+            git \
+            libnewlib-arm-none-eabi \
+            unzip \
+            wget \
+            zip \
+            python3-pip
 
-      - name: Run QMK Setup
-        run: qmk setup --yes --home "${{ github.workspace }}"
+          pip3 install --upgrade pip
+          pip3 install qmk
 
-      - name: Compile firmware for Lily58
-        run: qmk compile -kb lily58/rev1 -km vial
+      - name: Build firmware
+        run: |
+          qmk config user.qmk_home=$GITHUB_WORKSPACE
+          qmk config user.keyboard=${{ matrix.keyboard }}
+          qmk config user.keymap=${{ matrix.keymap }}
 
-      - name: Compile firmware for Sofle
-        run: qmk compile -kb sofle/rev1 -km vial
+          python build.py --build-single \
+            --keyboard "${{ matrix.keyboard }}" \
+            --keymap "${{ matrix.keymap }}" \
+            --left-device "${{ matrix.left_device }}" \
+            --right-device "${{ matrix.right_device }}" \
+            --side "${{ matrix.side }}" \
+            ${{ matrix.debug == true && '--debug' || '' }}
 
-      - name: Upload Firmware Artifacts
+      - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: firmware
-          path: |
-            *.hex
-            *.bin
-            *.uf2
+          name: firmware-${{ matrix.keyboard_name }}-${{ matrix.keymap }}-${{ matrix.side }}
+          path: build_*/*.uf2
+          retention-days: 7
