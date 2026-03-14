@@ -121,39 +121,49 @@ jobs:
           holykeebs_status="skipped"
 
           # --- Merge vial-qmk (primary upstream, includes QMK base) ---
-          VIAL_AHEAD=$(git rev-list --count HEAD..origin/mirror/vial 2>/dev/null || echo "0")
-          if [ "$VIAL_AHEAD" -gt 0 ]; then
-            echo "::group::Merging vial-qmk ($VIAL_AHEAD commits ahead)"
-            if git merge origin/mirror/vial --no-edit -m "chore: merge vial-qmk upstream updates"; then
-              vial_status="merged"
-              echo "✅ vial-qmk merged ($VIAL_AHEAD new commits)"
-            else
-              git merge --abort
-              vial_status="conflict"
-              echo "❌ vial-qmk merge has conflicts"
-            fi
-            echo "::endgroup::"
+          if [ "${{ steps.mirrors.outputs.vial }}" != "success" ]; then
+            vial_status="skipped"
+            echo "⏭️ vial-qmk: mirror sync did not succeed, skipping merge"
           else
-            vial_status="up-to-date"
-            echo "ℹ️ vial-qmk: already up to date"
+            VIAL_AHEAD=$(git rev-list --count HEAD..origin/mirror/vial 2>/dev/null || echo "0")
+            if [ "$VIAL_AHEAD" -gt 0 ]; then
+              echo "::group::Merging vial-qmk ($VIAL_AHEAD commits ahead)"
+              if git merge origin/mirror/vial --no-edit -m "chore: merge vial-qmk upstream updates"; then
+                vial_status="merged"
+                echo "✅ vial-qmk merged ($VIAL_AHEAD new commits)"
+              else
+                git merge --abort
+                vial_status="conflict"
+                echo "❌ vial-qmk merge has conflicts"
+              fi
+              echo "::endgroup::"
+            else
+              vial_status="up-to-date"
+              echo "ℹ️ vial-qmk: already up to date"
+            fi
           fi
 
           # --- Merge holykeebs (pointing device support) ---
-          HOLYKEEBS_AHEAD=$(git rev-list --count HEAD..origin/mirror/holykeebs 2>/dev/null || echo "0")
-          if [ "$HOLYKEEBS_AHEAD" -gt 0 ]; then
-            echo "::group::Merging holykeebs ($HOLYKEEBS_AHEAD commits ahead)"
-            if git merge origin/mirror/holykeebs --no-edit -m "chore: merge holykeebs upstream updates"; then
-              holykeebs_status="merged"
-              echo "✅ holykeebs merged ($HOLYKEEBS_AHEAD new commits)"
-            else
-              git merge --abort
-              holykeebs_status="conflict"
-              echo "❌ holykeebs merge has conflicts"
-            fi
-            echo "::endgroup::"
+          if [ "${{ steps.mirrors.outputs.holykeebs }}" != "success" ]; then
+            holykeebs_status="skipped"
+            echo "⏭️ holykeebs: mirror sync did not succeed, skipping merge"
           else
-            holykeebs_status="up-to-date"
-            echo "ℹ️ holykeebs: already up to date"
+            HOLYKEEBS_AHEAD=$(git rev-list --count HEAD..origin/mirror/holykeebs 2>/dev/null || echo "0")
+            if [ "$HOLYKEEBS_AHEAD" -gt 0 ]; then
+              echo "::group::Merging holykeebs ($HOLYKEEBS_AHEAD commits ahead)"
+              if git merge origin/mirror/holykeebs --no-edit -m "chore: merge holykeebs upstream updates"; then
+                holykeebs_status="merged"
+                echo "✅ holykeebs merged ($HOLYKEEBS_AHEAD new commits)"
+              else
+                git merge --abort
+                holykeebs_status="conflict"
+                echo "❌ holykeebs merge has conflicts"
+              fi
+              echo "::endgroup::"
+            else
+              holykeebs_status="up-to-date"
+              echo "ℹ️ holykeebs: already up to date"
+            fi
           fi
 
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
