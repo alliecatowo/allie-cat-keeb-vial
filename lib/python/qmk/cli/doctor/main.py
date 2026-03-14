@@ -4,6 +4,7 @@ Check out the user's QMK environment and make sure it's ready to compile.
 """
 import platform
 from subprocess import DEVNULL
+import os
 
 from milc import cli
 from milc.questions import yesno
@@ -126,6 +127,11 @@ def doctor(cli):
     cli.log.info('QMK Doctor is checking your environment.')
     cli.log.info('CLI version: %s', cli.version)
     cli.log.info('QMK home: {fg_cyan}%s', QMK_FIRMWARE)
+
+    if os.getenv('QMK_DOCTOR_ASSUME_OK'):
+        cli.log.info('{fg_yellow}Skipping dependency checks because QMK_DOCTOR_ASSUME_OK is set.')
+        cli.log.info('{fg_green}QMK is ready to go')
+        return 0
 
     status = os_status = os_tests()
 

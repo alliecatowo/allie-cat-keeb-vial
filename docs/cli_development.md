@@ -193,6 +193,8 @@ We use nose2, flake8, and yapf to test, lint, and format code. You can use the `
 ### Testing and Linting
 
 ```
+python3 -m pip install -r requirements-dev.txt
+export QMK_DOCTOR_ASSUME_OK=1  # headless/CI: skip hardware/toolchain checks
 qmk pytest
 ```
 

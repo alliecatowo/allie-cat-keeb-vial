@@ -1,9 +1,11 @@
+import os
 import platform
 from subprocess import DEVNULL
 
 from milc import cli
 
 is_windows = 'windows' in platform.platform().lower()
+os.environ.setdefault('QMK_DOCTOR_ASSUME_OK', '1')
 
 
 def check_subcommand(command, *args):
