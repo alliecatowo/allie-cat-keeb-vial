@@ -50,3 +50,24 @@ jobs:
           flake8 build.py tools/callgraph.py tests/test_build_py.py \
             --max-line-length=120 \
             --extend-ignore=E501,W503
+
+  # Gate job — set this as the single required status check in branch protection
+  tests-complete:
+    name: Tests Complete
+    if: always()
+    needs: [python-tests, lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all job results
+        run: |
+          results=( \
+            "${{ needs.python-tests.result }}" \
+            "${{ needs.lint.result }}" \
+          )
+          for r in "${results[@]}"; do
+            if [[ "$r" != "success" ]]; then
+              echo "One or more jobs did not succeed (got: $r)"
+              exit 1
+            fi
+          done
+          echo "All jobs passed!"

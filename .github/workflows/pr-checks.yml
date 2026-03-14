@@ -150,3 +150,26 @@ jobs:
         with:
           name: azoteq-callgraph
           path: docs/azoteq_callgraph.svg
+
+  # Gate job — set this as the single required status check in branch protection
+  ci-complete:
+    name: CI Complete
+    if: always()
+    needs: [pr-quality, build-test, code-quality, callgraph]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all job results
+        run: |
+          results=( \
+            "${{ needs.pr-quality.result }}" \
+            "${{ needs.build-test.result }}" \
+            "${{ needs.code-quality.result }}" \
+            "${{ needs.callgraph.result }}" \
+          )
+          for r in "${results[@]}"; do
+            if [[ "$r" != "success" ]]; then
+              echo "One or more jobs did not succeed (got: $r)"
+              exit 1
+            fi
+          done
+          echo "All jobs passed!"
