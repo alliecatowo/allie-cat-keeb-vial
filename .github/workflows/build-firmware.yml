@@ -1,0 +1,108 @@
+name: Build Firmware
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          matrix=$(python build.py --generate-matrix-release)
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  build:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install QMK dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            avr-libc \
+            binutils-arm-none-eabi \
+            binutils-avr \
+            dfu-programmer \
+            dfu-util \
+            gcc-arm-none-eabi \
+            gcc-avr \
+            git \
+            libnewlib-arm-none-eabi \
+            unzip \
+            wget \
+            zip \
+            python3-pip
+
+          pip3 install --upgrade pip
+          pip3 install qmk
+
+      - name: Configure QMK userspace
+        run: qmk config user.qmk_home=$GITHUB_WORKSPACE
+
+      - name: Build firmware
+        run: |
+          python build.py --build-single \
+            --keyboard "${{ matrix.keyboard }}" \
+            --keymap "${{ matrix.keymap }}" \
+            --pointing-device "${{ matrix.pointing_device }}" \
+            --side "${{ matrix.side }}" \
+            --oled "${{ matrix.oled }}"
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.keyboard_safe }}-${{ matrix.pointing_device || 'plain' }}${{ matrix.side && format('-{0}', matrix.side) || '' }}${{ matrix.oled == 'yes' && '-oled' || '' }}
+          path: |
+            build_lily58/*.uf2
+            build_sofle/*.hex
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: firmware
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            firmware/**/*.uf2
+            firmware/**/*.hex
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

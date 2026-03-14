@@ -1,0 +1,151 @@
+name: Sync with Upstreams
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      sync_holykeebs:
+        description: 'Sync idank/qmk_firmware holykeebs-master'
+        required: false
+        default: true
+        type: boolean
+      sync_vial:
+        description: 'Sync vial-kb/vial-qmk vial'
+        required: false
+        default: true
+        type: boolean
+      sync_qmk:
+        description: 'Sync qmk/qmk_firmware master'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Add remotes
+        run: |
+          # Add all upstreams if not already present
+          git remote add holykeebs https://github.com/idank/qmk_firmware.git || true
+          git remote add vial https://github.com/vial-kb/vial-qmk.git || true
+          git remote add qmk https://github.com/qmk/qmk_firmware.git || true
+
+      - name: Fetch all remotes
+        run: |
+          git fetch --all --prune
+
+      - name: Sync idank/holykeebs-master to mirror/holykeebs
+        if: github.event.inputs.sync_holykeebs != 'false'
+        continue-on-error: true
+        run: |
+          echo "Syncing idank/holykeebs-master..."
+          git checkout -B mirror/holykeebs
+          git reset --hard holykeebs/holykeebs-master
+          git push origin mirror/holykeebs --force
+          echo "✅ holykeebs sync complete"
+
+      - name: Sync vial-kb/vial to mirror/vial
+        if: github.event.inputs.sync_vial != 'false'
+        continue-on-error: true
+        run: |
+          echo "Syncing vial-kb/vial..."
+          git checkout -B mirror/vial
+          git reset --hard vial/vial
+          git push origin mirror/vial --force
+          echo "✅ vial sync complete"
+
+      - name: Sync qmk/master to mirror/qmk
+        if: github.event.inputs.sync_qmk != 'false'
+        continue-on-error: true
+        run: |
+          echo "Syncing qmk/master..."
+          git checkout -B mirror/qmk
+          git reset --hard qmk/master
+          git push origin mirror/qmk --force
+          echo "✅ QMK sync complete"
+
+      - name: Create sync summary
+        if: always()
+        run: |
+          echo "## Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- holykeebs: mirror/holykeebs" >> $GITHUB_STEP_SUMMARY
+          echo "- vial: mirror/vial" >> $GITHUB_STEP_SUMMARY
+          echo "- qmk: mirror/qmk" >> $GITHUB_STEP_SUMMARY
+
+  attempt-merge:
+    needs: sync-branches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Attempt to merge updates
+        id: merge
+        continue-on-error: true
+        run: |
+          # Create a test branch for merging
+          git checkout main
+          git checkout -b auto-merge/test-$(date +%Y%m%d-%H%M%S)
+
+          # Try to merge holykeebs updates
+          echo "Attempting to merge holykeebs updates..."
+          git merge origin/mirror/holykeebs -m "chore: merge holykeebs updates" || echo "HOLYKEEBS_MERGE=failed" >> $GITHUB_ENV
+
+          # Only try vial merge if holykeebs succeeded
+          if [ -z "$HOLYKEEBS_MERGE" ]; then
+            echo "Attempting to merge vial updates..."
+            git merge origin/mirror/vial -m "chore: merge vial updates" -X theirs || echo "VIAL_MERGE=failed" >> $GITHUB_ENV
+          fi
+
+      - name: Create PR if merge has conflicts
+        if: env.HOLYKEEBS_MERGE == 'failed' || env.VIAL_MERGE == 'failed'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: manual merge required for upstream updates"
+          title: "[Auto] Manual merge required for upstream updates"
+          body: |
+            ## ⚠️ Manual Merge Required
+
+            Automatic merge failed due to conflicts. Please review and resolve conflicts manually.
+
+            ### Merge Status:
+            - holykeebs: ${{ env.HOLYKEEBS_MERGE == 'failed' && '❌ Failed' || '✅ Success' }}
+            - vial: ${{ env.VIAL_MERGE == 'failed' && '❌ Failed' || '✅ Success' }}
+
+            ### Mirror branches:
+            - `mirror/holykeebs` - Latest from idank/holykeebs-master
+            - `mirror/vial` - Latest from vial-kb/vial
+            - `mirror/qmk` - Latest from qmk/master
+
+            ### To resolve:
+            1. Check out this branch
+            2. Resolve conflicts
+            3. Test build
+            4. Merge when ready
+          branch: auto-merge/upstream-sync
+          labels: |
+            upstream-sync
+            needs-review

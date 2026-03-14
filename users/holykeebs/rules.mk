@@ -1,4 +1,4 @@
-VALID_POINTING_DEVICE_CONFIGURATIONS := trackball tps43 cirque40 cirque35 tps43_tps43 cirque35_cirque35 cirque40_cirque40 trackball_trackball trackball_tps43 tps43_trackball trackball_cirque35 cirque35_trackball trackball_cirque40 cirque40_trackball trackpoint trackpoint_tps43 tps43_trackpoint trackpoint_trackball trackball_trackpoint trackpoint_cirque35 cirque35_trackpoint trackpoint_cirque40 cirque40_trackpoint cirque40_tps43 tps43_cirque40 cirque35_tps43 tps43_cirque35
+VALID_POINTING_DEVICE_CONFIGURATIONS := trackball tps43 tps43_tps43 trackball_trackball trackball_tps43 tps43_trackball trackpoint trackpoint_tps43 tps43_trackpoint trackpoint_trackball trackball_trackpoint
 ifdef POINTING_DEVICE
     ifeq ($(filter $(POINTING_DEVICE),$(VALID_POINTING_DEVICE_CONFIGURATIONS)),)
         $(call CATASTROPHIC_ERROR,Invalid POINTING_DEVICE,POINTING_DEVICE="$(POINTING_DEVICE)" is not a valid pointing device configuration)
