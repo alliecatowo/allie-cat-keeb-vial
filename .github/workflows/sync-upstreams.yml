@@ -219,6 +219,7 @@ jobs:
 
           ### ⚠️ Manual Resolution Needed
           Some upstreams had merge conflicts that could not be auto-resolved.
+          Auto-merge is **disabled** for this PR — a human must resolve conflicts first.
 
           To resolve locally:
           \`\`\`bash
@@ -232,7 +233,20 @@ jobs:
           git push origin $BRANCH
           \`\`\`
           EOF
+          else
+            cat >> /tmp/pr-body.md <<EOF
+
+          ### ✅ Auto-Merge Enabled
+          All upstreams merged cleanly. This PR will merge into \`main\` automatically once CI checks pass.
+          EOF
           fi
+
+          cat >> /tmp/pr-body.md <<EOF
+
+          ---
+          > **Safety**: \`main\` is never force-pushed. All upstream changes reach \`main\` only through this PR after CI passes.
+          > Force pushes are only used on \`mirror/*\` tracking branches and the \`auto-merge/upstream-sync\` staging branch.
+          EOF
 
           # Check for an existing open PR from this branch
           EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
@@ -247,6 +261,19 @@ jobs:
               --body-file /tmp/pr-body.md \
               --base main \
               --head "$BRANCH" || true
+          fi
+
+          # Enable auto-merge when all upstreams merged cleanly (no conflicts).
+          # The PR will merge into main automatically once required CI checks pass.
+          # If there are conflicts, skip auto-merge — a human must resolve them first.
+          if [ "$HAS_CONFLICTS" != "true" ]; then
+            PR_NUM=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+            if [ -n "$PR_NUM" ] && [ "$PR_NUM" != "null" ]; then
+              echo "Enabling auto-merge on PR #$PR_NUM"
+              gh pr merge "$PR_NUM" --auto --merge || echo "⚠️ Could not enable auto-merge (check repo settings: Settings → General → Allow auto-merge)"
+            fi
+          else
+            echo "⚠️ Conflicts detected — skipping auto-merge, manual review required"
           fi
 
       - name: Sync summary
@@ -285,10 +312,16 @@ jobs:
             echo "| holykeebs | $(merge_status "${{ steps.merge.outputs.holykeebs }}") |"
             echo ""
             if [ "${{ steps.merge.outputs.has_merges }}" = "true" ]; then
-              echo "📋 PR created/updated on branch \`${{ steps.merge.outputs.branch }}\`"
+              if [ "${{ steps.merge.outputs.has_conflicts }}" = "true" ]; then
+                echo "📋 PR created on branch \`${{ steps.merge.outputs.branch }}\` — **manual merge needed** (conflicts)"
+              else
+                echo "📋 PR created on branch \`${{ steps.merge.outputs.branch }}\` — **auto-merge enabled** (will merge when CI passes)"
+              fi
             elif [ "${{ steps.merge.outputs.has_conflicts }}" = "true" ]; then
               echo "⚠️ Conflicts detected but no clean merges — manual intervention needed"
             else
               echo "**✅ All upstreams are up to date. No changes needed.**"
             fi
+            echo ""
+            echo "> **Safety**: \`main\` is never force-pushed. Changes only reach \`main\` through a PR after CI checks pass."
           } >> "$GITHUB_STEP_SUMMARY"
