@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+"""Local QMK CLI entrypoint backed by this repository."""
+import os
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+LIB_PATH = REPO_ROOT / "lib" / "python"
+
+# Ensure our Python modules are importable and we point the CLI at this checkout
+sys.path.insert(0, str(LIB_PATH))
+os.environ.setdefault("PYTHONPATH", str(LIB_PATH))
+os.environ.setdefault("QMK_HOME", str(REPO_ROOT))
+os.environ.setdefault("QMK_FIRMWARE", str(REPO_ROOT))
+os.environ.setdefault("ORIG_CWD", os.getcwd())
+
+from milc import cli  # noqa: E402
+import qmk.cli  # noqa: E402,F401 -- registers subcommands
+
+
+def main():
+    cli()
+
+
+if __name__ == "__main__":
+    main()
