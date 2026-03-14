@@ -262,6 +262,15 @@ void hk_process_scroll(const hk_pointer_state_t* pointer_state, report_mouse_t* 
     if (pointer_state->pointer_scroll_buffer_size > 0) {
         static int16_t scroll_buffer_h = 0;
         static int16_t scroll_buffer_v = 0;
+        static uint32_t last_scroll_time = 0;
+        uint32_t now = timer_read32();
+
+        // Reset scroll buffers if no scroll activity for a while (helps with scroll lock issues)
+        #define SCROLL_TIMEOUT_MS 500
+        if (timer_elapsed32(last_scroll_time) > SCROLL_TIMEOUT_MS) {
+            scroll_buffer_h = 0;
+            scroll_buffer_v = 0;
+        }
 
         scroll_buffer_h += mouse_report->h;
         scroll_buffer_v += mouse_report->v;
@@ -271,14 +280,29 @@ void hk_process_scroll(const hk_pointer_state_t* pointer_state, report_mouse_t* 
         bool output_horizontal = pointer_state->scroll_lock == SCROLL_LOCK_HORIZONTAL || pointer_state->scroll_lock == SCROLL_LOCK_OFF;
         bool output_vertical = pointer_state->scroll_lock == SCROLL_LOCK_VERTICAL || pointer_state->scroll_lock == SCROLL_LOCK_OFF;
 
+        // Improved scroll output - allows for smoother multi-tick scrolling
         if (output_horizontal && abs(scroll_buffer_h) > pointer_state->pointer_scroll_buffer_size) {
-            mouse_report->h = scroll_buffer_h > 0 ? 1 : -1;
-            scroll_buffer_h = 0;
+            // Output multiple scroll ticks if buffer is large enough
+            int16_t scroll_amount = scroll_buffer_h / (pointer_state->pointer_scroll_buffer_size + 1);
+            // Clamp to reasonable values
+            scroll_amount = scroll_amount > 127 ? 127 : (scroll_amount < -127 ? -127 : scroll_amount);
+            if (scroll_amount != 0) {
+                mouse_report->h = scroll_amount;
+                scroll_buffer_h -= scroll_amount * (pointer_state->pointer_scroll_buffer_size + 1);
+                last_scroll_time = now;
+            }
         }
 
         if (output_vertical && abs(scroll_buffer_v) > pointer_state->pointer_scroll_buffer_size) {
-            mouse_report->v = scroll_buffer_v > 0 ? 1 : -1;
-            scroll_buffer_v = 0;
+            // Output multiple scroll ticks if buffer is large enough
+            int16_t scroll_amount = scroll_buffer_v / (pointer_state->pointer_scroll_buffer_size + 1);
+            // Clamp to reasonable values
+            scroll_amount = scroll_amount > 127 ? 127 : (scroll_amount < -127 ? -127 : scroll_amount);
+            if (scroll_amount != 0) {
+                mouse_report->v = scroll_amount;
+                scroll_buffer_v -= scroll_amount * (pointer_state->pointer_scroll_buffer_size + 1);
+                last_scroll_time = now;
+            }
         }
     }
 }
@@ -300,6 +324,41 @@ static void hk_set_cursor_mode(hk_cursor_mode target_mode, bool enabled, bool si
     }
 
     g_hk_state.dirty = true;
+
+    // Update LED color for Pimoroni trackball
+    #if defined(POINTING_DEVICE_DRIVER_pimoroni_trackball)
+        // Only update LED if this device is a Pimoroni trackball
+        bool is_pimoroni = state->pointer_kind == POINTER_KIND_PIMORONI_TRACKBALL;
+
+        // Determine if we should update the LED on this side
+        bool should_update_led = false;
+        #if defined(HK_POINTING_DEVICE_LEFT_PIMORONI) && defined(HK_POINTING_DEVICE_RIGHT_PIMORONI)
+            // Dual trackball - always update on the active side
+            should_update_led = is_pimoroni;
+        #elif defined(HK_POINTING_DEVICE_LEFT_PIMORONI)
+            should_update_led = is_pimoroni && is_keyboard_left();
+        #elif defined(HK_POINTING_DEVICE_RIGHT_PIMORONI)
+            should_update_led = is_pimoroni && !is_keyboard_left();
+        #endif
+
+        if (should_update_led && !side_peripheral) {
+            // Set LED color based on cursor mode
+            switch (state->cursor_mode) {
+                case CURSOR_MODE_DEFAULT:
+                    // Default: Off or very dim white
+                    pimoroni_trackball_set_rgbw(0, 0, 0, 0);
+                    break;
+                case CURSOR_MODE_SNIPING:
+                    // Sniping: Blue for precision
+                    pimoroni_trackball_set_rgbw(0, 0, 255, 0);
+                    break;
+                case CURSOR_MODE_ARROW_KEY:
+                    // Arrow key mode: Green to indicate active directional mode
+                    pimoroni_trackball_set_rgbw(0, 255, 0, 0);
+                    break;
+            }
+        }
+    #endif
 }
 
 static void hk_set_dragscroll(bool enabled, bool side_peripheral) {
@@ -316,6 +375,10 @@ static float scale_movement(const hk_pointer_state_t* state, int32_t amount) {
             break;
         case CURSOR_MODE_SNIPING:
             multiplier = state->pointer_sniping_multiplier;
+            break;
+        case CURSOR_MODE_ARROW_KEY:
+            // Arrow key mode doesn't scale movement - handled separately
+            multiplier = 1.0;
             break;
     }
 
@@ -379,7 +442,80 @@ static void hk_cycle_scroll_mode(bool side_peripheral) {
     g_hk_state.dirty = true;
 }
 
+// Process arrow key mode - converts trackball movement into arrow key presses
+// Returns true if arrow keys were sent (mouse report should be zeroed)
+static bool hk_process_arrow_key_mode(const hk_pointer_state_t* pointer_state, report_mouse_t* mouse_report) {
+    if (pointer_state->cursor_mode != CURSOR_MODE_ARROW_KEY) {
+        return false;
+    }
+
+    // Threshold for triggering arrow key - adjust as needed
+    #define ARROW_KEY_THRESHOLD 15
+    // Debounce time in milliseconds between arrow key presses
+    #define ARROW_KEY_DEBOUNCE_MS 150
+
+    static uint32_t last_arrow_time = 0;
+    uint32_t now = timer_read32();
+
+    // Check if enough time has passed since last arrow key
+    if (timer_elapsed32(last_arrow_time) < ARROW_KEY_DEBOUNCE_MS) {
+        // Clear the mouse report but don't send arrow keys yet
+        mouse_report->x = 0;
+        mouse_report->y = 0;
+        mouse_report->h = 0;
+        mouse_report->v = 0;
+        return true;
+    }
+
+    // Determine which direction has the strongest signal
+    int16_t abs_x = abs(mouse_report->x);
+    int16_t abs_y = abs(mouse_report->y);
+
+    if (abs_x < ARROW_KEY_THRESHOLD && abs_y < ARROW_KEY_THRESHOLD) {
+        // Movement too small, ignore
+        mouse_report->x = 0;
+        mouse_report->y = 0;
+        mouse_report->h = 0;
+        mouse_report->v = 0;
+        return true;
+    }
+
+    // Send arrow key based on dominant direction
+    if (abs_x > abs_y) {
+        // Horizontal movement is stronger
+        if (mouse_report->x > 0) {
+            tap_code(KC_RIGHT);
+        } else {
+            tap_code(KC_LEFT);
+        }
+    } else {
+        // Vertical movement is stronger
+        if (mouse_report->y > 0) {
+            tap_code(KC_DOWN);
+        } else {
+            tap_code(KC_UP);
+        }
+    }
+
+    last_arrow_time = now;
+
+    // Clear all mouse movement
+    mouse_report->x = 0;
+    mouse_report->y = 0;
+    mouse_report->h = 0;
+    mouse_report->v = 0;
+
+    return true;
+}
+
 void hk_process_mouse_report(const hk_pointer_state_t* pointer_state, report_mouse_t* mouse_report) {
+    // Handle arrow key mode first - if active, it consumes all movement
+    if (hk_process_arrow_key_mode(pointer_state, mouse_report)) {
+        // Arrow key mode handled the report, skip normal processing
+        g_hk_state.dirty = true;
+        return;
+    }
+
     #ifdef ENABLE_DRIFT_DETECTION
         #ifndef POINTING_DEVICE_CONFIGURATION_TRACKPOINT
             #error "cannot use ENABLE_DRIFT_DETECTION without a trackpoint"
@@ -587,6 +723,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 state_changed = true;
             }
             break;
+        case HK_ARROW_KEY_MODE:
+            hk_set_cursor_mode(/*mode=*/CURSOR_MODE_ARROW_KEY, /*enabled=*/record->event.pressed, /*side_peripheral=*/has_shift_mod());
+            state_changed = true;
+            break;
+        case HK_ARROW_KEY_MODE_TOGGLE:
+            if (record->event.pressed) {
+                bool is_on = hk_get_cursor_mode(/*side_peripheral=*/has_shift_mod()) == CURSOR_MODE_ARROW_KEY;
+                hk_set_cursor_mode(/*mode=*/CURSOR_MODE_ARROW_KEY, /*enabled=*/!is_on, /*side_peripheral=*/has_shift_mod());
+                state_changed = true;
+            }
+            break;
     }
     if (state_changed) {
         debug_hk_state_to_console(&g_hk_state);
@@ -616,13 +763,16 @@ void housekeeping_task_user(void) {
 #if defined(HK_PIMORONI_TRACKBALL_RGB_RAINBOW) && defined(POINTING_DEVICE_DRIVER_pimoroni_trackball)
     bool run_animation = false;
 
+    // Only run rainbow animation in default cursor mode (not in sniping or arrow key mode)
+    bool is_default_mode = g_hk_state.main.cursor_mode == CURSOR_MODE_DEFAULT;
+
     // With two trackballs, always run the animation.
     #if defined(HK_POINTING_DEVICE_LEFT_PIMORONI) && defined(HK_POINTING_DEVICE_RIGHT_PIMORONI)
-        run_animation = true;
+        run_animation = is_default_mode;
     #elif defined(HK_POINTING_DEVICE_LEFT_PIMORONI)
-        run_animation = is_keyboard_left();
+        run_animation = is_default_mode && is_keyboard_left();
     #elif defined(HK_POINTING_DEVICE_RIGHT_PIMORONI)
-        run_animation = !is_keyboard_left();
+        run_animation = is_default_mode && !is_keyboard_left();
     #else
         #error "HK_PIMORONI_TRACKBALL_RGB_RAINBOW requires a pimoroni on either sides."
     #endif

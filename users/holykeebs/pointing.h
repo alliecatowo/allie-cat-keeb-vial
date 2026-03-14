@@ -22,11 +22,12 @@ typedef enum {
 typedef enum {
     CURSOR_MODE_DEFAULT,
     CURSOR_MODE_SNIPING,
+    CURSOR_MODE_ARROW_KEY,
 } hk_cursor_mode;
 
 typedef struct PACKED {
     hk_pointer_kind pointer_kind : 4;
-    hk_cursor_mode cursor_mode : 2;
+    hk_cursor_mode cursor_mode : 2;  // 2 bits can hold 0-3, enough for 3 modes
     hk_scroll_lock scroll_lock : 2;
     bool drag_scroll : 1;
     float pointer_default_multiplier;
