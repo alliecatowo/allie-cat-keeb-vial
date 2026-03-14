@@ -40,28 +40,28 @@
 #    define AZOTEQ_IQS5XX_SCROLL_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_X_ENABLE
-#    define AZOTEQ_IQS5XX_SWIPE_X_ENABLE false
+#    define AZOTEQ_IQS5XX_SWIPE_X_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_Y_ENABLE
-#    define AZOTEQ_IQS5XX_SWIPE_Y_ENABLE false
+#    define AZOTEQ_IQS5XX_SWIPE_Y_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_ZOOM_ENABLE
-#    define AZOTEQ_IQS5XX_ZOOM_ENABLE false
+#    define AZOTEQ_IQS5XX_ZOOM_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_TAP_TIME
-#    define AZOTEQ_IQS5XX_TAP_TIME 0x96
+#    define AZOTEQ_IQS5XX_TAP_TIME 0xC8  // 200ms - slightly longer for more reliable taps
 #endif
 #ifndef AZOTEQ_IQS5XX_TAP_DISTANCE
-#    define AZOTEQ_IQS5XX_TAP_DISTANCE 0x19
+#    define AZOTEQ_IQS5XX_TAP_DISTANCE 0x14  // 20 pixels - tighter for more precise taps
 #endif
 #ifndef AZOTEQ_IQS5XX_HOLD_TIME
-#    define AZOTEQ_IQS5XX_HOLD_TIME 0x12C
+#    define AZOTEQ_IQS5XX_HOLD_TIME 0x190  // 400ms - good balance for drag
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME
-#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME 0x64 // 0x96
+#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME 0xC8  // 200ms - more time for swipe gesture
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE
-#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE 0x12C
+#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE 0xFA  // 250 pixels - shorter distance for easier swipes
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME
 #    define AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME 0x0
@@ -70,13 +70,13 @@
 #    define AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE 0x7D0
 #endif
 #ifndef AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE
-#    define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 0x32
+#    define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 0x28  // 40 pixels - lower threshold for easier scrolling
 #endif
 #ifndef AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE
-#    define AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE 0x32
+#    define AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE 0x28  // 40 pixels - lower threshold for easier zoom
 #endif
 #ifndef AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE
-#    define AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE 0x19
+#    define AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE 0x14  // 20 pixels - smoother zoom increments
 #endif
 #ifndef AZOTEQ_IQS5XX_EVENT_MODE
 // Event mode can't be used until the pointing code has changed (stuck buttons)
@@ -206,16 +206,18 @@ i2c_status_t azoteq_iqs5xx_set_gesture_config(bool end_session) {
         config.multi_finger_gestures.two_finger_tap  = AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE;
         config.multi_finger_gestures.scroll          = AZOTEQ_IQS5XX_SCROLL_ENABLE;
         config.multi_finger_gestures.zoom            = AZOTEQ_IQS5XX_ZOOM_ENABLE;
-        // config.tap_time                              = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_TIME);
-        // config.tap_distance                          = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_DISTANCE);
-        // config.hold_time                             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_HOLD_TIME);
-        // config.swipe_initial_time                    = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME);
-        // config.swipe_initial_distance                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE);
-        // config.swipe_consecutive_time                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME);
-        // config.swipe_consecutive_distance            = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE);
-        // config.scroll_initial_distance               = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE);
-        // config.zoom_initial_distance                 = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE);
-        // config.zoom_consecutive_distance             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE);
+        config.tap_time                              = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_TIME);
+        config.tap_distance                          = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_DISTANCE);
+        config.hold_time                             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_HOLD_TIME);
+        config.swipe_initial_time                    = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME);
+        config.swipe_initial_distance                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE);
+        config.swipe_consecutive_time                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME);
+        config.swipe_consecutive_distance            = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE);
+        config.swipe_angle                           = 0; // Default angle (straight)
+        config.scroll_initial_distance               = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE);
+        config.scroll_angle                          = 0; // Default angle (straight)
+        config.zoom_initial_distance                 = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE);
+        config.zoom_consecutive_distance             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE);
         status                                       = i2c_write_register16(AZOTEQ_IQS5XX_ADDRESS, AZOTEQ_IQS5XX_REG_SINGLE_FINGER_GESTURES, (uint8_t *)&config, sizeof(azoteq_iqs5xx_gesture_config_t), AZOTEQ_IQS5XX_TIMEOUT_MS);
     }
     if (end_session) {

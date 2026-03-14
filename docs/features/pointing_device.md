@@ -132,25 +132,50 @@ If using one of the above defines you can skip to gesture settings.
 
 #### Gesture settings
 
+The TPS43 trackpad supports comprehensive multi-touch gestures via the Azoteq IQS572 controller. All gestures are now **enabled by default** for enhanced functionality.
+
+##### Single-Finger Gestures
+
 | Setting                                   | Description                                                                          | Default     |
 | ----------------------------------------- | ------------------------------------------------------------------------------------ | ----------- |
-| `AZOTEQ_IQS5XX_TAP_ENABLE`                | (Optional) Enable single finger tap. (Left click)                                    | `true`      |
-| `AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE`     | (Optional) Enable two finger tap. (Right click)                                      | `true`      |
-| `AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE`     | (Optional) Emulates holding left click to select text.                               | `false`     |
-| `AZOTEQ_IQS5XX_SWIPE_X_ENABLE`            | (Optional) Enable swipe gestures X+ (Mouse Button 5) / X- (Mouse Button 4)           | `false`     |
-| `AZOTEQ_IQS5XX_SWIPE_Y_ENABLE`            | (Optional) Enable swipe gestures Y+ (Mouse Button 3) / Y- (Mouse Button 6)           | `false`     |
-| `AZOTEQ_IQS5XX_ZOOM_ENABLE`               | (Optional) Enable zoom gestures Zoom Out (Mouse Button 7) / Zoom In (Mouse Button 8) | `false`     |
-| `AZOTEQ_IQS5XX_SCROLL_ENABLE`             | (Optional) Enable scrolling using two fingers.                                       | `true`      |
-| `AZOTEQ_IQS5XX_TAP_TIME`                  | (Optional) Maximum time in ms for tap to be registered.                              | `150`       |
-| `AZOTEQ_IQS5XX_TAP_DISTANCE`              | (Optional) Maximum deviation in pixels before single tap is no longer valid.         | `25`        |
-| `AZOTEQ_IQS5XX_HOLD_TIME`                 | (Optional) Minimum time in ms for press and hold.                                    | `300`       |
-| `AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME`        | (Optional) Maximum time to travel initial distance before swipe is registered.       | `150`       |
-| `AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE`    | (Optional) Minimum travel in pixels before swipe is registered.                      | `300`       |
-| `AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME`    | (Optional) Maximum time to travel consecutive distance before swipe is registered.   | `0`         |
-| `AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE`| (Optional) Minimum travel in pixels before a consecutive swipe is registered.        | `2000`      |
-| `AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE`   | (Optional) Minimum travel in pixels before scroll is registered.                     | `50`        |
-| `AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE`     | (Optional) Minimum travel in pixels before zoom is registered.                       | `50`        |
-| `AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE` | (Optional) Maximum time to travel zoom distance before zoom is registered.           | `25`        |
+| `AZOTEQ_IQS5XX_TAP_ENABLE`                | Enable single finger tap. (Left click)                                               | `true`      |
+| `AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE`     | Emulates holding left click for drag operations and text selection.                  | `true`      |
+| `AZOTEQ_IQS5XX_SWIPE_X_ENABLE`            | Enable horizontal swipe gestures: X+ (Mouse Button 5) / X- (Mouse Button 4)         | `true`      |
+| `AZOTEQ_IQS5XX_SWIPE_Y_ENABLE`            | Enable vertical swipe gestures: Y+ (Mouse Button 3) / Y- (Mouse Button 6)           | `true`      |
+
+##### Two-Finger Gestures
+
+| Setting                                   | Description                                                                          | Default     |
+| ----------------------------------------- | ------------------------------------------------------------------------------------ | ----------- |
+| `AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE`     | Enable two finger tap. (Right click)                                                 | `true`      |
+| `AZOTEQ_IQS5XX_SCROLL_ENABLE`             | Enable two-finger scrolling (vertical and horizontal).                               | `true`      |
+| `AZOTEQ_IQS5XX_ZOOM_ENABLE`               | Enable pinch-to-zoom gestures: Zoom Out (Mouse Button 7) / Zoom In (Mouse Button 8) | `true`      |
+
+::: tip
+The IQS572 controller supports up to 2 simultaneous finger tracking. Three-finger gestures are not supported by the hardware.
+:::
+
+##### Timing Parameters
+
+These parameters have been optimized for improved stability, responsiveness, and reliable gesture detection:
+
+| Setting                                   | Description                                                                          | Default (hex) | Default (ms/px) |
+| ----------------------------------------- | ------------------------------------------------------------------------------------ | ------------- | --------------- |
+| `AZOTEQ_IQS5XX_REPORT_RATE`               | Polling rate in milliseconds (lower = more responsive)                               | `5`           | 5ms             |
+| `AZOTEQ_IQS5XX_TAP_TIME`                  | Maximum time for tap to be registered.                                               | `0xC8`        | 200ms           |
+| `AZOTEQ_IQS5XX_TAP_DISTANCE`              | Maximum movement in pixels before tap becomes invalid (tighter = more precise).     | `0x14`        | 20px            |
+| `AZOTEQ_IQS5XX_HOLD_TIME`                 | Minimum time for press-and-hold gesture (drag operations).                          | `0x190`       | 400ms           |
+| `AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME`        | Maximum time to travel initial distance before swipe is registered.                  | `0xC8`        | 200ms           |
+| `AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE`    | Minimum travel in pixels before swipe is registered.                                 | `0xFA`        | 250px           |
+| `AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME`    | Maximum time to travel consecutive distance before swipe is registered.              | `0x0`         | disabled        |
+| `AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE`| Minimum travel in pixels before a consecutive swipe is registered.                   | `0x7D0`       | 2000px          |
+| `AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE`   | Minimum travel in pixels before scroll gesture activates (lower = easier).          | `0x28`        | 40px            |
+| `AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE`     | Minimum pinch distance before zoom gesture activates.                                | `0x28`        | 40px            |
+| `AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE` | Distance threshold for continuous zoom increments.                                   | `0x14`        | 20px            |
+
+::: warning Performance Note
+The default report rate has been reduced from 10ms to 5ms for more responsive tracking. If you experience I2C communication issues, increase `AZOTEQ_IQS5XX_REPORT_RATE` back to 10ms.
+:::
 
 #### Rotation settings
 
