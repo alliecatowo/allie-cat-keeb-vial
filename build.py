@@ -138,7 +138,7 @@ def main():
     options = parser.add_argument_group('Build Options')
     options.add_argument('--keyboard', default='lily58/rev1', help='Keyboard to build.')
     options.add_argument('--keymap', default='vial', help='Keymap to build.')
-    options.add_argument('--user-name', default='holykeebs', help='QMK user name.')
+    options.add_argument('--user-name', default='alliecatowo', help='QMK user name.')
     options.add_argument('--left-device', default='None', help='Left device.')
     options.add_argument('--right-device', default='None', help='Right device.')
     options.add_argument('--side', choices=['left', 'right'], help='Side to build.')
