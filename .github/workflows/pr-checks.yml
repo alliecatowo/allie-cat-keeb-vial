@@ -8,6 +8,10 @@ on:
       - 'docs/**'
       - '.github/ISSUE_TEMPLATE/**'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   # Check PR description and format
   pr-quality:

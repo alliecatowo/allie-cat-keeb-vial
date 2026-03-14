@@ -5,6 +5,7 @@ import subprocess
 import re
 import pydot
 
+
 def run_clang(files, defines=None, extra=None):
     cmd = [
         "clang",
@@ -37,6 +38,7 @@ def run_clang(files, defines=None, extra=None):
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return result.stdout
 
+
 def parse_graph(output):
     edges = []
     pattern = re.compile(r"Function:\s*(\S+)\s*calls:\s*(.*)")
@@ -49,11 +51,13 @@ def parse_graph(output):
                 edges.append((func, callee))
     return edges
 
+
 def build_graph(edges):
     graph = pydot.Dot(graph_type="digraph", rankdir="LR")
     for src, dst in edges:
         graph.add_edge(pydot.Edge(src, dst))
     return graph
+
 
 def main():
     parser = argparse.ArgumentParser(description="Generate call graph using clang")
@@ -72,6 +76,7 @@ def main():
         print(f"Call graph written to {args.output}")
     else:
         print("Failed to write call graph")
+
 
 if __name__ == "__main__":
     main()
