@@ -51,8 +51,8 @@ class Command:
 
 def generate_matrix(matrix_type='all'):
     """Generate CI matrix covering all supported boards and pointing combos."""
-    pointing_devices = ('trackball', 'trackpoint', 'tps43')
-    dual_device_combinations = (
+    default_pointing_devices = ('trackball', 'trackpoint', 'tps43')
+    default_dual_device_combinations = (
         ('trackball', 'trackball'),
         ('trackball', 'tps43'),
         ('tps43', 'trackball'),
@@ -65,9 +65,28 @@ def generate_matrix(matrix_type='all'):
 
     boards = (
         # AVR boards overflow when CONSOLE is enabled; skip debug there.
-        {'keyboard': 'lily58/rev1', 'keymap': 'vial', 'allow_debug': True},
-        {'keyboard': 'sofle/rev1', 'keymap': 'vial', 'allow_debug': False},
-        {'keyboard': 'crkbd/rev1', 'keymap': 'vial', 'allow_debug': False},
+        {
+            'keyboard': 'lily58/rev1',
+            'keymap': 'vial',
+            'allow_debug': True,
+            'pointing_devices': default_pointing_devices,
+            'dual_device_combinations': default_dual_device_combinations,
+        },
+        {
+            'keyboard': 'sofle/rev1',
+            'keymap': 'vial',
+            'allow_debug': False,
+            # Sofle runs on AVR—keep to a single TPS43 to fit alongside Vial.
+            'pointing_devices': ('tps43',),
+            'dual_device_combinations': (),
+        },
+        {
+            'keyboard': 'crkbd/rev1',
+            'keymap': 'vial',
+            'allow_debug': False,
+            'pointing_devices': default_pointing_devices,
+            'dual_device_combinations': default_dual_device_combinations,
+        },
     )
 
     matrix_entries = []
@@ -80,8 +99,11 @@ def generate_matrix(matrix_type='all'):
             'debug': matrix_type == 'debug' and board.get('allow_debug', True),
         }
 
+        board_pointing_devices = board.get('pointing_devices', default_pointing_devices)
+        board_dual_devices = board.get('dual_device_combinations', default_dual_device_combinations)
+
         # Single-device configs (empty opposite side), with and without OLED.
-        for device in pointing_devices:
+        for device in board_pointing_devices:
             for side in ('left', 'right'):
                 for oled in (False, True):
                     entry = {
@@ -94,7 +116,7 @@ def generate_matrix(matrix_type='all'):
                     matrix_entries.append(entry)
 
         # Dual-device configs (one per side), with and without OLED.
-        for left_device, right_device in dual_device_combinations:
+        for left_device, right_device in board_dual_devices:
             for side in ('left', 'right'):
                 for oled in (False, True):
                     entry = {
@@ -203,8 +225,9 @@ def main():
 
     # Default: build trackball_tsp43 only
     if args.build_personal or args.build_all or not any(vars(args).values()):
-        kb = 'lily58/rev1'
-        os.makedirs('build_lily58', exist_ok=True)
+        kb = args.keyboard
+        build_dir = f'build_{kb.split("/")[0]}'
+        os.makedirs(build_dir, exist_ok=True)
 
         # Build both sides of trackball_tsp43
         for side in ('left', 'right'):
@@ -219,7 +242,7 @@ def main():
             try:
                 print(f"Building {command.file_name()}...")
                 run_command_check_output(command.build().split())
-                os.rename(f'{command.file_name()}.uf2', f'build_lily58/{command.file_name()}.uf2')
+                os.rename(f'{command.file_name()}.uf2', f'{build_dir}/{command.file_name()}.uf2')
                 print(f"✅ Success!")
             except (subprocess.CalledProcessError, FileNotFoundError) as e:
                 print(f"❌ Error building {command.file_name()}: {e}")
