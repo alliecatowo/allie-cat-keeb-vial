@@ -26,9 +26,9 @@ split keyboards (primarily the Lily58).
 
 ```bash
 # 1. Run Python unit tests for build.py (completes in < 5 seconds)
-python3 -m pytest tests/test_build_py.py -v
-# or with the stdlib runner:
 python3 -m unittest tests.test_build_py -v
+# or with pytest (if installed):
+python3 -m pytest tests/test_build_py.py -v
 
 # 2. Validate the CI matrix JSON
 python3 build.py --generate-matrix-release
@@ -90,7 +90,7 @@ All `build.py` logic is covered by Python unit tests that run without any C tool
 update or add tests when changing `build.py`. Run them with:
 
 ```bash
-python3 -m pytest tests/test_build_py.py -v
+python3 -m unittest tests.test_build_py -v
 ```
 
 ### Commit style
@@ -105,7 +105,7 @@ Use conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `ci:`, `refactor:`
 
 1. Edit `generate_matrix()` in `build.py` — add entries following the existing schema.
 2. Update `tests/test_build_py.py` to assert the new matrix length and entry content.
-3. Run `python3 -m pytest tests/test_build_py.py -v` — must pass.
+3. Run `python3 -m unittest tests.test_build_py -v` — must pass.
 
 ### Add support for a new keyboard
 
