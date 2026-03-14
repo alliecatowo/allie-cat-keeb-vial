@@ -2,7 +2,7 @@
     "manufacturer": "MD",
     "keyboard_name": "Twilight",
     "maintainer": "ToastyStoemp",
-    "bootloader": "custom",
+    "bootloader": "rp2040",
     "diode_direction": "COL2ROW",
     "features": {
         "bootmagic": true,
