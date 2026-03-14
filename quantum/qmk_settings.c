@@ -18,6 +18,27 @@ static int magic_settings_set(const qmk_settings_proto_t *proto, const void *set
 
 qmk_settings_t QS;
 
+#ifndef QMK_SETTINGS_USER_NOT_HANDLED
+#    define QMK_SETTINGS_USER_NOT_HANDLED 1
+#endif
+
+__attribute__((weak)) int qmk_settings_user_get(uint16_t qsid, void *setting, size_t maxsz) {
+    (void)qsid;
+    (void)setting;
+    (void)maxsz;
+    return QMK_SETTINGS_USER_NOT_HANDLED;
+}
+
+__attribute__((weak)) int qmk_settings_user_set(uint16_t qsid, const void *setting, size_t maxsz) {
+    (void)qsid;
+    (void)setting;
+    (void)maxsz;
+    return QMK_SETTINGS_USER_NOT_HANDLED;
+}
+
+__attribute__((weak)) void qmk_settings_user_init(void) {}
+__attribute__((weak)) void qmk_settings_user_reset(void) {}
+
 #define DECLARE_SETTING_NOTIFY(id, _get, _set, _notify)  { .qsid=id, .get=_get, .set=_set, .notify=_notify }
 #define DECLARE_SETTING(id, _get, _set) DECLARE_SETTING_NOTIFY(id, _get, _set, NULL)
 #define DECLARE_STATIC_SETTING_NOTIFY(id, field, notify_)  { .qsid=id, .ptr=&QS.field, .sz=sizeof(QS.field), .get=eeprom_settings_get, .set=eeprom_settings_set, .notify=notify_ }
@@ -158,6 +179,8 @@ void qmk_settings_init(void) {
         if (notify)
             notify();
     }
+
+    qmk_settings_user_init();
 }
 
 void qmk_settings_reset(void) {
@@ -194,6 +217,8 @@ void qmk_settings_reset(void) {
     keymap_config.oneshot_enable = 1;
     eeconfig_update_keymap(keymap_config.raw);
 
+    qmk_settings_user_reset();
+
     /* to trigger all callbacks */
     qmk_settings_init();
 }
@@ -226,6 +251,10 @@ static const qmk_settings_proto_t *find_setting(uint16_t qsid) {
 }
 
 int qmk_settings_get(uint16_t qsid, void *setting, size_t maxsz) {
+    int user_ret = qmk_settings_user_get(qsid, setting, maxsz);
+    if (user_ret != QMK_SETTINGS_USER_NOT_HANDLED)
+        return user_ret;
+
     const qmk_settings_proto_t *proto = find_setting(qsid);
     if (!proto)
         return -1;
@@ -238,6 +267,10 @@ int qmk_settings_get(uint16_t qsid, void *setting, size_t maxsz) {
 }
 
 int qmk_settings_set(uint16_t qsid, const void *setting, size_t maxsz) {
+    int user_ret = qmk_settings_user_set(qsid, setting, maxsz);
+    if (user_ret != QMK_SETTINGS_USER_NOT_HANDLED)
+        return user_ret;
+
     const qmk_settings_proto_t *proto = find_setting(qsid);
     if (!proto)
         return -1;

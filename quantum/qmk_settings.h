@@ -142,6 +142,14 @@ typedef struct qmk_settings_proto_t {
     qmk_settings_notify_t notify;
 } qmk_settings_proto_t;
 
+#define QMK_SETTINGS_USER_NOT_HANDLED 1
+
+/* Optional keyboard/user hooks for extending QMK settings handling. */
+int qmk_settings_user_get(uint16_t qsid, void *setting, size_t maxsz);
+int qmk_settings_user_set(uint16_t qsid, const void *setting, size_t maxsz);
+void qmk_settings_user_init(void);
+void qmk_settings_user_reset(void);
+
 void qmk_settings_init(void);
 void qmk_settings_reset(void);
 void qmk_settings_query(uint16_t qsid_gt, void *buffer, size_t sz);

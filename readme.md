@@ -39,6 +39,19 @@ The holykeebs QMK repository provides excellent support for various pointing dev
 - ✅ **Automated Builds** - GitHub Actions automatically build firmware for multiple configurations
 - ✅ **Regular Updates** - Synced with upstream holykeebs changes
 
+## 🎛️ Tune Holykeebs Pointers in Vial
+
+Use the Vial **QMK Settings → Mouse keys** tab to live-tune holykeebs pointer behavior (no reflashing needed):
+- `Delay between pressing a movement key and cursor movement` → Drag scroll (main side) on/off
+- `Time between cursor movements in milliseconds` → Scroll lock mode (`0` off, `1` horizontal, `2` vertical) applied to both sides
+- `Step size` → Main cursor sensitivity (default multiplier, hundredths)
+- `Maximum cursor speed at which acceleration stops` → Main sniping sensitivity (hundredths)
+- `Time until maximum cursor speed is reached` → Scroll buffer threshold for both sides
+- `Delay between pressing a wheel key and wheel movement` → Peripheral cursor sensitivity (default multiplier, hundredths)
+- `Time between wheel movements` → Peripheral sniping sensitivity (hundredths)
+- `Maximum number of scroll steps per scroll action` → Peripheral drag scroll on/off (`0` off, `1` on)
+- `Time until maximum scroll speed is reached` → Peripheral scroll buffer threshold
+
 ## 🔧 What We Changed
 
 To enable Vial support on the holykeebs firmware, we made the following modifications:
