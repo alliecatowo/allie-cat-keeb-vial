@@ -172,7 +172,7 @@ def main():
                         errors.append(str(e))
         # sofle: plain vial
         try:
-            build_single('sofle/rev1', 'vial', '', '')
+            build_single('sofle/rev1', 'vial', '', '', '')
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             errors.append(str(e))
         if errors:
