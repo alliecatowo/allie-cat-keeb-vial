@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
-#include "users/holykeebs/holykeebs.h"
+#include "users/alliecatowo/holykeebs.h"
 
 #define QK_C_EEPROM QK_CLEAR_EEPROM
 

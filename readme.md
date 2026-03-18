@@ -134,7 +134,7 @@ For direct QMK commands:
 
 ```bash
 # Dual pointing devices with Vial
-make lily58/rev1:via -e USER_NAME=holykeebs \
+make lily58/rev1:via -e USER_NAME=alliecatowo \
   -e POINTING_DEVICE=trackball_tps43 \
   -e SIDE=left \
   -e TRACKBALL_RGB_RAINBOW=yes \

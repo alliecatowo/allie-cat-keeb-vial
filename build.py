@@ -231,7 +231,7 @@ def main():
         # Build both sides of trackball_tsp43
         for side in ('left', 'right'):
             command = Command(kb, 'vial')
-            command.prepend_argument('USER_NAME=holykeebs')
+            command.prepend_argument('USER_NAME=alliecatowo')
             command.add_argument('POINTING_DEVICE=trackball_tps43')
             command.add_argument(f'SIDE={side}')
             command.add_argument('TRACKBALL_RGB_RAINBOW=yes')

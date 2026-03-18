@@ -22,8 +22,8 @@
  *   HK_POINTING_PMW3360       — PMW3360 high-DPI optical sensor (SPI)
  *   HK_POINTING_AZOTEQ        — Azoteq IQS5xx capacitive multi-touch pad
  *
- * Note: if you are using the holykeebs userspace (users/holykeebs) you
- * normally do NOT need this file — holykeebs manages pointing device
+ * Note: if you are using the alliecatowo userspace (users/alliecatowo) you
+ * normally do NOT need this file — that userspace manages pointing device
  * configuration through its own rules.mk POINTING_DEVICE variable.
  * This header exists for custom/standalone alliecatowo builds that want a
  * single authoritative pointing device config.
@@ -38,9 +38,10 @@
 #    define POINTING_DEVICE_ENABLE
 #    define POINTING_DEVICE_DRIVER pimoroni_trackball
 
-// Non-linear adaptive motion scaling is implemented in users/holykeebs/pimoroni.c
-// and guarded by ENABLE_PIMORONI_ADAPTIVE_MOTION.  Enable here if not using
-// holykeebs and you've copied that scaling code into your own userspace.
+// Non-linear adaptive motion scaling is implemented in users/alliecatowo/pimoroni.c
+// and guarded by ENABLE_PIMORONI_ADAPTIVE_MOTION. Enable here only if you are
+// not using the alliecatowo userspace and have copied that scaling code into
+// your own userspace.
 // #define ENABLE_PIMORONI_ADAPTIVE_MOTION
 
 /* ------------------------------------------------------------------ */

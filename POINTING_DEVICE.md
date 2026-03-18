@@ -2,7 +2,7 @@
 
 Comprehensive reference for all supported pointing devices in `allie-cat-keeb-vial`.
 
-> **TL;DR** — Use the holykeebs userspace (`users/holykeebs`) for the easiest
+> **TL;DR** — Use the alliecatowo userspace (`users/alliecatowo`) for the easiest
 > setup.  Set `POINTING_DEVICE=<type>` and `POINTING_DEVICE_POSITION=<side>`
 > in `rules.mk` and everything else is handled automatically.
 
@@ -22,7 +22,7 @@ Comprehensive reference for all supported pointing devices in `allie-cat-keeb-vi
 
 ---
 
-## Quick Setup — holykeebs Userspace (Recommended)
+## Quick Setup — alliecatowo Userspace (Recommended)
 
 ### 1. Set sensor in `rules.mk`
 
@@ -49,17 +49,17 @@ POINTING_DEVICE = trackball_cirque40   # left=trackball, right=Cirque40
 SIDE            = right                # which half you are flashing
 ```
 
-See `users/holykeebs/rules.mk` for all 28 valid dual-sensor combinations.
+See `users/alliecatowo/rules.mk` for all 28 valid dual-sensor combinations.
 
 ### 2. No config.h changes needed
 
-The holykeebs `config.h` automatically sets `CIRQUE_PINNACLE_TAP_ENABLE`,
+The alliecatowo `config.h` automatically sets `CIRQUE_PINNACLE_TAP_ENABLE`,
 `POINTING_DEVICE_GESTURES_SCROLL_ENABLE`, diameter, rotation, and throttle
 based on the `POINTING_DEVICE` variable you set.
 
 ---
 
-## Standalone Setup (no holykeebs)
+## Standalone Setup (no alliecatowo userspace)
 
 ### Option A — using `users/alliecatowo/pointing_device_config.h`
 
@@ -143,7 +143,7 @@ Tune the scroll zone with:
 
 ### Scroll axis lock
 
-`HK_C_SCROLL` (from `users/holykeebs`) cycles through: off → horizontal only →
+`HK_C_SCROLL` (from `users/alliecatowo`) cycles through: off → horizontal only →
 vertical only.  Works as an output filter on top of circular scroll — they
 don't conflict.
 
@@ -160,17 +160,17 @@ The IQS5xx driver supports true multi-touch (up to 5 simultaneous contacts).
 | 2-finger scroll | enabled | `AZOTEQ_IQS5XX_SCROLL_ENABLE` |
 | Press and hold | enabled* | `AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE` |
 
-*Press-and-hold is disabled in the QMK default but enabled in holykeebs.
+*Press-and-hold is disabled in the QMK default but enabled in the alliecatowo userspace.
 
 ---
 
 ## Pimoroni Trackball — Non-Linear Scaling
 
 The Pimoroni trackball supports adaptive non-linear scaling implemented in
-`users/holykeebs/pimoroni.c`.  Enable it with:
+`users/alliecatowo/pimoroni.c`.  Enable it with:
 
 ```c
-// In holykeebs.h (or your own userspace):
+// In users/alliecatowo/holykeebs.h (or your own userspace):
 #define ENABLE_PIMORONI_ADAPTIVE_MOTION
 ```
 
@@ -215,7 +215,7 @@ make lily58/rev1:vial POINTING_DEVICE=trackball_cirque40 SIDE=left
 make lily58/rev1:vial POINTING_DEVICE=trackball_cirque40 SIDE=right
 ```
 
-The holykeebs RPC layer (`users/holykeebs/rpc.c`) syncs the peripheral side's
+The alliecatowo RPC layer (`users/alliecatowo/rpc.c`) syncs the peripheral side's
 state to the master over USART so both sides can be tuned from the master.
 
 ---
@@ -240,10 +240,10 @@ For `POINTING_DEVICE_COMBINED`, suffix with `_RIGHT` or `_LEFT`:
 
 | File | Purpose |
 |------|---------|
-| `users/holykeebs/config.h` | Main pointing device config (holykeebs) |
-| `users/holykeebs/rules.mk` | POINTING_DEVICE build system |
-| `users/holykeebs/holykeebs.h` | HK_* keycode enum |
-| `users/holykeebs/pimoroni.c` | Non-linear Pimoroni scaling |
+| `users/alliecatowo/config.h` | Main pointing device config |
+| `users/alliecatowo/rules.mk` | POINTING_DEVICE build system |
+| `users/alliecatowo/holykeebs.h` | HK_* keycode enum |
+| `users/alliecatowo/pimoroni.c` | Non-linear Pimoroni scaling |
 | `users/alliecatowo/pointing_device_config.h` | Standalone multi-sensor abstraction (ALLIE-202) |
 | `keyboards/lily58/keymaps/vial/config.h` | Vial keymap — Cirque gesture config reference (ALLIE-201) |
 | `drivers/sensors/cirque_pinnacle_gestures.c` | Tap + circular scroll implementation |

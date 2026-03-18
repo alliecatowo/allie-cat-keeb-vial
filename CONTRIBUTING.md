@@ -100,7 +100,7 @@ qmk setup -y
 python build.py
 
 # Or use make directly
-make lily58/rev1:via -e USER_NAME=holykeebs -e POINTING_DEVICE=trackball_tps43
+make lily58/rev1:via -e USER_NAME=alliecatowo -e POINTING_DEVICE=trackball_tps43
 ```
 
 ## 🤝 Community Guidelines
