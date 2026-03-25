@@ -5,6 +5,7 @@
 #include "azoteq_iqs5xx.h"
 #include "pointing_device_internal.h"
 #include "wait.h"
+#include "timer.h"
 
 #ifndef AZOTEQ_IQS5XX_ADDRESS
 #    define AZOTEQ_IQS5XX_ADDRESS (0x74 << 1)
@@ -31,6 +32,8 @@
 #    define AZOTEQ_IQS5XX_TAP_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE
+// Press-and-hold doesn't work on capacitive touchpads (no physical press)
+// Use double-tap-to-drag instead
 #    define AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE false
 #endif
 #ifndef AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE
@@ -40,28 +43,28 @@
 #    define AZOTEQ_IQS5XX_SCROLL_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_X_ENABLE
-#    define AZOTEQ_IQS5XX_SWIPE_X_ENABLE false
+#    define AZOTEQ_IQS5XX_SWIPE_X_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_Y_ENABLE
-#    define AZOTEQ_IQS5XX_SWIPE_Y_ENABLE false
+#    define AZOTEQ_IQS5XX_SWIPE_Y_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_ZOOM_ENABLE
-#    define AZOTEQ_IQS5XX_ZOOM_ENABLE false
+#    define AZOTEQ_IQS5XX_ZOOM_ENABLE true
 #endif
 #ifndef AZOTEQ_IQS5XX_TAP_TIME
-#    define AZOTEQ_IQS5XX_TAP_TIME 0x96
+#    define AZOTEQ_IQS5XX_TAP_TIME 0xC8  // 200ms - slightly longer for more reliable taps
 #endif
 #ifndef AZOTEQ_IQS5XX_TAP_DISTANCE
-#    define AZOTEQ_IQS5XX_TAP_DISTANCE 0x19
+#    define AZOTEQ_IQS5XX_TAP_DISTANCE 0x14  // 20 pixels - tighter for more precise taps
 #endif
 #ifndef AZOTEQ_IQS5XX_HOLD_TIME
-#    define AZOTEQ_IQS5XX_HOLD_TIME 0x12C
+#    define AZOTEQ_IQS5XX_HOLD_TIME 0x190  // 400ms - good balance for drag
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME
-#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME 0x64 // 0x96
+#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME 0xC8  // 200ms - more time for swipe gesture
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE
-#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE 0x12C
+#    define AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE 0xFA  // 250 pixels - shorter distance for easier swipes
 #endif
 #ifndef AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME
 #    define AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME 0x0
@@ -70,14 +73,26 @@
 #    define AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE 0x7D0
 #endif
 #ifndef AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE
-#    define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 0x32
+#    define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 0x28  // 40 pixels - lower threshold for easier scrolling
 #endif
 #ifndef AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE
-#    define AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE 0x32
+#    define AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE 0x28  // 40 pixels - lower threshold for easier zoom
 #endif
 #ifndef AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE
-#    define AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE 0x19
+#    define AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE 0x14  // 20 pixels - smoother zoom increments
 #endif
+
+// Double-tap-to-drag configuration
+#ifndef AZOTEQ_IQS5XX_DOUBLE_TAP_DRAG_ENABLE
+#    define AZOTEQ_IQS5XX_DOUBLE_TAP_DRAG_ENABLE true
+#endif
+#ifndef AZOTEQ_IQS5XX_DOUBLE_TAP_TERM
+#    define AZOTEQ_IQS5XX_DOUBLE_TAP_TERM 300  // 300ms window for second tap
+#endif
+#ifndef AZOTEQ_IQS5XX_DRAG_TIMEOUT
+#    define AZOTEQ_IQS5XX_DRAG_TIMEOUT 10000  // 10 seconds max drag duration
+#endif
+
 #ifndef AZOTEQ_IQS5XX_EVENT_MODE
 // Event mode can't be used until the pointing code has changed (stuck buttons)
 #    define AZOTEQ_IQS5XX_EVENT_MODE false
@@ -116,6 +131,25 @@ static struct {
     uint16_t resolution_x;
     uint16_t resolution_y;
 } azoteq_iqs5xx_device_resolution_t;
+
+// Double-tap-to-drag state machine
+#if AZOTEQ_IQS5XX_DOUBLE_TAP_DRAG_ENABLE
+typedef enum {
+    DRAG_STATE_IDLE,           // No tap detected
+    DRAG_STATE_FIRST_TAP,      // First tap received, waiting for second tap
+    DRAG_STATE_DRAGGING,       // In drag mode, button held
+} azoteq_iqs5xx_drag_state_t;
+
+static struct {
+    azoteq_iqs5xx_drag_state_t state;
+    uint16_t                   timer;
+    bool                       was_touched;  // Track touch state for tap detection
+} azoteq_iqs5xx_drag_context = {
+    .state = DRAG_STATE_IDLE,
+    .timer = 0,
+    .was_touched = false,
+};
+#endif
 
 i2c_status_t azoteq_iqs5xx_end_session(void) {
     const uint8_t END_BYTE = 1; // any data
@@ -206,16 +240,18 @@ i2c_status_t azoteq_iqs5xx_set_gesture_config(bool end_session) {
         config.multi_finger_gestures.two_finger_tap  = AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE;
         config.multi_finger_gestures.scroll          = AZOTEQ_IQS5XX_SCROLL_ENABLE;
         config.multi_finger_gestures.zoom            = AZOTEQ_IQS5XX_ZOOM_ENABLE;
-        // config.tap_time                              = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_TIME);
-        // config.tap_distance                          = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_DISTANCE);
-        // config.hold_time                             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_HOLD_TIME);
-        // config.swipe_initial_time                    = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME);
-        // config.swipe_initial_distance                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE);
-        // config.swipe_consecutive_time                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME);
-        // config.swipe_consecutive_distance            = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE);
-        // config.scroll_initial_distance               = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE);
-        // config.zoom_initial_distance                 = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE);
-        // config.zoom_consecutive_distance             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE);
+        config.tap_time                              = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_TIME);
+        config.tap_distance                          = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_TAP_DISTANCE);
+        config.hold_time                             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_HOLD_TIME);
+        config.swipe_initial_time                    = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME);
+        config.swipe_initial_distance                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE);
+        config.swipe_consecutive_time                = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_TIME);
+        config.swipe_consecutive_distance            = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SWIPE_CONSECUTIVE_DISTANCE);
+        config.swipe_angle                           = 0; // Default angle (straight)
+        config.scroll_initial_distance               = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE);
+        config.scroll_angle                          = 0; // Default angle (straight)
+        config.zoom_initial_distance                 = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE);
+        config.zoom_consecutive_distance             = AZOTEQ_IQS5XX_SWAP_H_L_BYTES(AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE);
         status                                       = i2c_write_register16(AZOTEQ_IQS5XX_ADDRESS, AZOTEQ_IQS5XX_REG_SINGLE_FINGER_GESTURES, (uint8_t *)&config, sizeof(azoteq_iqs5xx_gesture_config_t), AZOTEQ_IQS5XX_TIMEOUT_MS);
     }
     if (end_session) {
@@ -365,10 +401,66 @@ report_mouse_t azoteq_iqs5xx_get_report(report_mouse_t mouse_report) {
                 pd_dprintf("IQS5XX - previous cycle time missed, took: %dms\n", base_data.previous_cycle_time);
             }
 #endif
+
+#if AZOTEQ_IQS5XX_DOUBLE_TAP_DRAG_ENABLE
+            // Double-tap-to-drag state machine
+            bool currently_touched = (base_data.number_of_fingers > 0);
+            bool tap_detected = base_data.gesture_events_0.single_tap;
+
+            // Detect touch release (transition from touched to not touched)
+            bool touch_released = azoteq_iqs5xx_drag_context.was_touched && !currently_touched;
+            azoteq_iqs5xx_drag_context.was_touched = currently_touched;
+
+            switch (azoteq_iqs5xx_drag_context.state) {
+                case DRAG_STATE_IDLE:
+                    if (tap_detected) {
+                        // First tap detected, start waiting for second tap
+                        azoteq_iqs5xx_drag_context.state = DRAG_STATE_FIRST_TAP;
+                        azoteq_iqs5xx_drag_context.timer = timer_read();
+                        pd_dprintf("IQS5XX - First tap for drag.\n");
+                        // Send single click
+                        temp_report.buttons = pointing_device_handle_buttons(temp_report.buttons, true, POINTING_DEVICE_BUTTON1);
+                    }
+                    break;
+
+                case DRAG_STATE_FIRST_TAP:
+                    if (tap_detected) {
+                        // Second tap detected within window - enter drag mode
+                        azoteq_iqs5xx_drag_context.state = DRAG_STATE_DRAGGING;
+                        azoteq_iqs5xx_drag_context.timer = timer_read();
+                        pd_dprintf("IQS5XX - Second tap, entering drag mode.\n");
+                        // Hold button 1 for dragging
+                        temp_report.buttons = pointing_device_handle_buttons(temp_report.buttons, true, POINTING_DEVICE_BUTTON1);
+                    } else if (timer_elapsed(azoteq_iqs5xx_drag_context.timer) > AZOTEQ_IQS5XX_DOUBLE_TAP_TERM) {
+                        // Timeout - return to idle
+                        azoteq_iqs5xx_drag_context.state = DRAG_STATE_IDLE;
+                        pd_dprintf("IQS5XX - Double-tap timeout.\n");
+                    }
+                    break;
+
+                case DRAG_STATE_DRAGGING:
+                    // Keep button 1 held during drag
+                    temp_report.buttons = pointing_device_handle_buttons(temp_report.buttons, true, POINTING_DEVICE_BUTTON1);
+
+                    // Exit drag mode on tap or timeout
+                    if (tap_detected || timer_elapsed(azoteq_iqs5xx_drag_context.timer) > AZOTEQ_IQS5XX_DRAG_TIMEOUT) {
+                        azoteq_iqs5xx_drag_context.state = DRAG_STATE_IDLE;
+                        pd_dprintf("IQS5XX - Exiting drag mode.\n");
+                        // Button will be released in next frame when we don't set it
+                    }
+                    break;
+            }
+
+            // Process other gestures only if not in drag mode or waiting for double-tap
+            if (azoteq_iqs5xx_drag_context.state == DRAG_STATE_IDLE) {
+#else
+            // Original behavior: single tap or press-and-hold
             if (base_data.gesture_events_0.single_tap || base_data.gesture_events_0.press_and_hold) {
                 pd_dprintf("IQS5XX - Single tap/hold.\n");
                 temp_report.buttons = pointing_device_handle_buttons(temp_report.buttons, true, POINTING_DEVICE_BUTTON1);
-            } else if (base_data.gesture_events_1.two_finger_tap) {
+            } else
+#endif
+            if (base_data.gesture_events_1.two_finger_tap) {
                 pd_dprintf("IQS5XX - Two finger tap.\n");
                 temp_report.buttons = pointing_device_handle_buttons(temp_report.buttons, true, POINTING_DEVICE_BUTTON2);
             } else if (base_data.gesture_events_0.swipe_x_neg) {
@@ -400,6 +492,11 @@ report_mouse_t azoteq_iqs5xx_get_report(report_mouse_t mouse_report) {
                 temp_report.h = CONSTRAIN_HID(AZOTEQ_IQS5XX_COMBINE_H_L_BYTES(base_data.x.h, base_data.x.l));
                 temp_report.v = CONSTRAIN_HID(AZOTEQ_IQS5XX_COMBINE_H_L_BYTES(base_data.y.h, base_data.y.l));
             }
+#if AZOTEQ_IQS5XX_DOUBLE_TAP_DRAG_ENABLE
+            }  // End of "if (state == IDLE)" check
+#endif
+
+            // Always allow single-finger movement (including during drag)
             if (base_data.number_of_fingers == 1 && !ignore_movement) {
                 temp_report.x = CONSTRAIN_HID_XY(AZOTEQ_IQS5XX_COMBINE_H_L_BYTES(base_data.x.h, base_data.x.l));
                 temp_report.y = CONSTRAIN_HID_XY(AZOTEQ_IQS5XX_COMBINE_H_L_BYTES(base_data.y.h, base_data.y.l));

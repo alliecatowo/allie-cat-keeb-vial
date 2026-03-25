@@ -108,11 +108,27 @@
         #endif
     #endif
 
-    // These are enabled by default.
-    // #define AZOTEQ_IQS5XX_TAP_ENABLE true
-    // #define AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE true
-    // #define AZOTEQ_IQS5XX_SCROLL_ENABLE true
-    #define AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE true
+    // Multi-touch gestures - all enabled by default for enhanced functionality
+    // Single-finger gestures:
+    // #define AZOTEQ_IQS5XX_TAP_ENABLE true              // Single tap = left click (enabled by default)
+    // #define AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE true   // Hold for drag (enabled by default)
+
+    // Two-finger gestures:
+    // #define AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE true   // Two-finger tap = right click (enabled by default)
+    // #define AZOTEQ_IQS5XX_SCROLL_ENABLE true           // Two-finger scroll (enabled by default)
+    // #define AZOTEQ_IQS5XX_ZOOM_ENABLE true             // Pinch to zoom in/out (enabled by default)
+    // #define AZOTEQ_IQS5XX_SWIPE_X_ENABLE true          // Horizontal swipes = mouse buttons 4,5 (enabled by default)
+    // #define AZOTEQ_IQS5XX_SWIPE_Y_ENABLE true          // Vertical swipes = mouse buttons 3,6 (enabled by default)
+
+    // Timing parameters optimized for stability and responsiveness:
+    // #define AZOTEQ_IQS5XX_REPORT_RATE 5                // 5ms polling rate (was 10ms) for better tracking
+    // #define AZOTEQ_IQS5XX_TAP_TIME 0xC8                // 200ms max tap duration
+    // #define AZOTEQ_IQS5XX_TAP_DISTANCE 0x14            // 20 pixels max tap movement
+    // #define AZOTEQ_IQS5XX_HOLD_TIME 0x190              // 400ms min hold for drag
+    // #define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 0x28 // 40 pixels to start scroll
+    // #define AZOTEQ_IQS5XX_ZOOM_INITIAL_DISTANCE 0x28   // 40 pixels to start zoom
+    // #define AZOTEQ_IQS5XX_SWIPE_INITIAL_TIME 0xC8      // 200ms to complete swipe
+    // #define AZOTEQ_IQS5XX_SWIPE_INITIAL_DISTANCE 0xFA  // 250 pixels swipe distance
 #endif
 
 #ifdef POINTING_DEVICE_DRIVER_ps2
