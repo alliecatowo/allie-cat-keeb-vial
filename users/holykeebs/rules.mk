@@ -15,7 +15,7 @@ MOUSEKEY_ENABLE = yes
 SERIAL_DRIVER = vendor
 
 ifdef POINTING_DEVICE
-	SRC += $(USER_PATH)/holykeebs.c $(USER_PATH)/hk_debug.c $(USER_PATH)/rpc.c $(USER_PATH)/pimoroni.c $(USER_PATH)/trackpoint.c
+	SRC += $(USER_PATH)/holykeebs.c $(USER_PATH)/hk_debug.c $(USER_PATH)/rpc.c $(USER_PATH)/pimoroni.c $(USER_PATH)/trackpoint.c $(USER_PATH)/vial_settings.c
 endif
 
 MSG_POINTING_DEVICE = none

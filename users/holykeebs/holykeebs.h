@@ -59,3 +59,5 @@ enum hk_keycodes {
 
 // #define ENABLE_DRIFT_DETECTION
 // #define ENABLE_PIMORONI_ADAPTIVE_MOTION
+
+void hk_write_eeconfig(void);

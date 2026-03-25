@@ -1,6 +1,19 @@
 {
     "name": "Aztec42",
     "lighting": "none",
+    "customKeycodes": [
+        { "name": "HK Save Settings", "shortName": "HK Save", "keycode": "HK_SAVE_SETTINGS" },
+        { "name": "HK Reset Settings", "shortName": "HK Reset", "keycode": "HK_RESET_SETTINGS" },
+        { "name": "HK Dump Settings (console)", "shortName": "HK Dump", "keycode": "HK_DUMP_SETTINGS" },
+        { "name": "HK Set Main Speed (+/- while held)", "shortName": "HK Main", "keycode": "HK_POINTER_SET_DEFAULT_SCALER" },
+        { "name": "HK Set Sniping Speed (+/- while held)", "shortName": "HK Snipe", "keycode": "HK_POINTER_SET_SNIPING_SCALER" },
+        { "name": "HK Set Scroll Buffer (+/- while held)", "shortName": "HK ScrBuf", "keycode": "HK_POINTER_SET_SCROLL_BUFFER" },
+        { "name": "HK Sniping Mode (hold)", "shortName": "HK SnipeH", "keycode": "HK_SNIPING_MODE" },
+        { "name": "HK Sniping Mode Toggle", "shortName": "HK Snipe", "keycode": "HK_SNIPING_MODE_TOGGLE" },
+        { "name": "HK Drag Scroll (hold)", "shortName": "HK DragH", "keycode": "HK_DRAGSCROLL_MODE" },
+        { "name": "HK Drag Scroll Toggle", "shortName": "HK Drag", "keycode": "HK_DRAGSCROLL_MODE_TOGGLE" },
+        { "name": "HK Scroll Lock Cycle", "shortName": "HK Scroll", "keycode": "HK_CYCLE_SCROLL_LOCK" }
+    ],
     "matrix": {
         "rows": 7,
         "cols": 6

@@ -61,7 +61,7 @@ static void serialize_state_to_eeconfig(hk_eeprom_config_t* config) {
     config->pointing.peripheral_scroll_buffer_size = g_hk_state.peripheral.pointer_scroll_buffer_size;
 }
 
-static void write_eeconfig(void) {
+void hk_write_eeconfig(void) {
     serialize_state_to_eeconfig(&hk_eeprom_config);
     eeconfig_update_user_datablock(&hk_eeprom_config);
 
@@ -514,13 +514,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
         case HK_SAVE_SETTINGS:
             if (record->event.pressed) {
-                write_eeconfig();
+                hk_write_eeconfig();
             }
             break;
         case HK_RESET_SETTINGS:
             if (record->event.pressed) {
                 g_hk_state = init_state();
-                write_eeconfig();
+                hk_write_eeconfig();
             }
             break;
         case HK_DUMP_SETTINGS:
