@@ -39,6 +39,76 @@ The holykeebs QMK repository provides excellent support for various pointing dev
 - ✅ **Automated Builds** - GitHub Actions automatically build firmware for multiple configurations
 - ✅ **Regular Updates** - Synced with upstream holykeebs changes
 
+## 🎯 Enhanced Trackball Features
+
+This fork includes advanced trackball features designed to improve usability and provide flexible input modes:
+
+### Arrow Key Mode (New!)
+The Pimoroni trackball can now function as a **5-way directional pad**, converting trackball movements into arrow key presses. This mode is perfect for:
+- Navigating through text and code
+- Menu navigation
+- Gaming applications
+- Any scenario where arrow keys are needed
+
+**Visual Indication**: The trackball LED glows **green** when arrow key mode is active.
+
+**Keycodes:**
+- `HK_ARROW_KEY_MODE` (or `HK_A_MODE`) - Hold to temporarily enable arrow key mode
+- `HK_ARROW_KEY_MODE_TOGGLE` (or `HK_A_MODE_T`) - Toggle arrow key mode on/off
+
+**Configuration:**
+- Threshold: 15 units of movement (configurable in `holykeebs.c`)
+- Debounce: 150ms between arrow key presses (configurable)
+- Directional logic: Strongest axis wins (diagonal movements register as single direction)
+
+### Improved Scroll Buffering
+Enhanced scrolling for a smoother, more reliable experience:
+- **Multi-tick scrolling**: Faster trackball movements output multiple scroll ticks per update
+- **Timeout reset**: Scroll buffers automatically clear after 500ms of inactivity (fixes scroll lock issues)
+- **Smoother acceleration**: Proportional scroll output based on movement speed
+
+### LED Color Modes
+The trackball LED now indicates the current operating mode:
+- **Off/Rainbow**: Default cursor mode (rainbow animation if enabled)
+- **Blue**: Sniping mode (precision cursor)
+- **Green**: Arrow key mode (directional pad)
+
+Note: Rainbow animation is automatically disabled when in sniping or arrow key mode.
+
+### Available Cursor Modes
+
+1. **Default Mode** (`CURSOR_MODE_DEFAULT`)
+   - Standard cursor movement with configurable multiplier
+   - LED: Off or rainbow animation
+
+2. **Sniping Mode** (`CURSOR_MODE_SNIPING`)
+   - Precision cursor control for detailed work
+   - LED: Blue
+   - Keycodes: `HK_SNIPING_MODE`, `HK_SNIPING_MODE_TOGGLE`
+
+3. **Arrow Key Mode** (`CURSOR_MODE_ARROW_KEY`) ✨ New!
+   - Trackball movements send arrow keys
+   - LED: Green
+   - Keycodes: `HK_ARROW_KEY_MODE`, `HK_ARROW_KEY_MODE_TOGGLE`
+
+### Other Holykeebs Keycodes
+
+**Pointer Scaling:**
+- `HK_POINTER_SET_DEFAULT_SCALER` - Hold and press +/- to adjust default cursor speed
+- `HK_POINTER_SET_SNIPING_SCALER` - Hold and press +/- to adjust sniping cursor speed
+- `HK_POINTER_SET_SCROLL_BUFFER` - Hold and press +/- to adjust scroll buffer size
+
+**Scroll Control:**
+- `HK_DRAGSCROLL_MODE` / `HK_DRAGSCROLL_MODE_TOGGLE` - Convert cursor movement to scrolling
+- `HK_CYCLE_SCROLL_LOCK` - Cycle through scroll lock modes (off → horizontal → vertical)
+
+**Settings:**
+- `HK_SAVE_SETTINGS` - Save current configuration to EEPROM
+- `HK_RESET_SETTINGS` - Reset to factory defaults
+- `HK_DUMP_SETTINGS` - Print settings to console (requires `CONSOLE_ENABLE`)
+
+**Tip:** Hold Shift while using these keycodes to apply settings to the peripheral side (in dual-device configurations).
+
 ## 🔧 What We Changed
 
 To enable Vial support on the holykeebs firmware, we made the following modifications:
