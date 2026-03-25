@@ -15,7 +15,7 @@ Comprehensive reference for all supported pointing devices in `allie-cat-keeb-vi
 | **Pimoroni Trackball** | `pimoroni_trackball` | I2C | — (scroll via drag-scroll key) | Ball, RGB |
 | **Cirque Pinnacle 35mm** | `cirque_pinnacle_i2c` / `_spi` | I2C or SPI | tap, circular scroll | Circular pad |
 | **Cirque Pinnacle 40mm** | `cirque_pinnacle_i2c` / `_spi` | I2C or SPI | tap, circular scroll | Circular pad |
-| **Azoteq IQS5xx (TPS43)** | `azoteq_iqs5xx` | I2C | tap, 2-finger tap, scroll, press+hold | Rectangular pad |
+| **Azoteq IQS5xx (TPS43)** | `azoteq_iqs5xx` | I2C | tap, 2-finger tap, scroll, swipes, pinch, tap-drag | Rectangular pad |
 | **PMW3320** | `pmw3320` | SPI | — | Optical chip |
 | **PMW3360** | `pmw3360` | SPI | — | Optical chip, high-DPI |
 | **TrackPoint** | `ps2` (PS/2 via PIO) | PS/2 | — | Isometric stick |
@@ -151,16 +151,24 @@ don't conflict.
 
 ## Azoteq IQS5xx — Gesture Reference
 
-The IQS5xx driver supports true multi-touch (up to 5 simultaneous contacts).
+The IQS5xx (TPS43) hardware tracks up to **2 simultaneous contacts**. Three-finger
+gestures are not available in silicon, so the driver enables every 1- and 2-finger
+gesture the sensor exposes, plus a firmware-level double-tap-to-drag.
 
 | Gesture | Default | Config define |
 |---------|---------|---------------|
 | 1-finger tap | enabled | `AZOTEQ_IQS5XX_TAP_ENABLE` |
 | 2-finger tap (right-click) | enabled | `AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE` |
 | 2-finger scroll | enabled | `AZOTEQ_IQS5XX_SCROLL_ENABLE` |
-| Press and hold | enabled* | `AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE` |
+| Horizontal swipe (Button 4/5) | enabled | `AZOTEQ_IQS5XX_SWIPE_X_ENABLE` |
+| Vertical swipe (Button 3/6) | enabled | `AZOTEQ_IQS5XX_SWIPE_Y_ENABLE` |
+| Pinch zoom (Button 7/8) | enabled | `AZOTEQ_IQS5XX_ZOOM_ENABLE` |
+| Double-tap to drag/hold | enabled | `AZOTEQ_IQS5XX_TAP_DRAG_ENABLE` |
+| Press and hold | disabled | `AZOTEQ_IQS5XX_PRESS_AND_HOLD_ENABLE` |
 
-*Press-and-hold is disabled in the QMK default but enabled in holykeebs.
+**Tap-drag UX:** tap once, then tap again and keep the second contact down to
+drag. Release the finger to drop. A short double-tap without movement still
+produces a normal click.
 
 ---
 
