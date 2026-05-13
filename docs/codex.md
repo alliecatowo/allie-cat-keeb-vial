@@ -10,9 +10,9 @@ Use these steps to bootstrap automation (or a fresh contributor machine) so Code
 
 ```bash
 # Run Python unit tests for build.py
-python3 -m pytest tests/test_build_py.py -v
-# Alternative if pytest is unavailable:
 python3 -m unittest tests.test_build_py -v
+# Alternative if pytest is installed:
+python3 -m pytest tests/test_build_py.py -v
 
 # Validate CI matrix JSON output
 python3 build.py --generate-matrix-release

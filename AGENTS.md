@@ -37,9 +37,9 @@ Run these first. They validate all Python/build-system logic without compiling C
 
 ```bash
 # 1. Unit tests for build.py
-python3 -m pytest tests/test_build_py.py -v
-# Alternative without pytest:
 python3 -m unittest tests.test_build_py -v
+# Alternative if pytest is installed:
+python3 -m pytest tests/test_build_py.py -v
 
 # 2. Validate CI matrix JSON
 python3 build.py --generate-matrix-release
