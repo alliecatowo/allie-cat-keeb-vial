@@ -50,7 +50,7 @@ python3 -m nose2 -v
 | Path | Purpose |
 |------|---------|
 | `build.py` | Main build/CI orchestration script |
-| `keyboards/lily58/` | Lily58 keyboard definition; keymaps under `rev1/keymaps/` |
+| `keyboards/lily58/` | Lily58 keyboard definition; keymaps under `keymaps/` (e.g. `keymaps/vial/`) |
 | `users/holykeebs/` | Holykeebs userspace: pointing-device rules and C sources |
 | `drivers/` | Low-level device drivers (SPI, I²C, pointing devices) |
 | `quantum/` | QMK core — modify with caution |
