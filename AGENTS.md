@@ -27,6 +27,9 @@ Lily58 Rev1 with an RP2040 controller.
 pip3 install -r requirements-dev.txt
 ```
 
+> **Note:** `requirements-dev.txt` includes `-r requirements.txt`, so this single command
+> installs all runtime dependencies too. No separate install step needed.
+
 No other setup is required to run the fast checks below.
 
 ---
@@ -37,9 +40,9 @@ Run these first. They validate all Python/build-system logic without compiling C
 
 ```bash
 # 1. Unit tests for build.py
-python3 -m pytest tests/test_build_py.py -v
-# Alternative without pytest:
 python3 -m unittest tests.test_build_py -v
+# or with pytest (if installed):
+python3 -m pytest tests/test_build_py.py -v
 
 # 2. Validate CI matrix JSON
 python3 build.py --generate-matrix-release

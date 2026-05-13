@@ -2,7 +2,7 @@
 -r requirements.txt
 
 # Python development requirements
-nose2
+nose2  # kept for legacy; not used in fast checks
 pytest
 flake8
 pep8-naming
