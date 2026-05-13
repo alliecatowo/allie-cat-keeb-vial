@@ -33,7 +33,7 @@ Thank you for your interest in contributing to this Vial-enabled fork of holykee
 ### Testing Requirements
 1. **Build Testing** - Ensure your changes compile:
    ```bash
-   python build.py --build-single --left-device trackball --right-device tps43
+   python3 build.py --build-single --left-device trackball --right-device tps43
    ```
 
 2. **Hardware Testing** - If possible, test on actual hardware
@@ -97,10 +97,10 @@ qmk setup -y
 ### Building Firmware
 ```bash
 # Use the build script
-python build.py
+python3 build.py
 
 # Or use make directly
-make lily58/rev1:via -e USER_NAME=holykeebs -e POINTING_DEVICE=trackball_tps43
+make lily58/rev1:vial -e USER_NAME=alliecatowo -e POINTING_DEVICE=trackball_tps43
 ```
 
 ## 🤝 Community Guidelines
