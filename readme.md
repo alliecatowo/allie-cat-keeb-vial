@@ -23,6 +23,13 @@ This repository is a **Vial-enabled fork** of the [holykeebs QMK firmware](https
 
 Visit the **[Holykeebs Store](https://holykeebs.com)** to get trackballs, touchpads, trackpoints, and other pointing device modules for your mechanical keyboard build.
 
+## 📚 Resources
+
+- **[Holykeebs Documentation](https://docs.holykeebs.com)** — Complete guides for hardware installation and configuration
+- **[Holykeebs Repository](https://github.com/idank/qmk_firmware)** — The original holykeebs QMK firmware (branch: `holykeebs-master`)
+- **[Vial](https://get.vial.today)** — Real-time keyboard configuration without flashing
+- **[Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)** — Pre-built firmware with Vial support
+
 ---
 
 ## 🎯 Why This Fork Exists
@@ -105,7 +112,7 @@ pip3 install qmk && qmk setup -y
 ### Quick Build
 
 ```bash
-# Clone your fork
+# Clone this repo
 git clone --recurse-submodules https://github.com/alliecatowo/allie-cat-keeb-vial.git
 cd allie-cat-keeb-vial
 
@@ -138,9 +145,8 @@ python build.py --release
 ```bash
 # Dual pointing devices with Vial
 make lily58/rev1:via -e USER_NAME=holykeebs \
-  -e POINTING_DEVICE=trackball_tps43 \
-  -e SIDE=left \
-  -e TRACKBALL_RGB_RAINBOW=yes \
+  -e LEFT_POINTING_DEVICE=TRACKBALL \
+  -e RIGHT_POINTING_DEVICE=TPS43 \
   -e VIAL_ENABLE=yes
 ```
 
