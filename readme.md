@@ -5,7 +5,7 @@
 ### Vial-Enabled QMK Firmware for Holykeebs & Friends
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/alliecatowo/allie-cat-keeb-vial/build-firmware.yml?logo=github&label=firmware%20build&style=for-the-badge)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml)
-[![Latest Release](https://img.shields.io/github/v/release/alliecatowo/allie-cat-keeb-vial?include_prereleases&logo=github&style=for-the-badge&color=blueviolet)](https://github.com/alliecatowo/allie-cat-keeb-vial/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/alliecatowo/allie-cat-keeb-vial?logo=github&style=for-the-badge&color=blueviolet)](https://github.com/alliecatowo/allie-cat-keeb-vial/releases/latest)
 [![License](https://img.shields.io/badge/license-GPL--2.0%2B-blue?style=for-the-badge&logo=gnu)](https://github.com/alliecatowo/allie-cat-keeb-vial/blob/main/LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/alliecatowo/allie-cat-keeb-vial?style=flat-square&logo=github)](https://github.com/alliecatowo/allie-cat-keeb-vial/stargazers)
@@ -42,10 +42,10 @@ The [holykeebs](https://holykeebs.com) QMK repository delivers excellent support
 | Keyboard | MCU | Split | Pointing Devices | Vial |
 |---|---|---|---|---|
 | **Lily58** (rev1) | RP2040 | ✅ | Trackball, TPS43 Touchpad, Trackpoint, Dual | ✅ |
-| **Sofle** (rev1) | — | ✅ | Trackball, Touchpad | ✅ |
+| **Sofle** (rev1) | Pro Micro | ✅ | Trackball, Touchpad | ✅ |
 | **holykeebs Aztec42** | RP2040 | ✅ | Trackball, Touchpad, Trackpoint | ✅ |
-| **holykeebs Spankbd** | — | ✅ | Trackball, Touchpad, Trackpoint | ✅ |
-| **holykeebs Sweeq** | — | ✅ | Trackball, Touchpad, Trackpoint | ✅ |
+| **holykeebs Spankbd** | RP2040 | ✅ | Trackball, Touchpad, Trackpoint | ✅ |
+| **holykeebs Sweeq** | RP2040 | ✅ | Trackball, Touchpad, Trackpoint | ✅ |
 
 > Want your keyboard added? [Open an issue!](https://github.com/alliecatowo/allie-cat-keeb-vial/issues/new)
 
@@ -79,6 +79,8 @@ The [holykeebs](https://holykeebs.com) QMK repository delivers excellent support
 ```
 lily58_rev1_via_<pointing-device-combo>_<side>.uf2
 ```
+
+*(Example for Lily58 — other keyboards follow the same `<keyboard>_<keymap>_<combo>_<side>` pattern.)*
 
 | Part | Examples |
 |---|---|
