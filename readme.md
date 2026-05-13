@@ -5,7 +5,7 @@
 [![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord)](https://discord.gg/qmk)
 [![License](https://img.shields.io/badge/license-GPL2+-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb/blob/main/LICENSE)
 
-This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository, bringing modern Vial support to holykeebs' amazing pointing device implementations for keyboards like the Lily58.
+This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository, bringing modern Vial support to holykeebs' amazing pointing device implementations.
 
 ## 🛍️ Get Your Holykeebs Hardware
 
@@ -39,6 +39,19 @@ The holykeebs QMK repository provides excellent support for various pointing dev
 - ✅ **Automated Builds** - GitHub Actions automatically build firmware for multiple configurations
 - ✅ **Regular Updates** - Synced with upstream holykeebs changes
 
+## 🎹 Supported Keyboards
+
+| Keyboard | Path | Vial Keymap | Notes |
+|----------|------|-------------|-------|
+| **Lily58 Rev1** | `keyboards/lily58/rev1` | ✅ | Primary target; split, RP2040 |
+| **Sofle Rev1** | `keyboards/sofle/rev1` | — | Standard & Keyhive variants |
+| **Sofle Keyhive** | `keyboards/sofle/keyhive` | — | RGB variant |
+| **Holykeebs Aztec42** | `keyboards/holykeebs/aztec42` | ✅ | Compact 42-key split |
+| **Holykeebs SpanKBD** | `keyboards/holykeebs/spankbd` | — | VIA keymap available |
+| **Holykeebs Sweeq** | `keyboards/holykeebs/sweeq` | — | VIA keymap available |
+
+Pre-built firmware releases currently target **Lily58 Rev1** (trackball + TPS43). Support for additional keyboards is tracked in the issue list.
+
 ## 🔧 What We Changed
 
 To enable Vial support on the holykeebs firmware, we made the following modifications:
@@ -51,11 +64,11 @@ To enable Vial support on the holykeebs firmware, we made the following modifica
 ### 2. **Build System Updates**
 - Modified the build system to support Vial's additional features
 - Added Vial-specific build flags and configurations
-- Created automated build scripts for common configurations
+- Created `build.py` — an automated build script for common configurations
 
 ### 3. **Keymap Modifications**
 - Updated VIA keymaps to include Vial's additional configuration options
-- Added proper Vial keyboard definitions (`.vil` files)
+- Added proper Vial keyboard definitions (`.vial.json` files)
 - Maintained backward compatibility with existing VIA configurations
 
 ### 4. **Memory Optimizations**
@@ -73,7 +86,7 @@ Each release includes:
 
 ### Firmware Naming Convention:
 ```
-lily58_rev1_via_[configuration]_[side].uf2
+lily58_rev1_vial_[configuration]_[side].uf2
 ```
 - `configuration`: The pointing device setup (e.g., `trackball_tps43`)
 - `side`: Either `left` or `right` for split keyboards
@@ -87,13 +100,29 @@ lily58_rev1_via_[configuration]_[side].uf2
    ```bash
    # macOS
    brew install qmk/qmk/qmk
-   
+
    # Linux/WSL
    sudo apt-get update
    sudo apt-get install -y git python3-pip
    pip3 install qmk
    qmk setup -y
    ```
+3. Install Python dependencies:
+   ```bash
+   python3 -m pip install -r requirements-dev.txt
+   ```
+
+### Environment Setup
+
+Before running any build or QMK command, export these variables in your shell:
+
+```bash
+export ORIG_CWD="$PWD"
+export QMK_HOME="$PWD"
+export QMK_FIRMWARE="$PWD"
+export PYTHONPATH="$PWD/lib/python"
+export PATH="$PWD/bin:$PATH"
+```
 
 ### Quick Build
 
@@ -102,52 +131,88 @@ lily58_rev1_via_[configuration]_[side].uf2
 git clone --recurse-submodules https://github.com/YOUR_USERNAME/allie-cat-keeb.git
 cd allie-cat-keeb
 
-# Build firmware with our convenient build script
-python build.py
+# Build default config (lily58, trackball left + TPS43 right, both sides)
+python3 build.py
 ```
+
+Output `.uf2` files land in `build_lily58/`.
 
 ### Build Options
 
-The `build.py` script supports various configurations:
+The `build.py` script supports the following actions:
 
 ```bash
-# Build specific configuration
-python build.py --build-single \
-  --keyboard lily58/rev1 \
-  --keymap via \
-  --left-device trackball \
-  --right-device tps43
+# Build default config (lily58 trackball_tps43, both sides)
+python3 build.py
+
+# Build personal config (same as default, alias)
+python3 build.py --build-personal
 
 # Build all configurations
-python build.py --build-all
+python3 build.py --build-all
 
-# Build with Vial only (no debug)
-python build.py --vial-only
+# Build a single custom variant
+python3 build.py --build-single \
+  --keyboard lily58/rev1 \
+  --keymap vial \
+  --left-device trackball \
+  --right-device tps43 \
+  --side left
 
-# Build for release (all variants)
-python build.py --release
+# Build with debug console output
+python3 build.py --build-single \
+  --keyboard lily58/rev1 \
+  --keymap vial \
+  --left-device trackball \
+  --right-device tps43 \
+  --side left \
+  --debug
+
+# Generate CI matrix JSON (for GitHub Actions)
+python3 build.py --generate-matrix-release
 ```
+
+Available `--left-device` / `--right-device` values: `trackball`, `tps43`, `trackpoint`, `oled`, `None`.
 
 ### Manual Build Commands
 
-For direct QMK commands:
+For direct QMK make commands:
 
 ```bash
 # Dual pointing devices with Vial
-make lily58/rev1:via -e USER_NAME=holykeebs \
+make lily58/rev1:vial -e USER_NAME=holykeebs \
   -e POINTING_DEVICE=trackball_tps43 \
   -e SIDE=left \
-  -e TRACKBALL_RGB_RAINBOW=yes \
-  -e VIAL_ENABLE=yes
+  -e TRACKBALL_RGB_RAINBOW=yes
 ```
 
-## 🤖 Codex Setup
+## 🧪 Development & Testing
 
-Automating with Codex (or bootstrapping a fresh machine)? Follow `docs/codex.md` for a fast start:
+No ARM toolchain is required for these quick checks:
 
-- Install Python deps: `python -m pip install -r requirements-dev.txt`
-- Add the local CLI to your PATH: `export PATH=\"$PWD/bin:$PATH\" && export ORIG_CWD=\"$PWD\" && export PYTHONPATH=\"$PWD/lib/python\"`
-- Run `flake8 lib/python` and `python -m nose2 -v` for quick validation
+```bash
+# 1. Python unit tests for build.py logic (~5 seconds)
+python3 -m unittest tests.test_build_py -v
+
+# 2. Validate CI matrix JSON
+python3 build.py --generate-matrix-release
+
+# 3. Lint Python files
+flake8 build.py tools/callgraph.py tests/test_build_py.py \
+  --max-line-length=120
+
+# 4. QMK CLI smoke tests
+python3 -m nose2 -v
+```
+
+## 🤖 Codex / Agent Setup
+
+Automating with Codex or bootstrapping a fresh machine? See `AGENTS.md` for the full bootstrap sequence and `docs/codex.md` for additional details.
+
+Key steps:
+1. Export the environment variables listed in the **Environment Setup** section above
+2. Run `python3 -m pip install -r requirements-dev.txt`
+3. Validate with `python3 -m unittest tests.test_build_py -v`
 
 ## 🔄 Using GitHub Actions in Your Fork
 
@@ -157,9 +222,8 @@ When you fork this repository, you get automated firmware builds for free!
 1. Go to your fork's Settings → Actions
 2. Enable GitHub Actions if not already enabled
 3. The build workflow triggers on:
-   - Pull requests to `main`
    - Tags matching `v*` pattern
-   - Manual triggers via GitHub UI
+   - Manual triggers via the GitHub UI (workflow_dispatch)
 
 ### Creating a Release:
 ```bash
@@ -176,22 +240,24 @@ The workflow will automatically:
 ## 🤝 Contributing
 
 We welcome contributions! Whether you want to:
-- Add support for new pointing devices
+- Add support for new pointing devices or keyboards
 - Improve Vial integration
 - Fix bugs or optimize code
-- Add new keyboard layouts
+- Improve documentation
 
 ### How to Contribute:
 1. Fork this repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to your branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Commit your changes using [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, etc.)
+4. Push to your branch and open a Pull Request
 
 ### Testing Your Changes:
-- Build and test firmware locally first
+- Run `python3 -m unittest tests.test_build_py -v` before committing
+- Build and test firmware locally if an ARM toolchain is available
 - Include before/after comparisons for significant changes
 - Document any new features or configurations
+
+See `CONTRIBUTING.md` for the full guide.
 
 ## 🎮 Getting Your Keyboard Working
 
@@ -205,8 +271,7 @@ We welcome contributions! Whether you want to:
 1. Download [Vial](https://get.vial.today)
 2. Connect your keyboard
 3. Customize everything in real-time:
-   - Key mappings
-   - Layers
+   - Key mappings and layers
    - Macros
    - Pointing device settings
    - RGB lighting
@@ -223,10 +288,11 @@ We welcome contributions! Whether you want to:
 **"Pointing device not working"**
 - Verify the correct firmware variant for your hardware
 - Check wiring connections (see [docs.holykeebs.com](https://docs.holykeebs.com))
-- Try the debug firmware build for console output
+- Try the debug firmware build for console output (`--debug` flag)
 
 **"Build fails"**
 - Make sure you're building from this fork, not base QMK
+- Export the environment variables from the **Environment Setup** section
 - Run `qmk doctor` to check your environment
 - Ensure submodules are initialized: `git submodule update --init`
 
@@ -259,7 +325,7 @@ This firmware is based on QMK and includes modifications from holykeebs and Vial
 ---
 
 <div align="center">
-  
+
 **[Get Hardware](https://holykeebs.com)** • **[Documentation](https://docs.holykeebs.com)** • **[Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)** • **[Report Bug](https://github.com/alliecatowo/allie-cat-keeb/issues)**
 
 Made with ❤️ for the mechanical keyboard community
