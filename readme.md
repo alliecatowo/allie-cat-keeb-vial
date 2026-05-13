@@ -1,267 +1,327 @@
-# 🐾 Allie Cat Keeb - Vial-Enabled QMK Firmware for Holykeebs
+<div align="center">
 
-[![Current Version](https://img.shields.io/github/tag/alliecatowo/allie-cat-keeb.svg)](https://github.com/alliecatowo/allie-cat-keeb/tags)
-[![Build Status](https://github.com/alliecatowo/allie-cat-keeb/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb/actions)
-[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord)](https://discord.gg/qmk)
-[![License](https://img.shields.io/badge/license-GPL2+-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb/blob/main/LICENSE)
+```
+ ██████╗ █████╗ ████████╗    ██╗  ██╗███████╗███████╗██████╗
+██╔════╝██╔══██╗╚══██╔══╝    ██║ ██╔╝██╔════╝██╔════╝██╔══██╗
+██║     ███████║   ██║       █████╔╝ █████╗  █████╗  ██████╔╝
+██║     ██╔══██║   ██║       ██╔═██╗ ██╔══╝  ██╔══╝  ██╔══██╗
+╚██████╗██║  ██║   ██║       ██║  ██╗███████╗███████╗██████╔╝
+ ╚═════╝╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝
+```
 
-This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository, bringing modern Vial support to holykeebs' amazing pointing device implementations for keyboards like the Lily58.
+# 🐾 Allie Cat Keeb — Vial-Enabled QMK for Holykeebs
 
-## 🛍️ Get Your Holykeebs Hardware
+*Bringing modern real-time configurability to holykeebs pointing-device keyboards*
 
-Visit the **[Holykeebs Store](https://holykeebs.com)** to purchase trackballs, touchpads, trackpoints, and other pointing device modules for your mechanical keyboard!
+[![Build Status](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions)
+[![GitHub Release](https://img.shields.io/github/v/release/alliecatowo/allie-cat-keeb-vial?include_prereleases&label=latest)](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/alliecatowo/allie-cat-keeb-vial?style=flat&color=yellow)](https://github.com/alliecatowo/allie-cat-keeb-vial/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/alliecatowo/allie-cat-keeb-vial?style=flat)](https://github.com/alliecatowo/allie-cat-keeb-vial/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/alliecatowo/allie-cat-keeb-vial)](https://github.com/alliecatowo/allie-cat-keeb-vial/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/alliecatowo/allie-cat-keeb-vial)](https://github.com/alliecatowo/allie-cat-keeb-vial/commits/main)
+[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord&color=5865F2&logo=discord&logoColor=white)](https://discord.gg/qmk)
+[![License](https://img.shields.io/badge/license-GPL--2.0%2B-blue.svg?logo=gnu)](https://github.com/alliecatowo/allie-cat-keeb-vial/blob/main/LICENSE)
 
-## 📚 Resources
+---
 
-- **[Holykeebs Documentation](https://docs.holykeebs.com)** - Complete guides for hardware installation and configuration
-- **[Holykeebs Repository](https://github.com/idank/qmk_firmware)** - The original holykeebs QMK firmware (branch: `holykeebs-master`)
-- **[Vial](https://get.vial.today)** - Real-time keyboard configuration without flashing
-- **[Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)** - Pre-built firmware with Vial support
+**[📦 Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)** • **[🛍️ Get Hardware](https://holykeebs.com)** • **[📖 Docs](https://docs.holykeebs.com)** • **[🐛 Report Bug](https://github.com/alliecatowo/allie-cat-keeb-vial/issues)**
 
-## 🎯 Why This Fork Exists
+</div>
 
-The holykeebs QMK repository provides excellent support for various pointing devices (trackballs, touchpads, trackpoints) but is based on an older QMK version that lacks modern Vial support. This fork bridges that gap by:
+---
 
-1. **Backporting Vial Components** - We've carefully integrated Vial-QMK components into the holykeebs codebase
-2. **Maintaining Compatibility** - All holykeebs pointing device drivers and features remain fully functional
-3. **Enabling Real-time Configuration** - Use Vial to customize your keyboard without reflashing firmware
-4. **Providing Pre-built Firmware** - Ready-to-use firmware files in our releases section
+## 📖 Table of Contents
+
+- [What Is This?](#-what-is-this)
+- [Supported Keyboards](#-supported-keyboards)
+- [Key Features](#-key-features)
+- [Getting Started — Flash Pre-built Firmware](#-getting-started--flash-pre-built-firmware)
+- [Configure with Vial](#-configure-with-vial)
+- [Build From Source](#-build-from-source)
+- [GitHub Actions in Your Fork](#-github-actions-in-your-fork)
+- [What We Changed](#-what-we-changed)
+- [Troubleshooting](#-troubleshooting)
+- [Driver Call Graph](#-driver-call-graph)
+- [Contributing](#-contributing)
+- [Acknowledgments](#-acknowledgments)
+- [License](#-license)
+
+---
+
+## 🐱 What Is This?
+
+This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository. The upstream holykeebs repo is an older QMK version that offers stellar pointing-device support (trackballs, touchpads, trackpoints) but lacks modern [Vial](https://get.vial.today) integration.
+
+This fork bridges that gap:
+
+| Upstream holykeebs | **This fork (allie-cat-keeb-vial)** |
+|---|---|
+| Excellent pointing-device drivers | ✅ All drivers kept intact |
+| No Vial support | ✅ Full Vial real-time config |
+| No automated builds | ✅ GitHub Actions CI for `.uf2` artifacts |
+| Older QMK base | ✅ Backported Vial-QMK components |
+
+---
+
+## 🎹 Supported Keyboards
+
+| Keyboard | Layout | Pointing Device Support |
+|---|---|---|
+| **Lily58** `rev1` | 58-key split | Trackball, TPS43 touchpad, trackpoint, dual combos |
+| **Sofle** `rev1` | 58-key split | Pointing device variants |
+| **Holykeebs Sweeq** | Sweep-style | Trackball |
+| **Holykeebs Aztec42** | 42-key | Trackball |
+| **Holykeebs SpanKBD** | Custom | Trackball |
+
+> **Note:** Pre-built firmware in [Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases) covers the most popular `lily58/rev1` configurations. Other keyboards can be built from source.
+
+---
 
 ## 🚀 Key Features
 
-- ✅ **Full Vial Support** - Configure your keyboard in real-time using the Vial GUI
-- ✅ **Holykeebs Pointing Devices** - Complete support for:
-  - Pimoroni Trackball with RGB
-  - Azoteq IQS5xx TPS43 Touchpad
-  - PS2 Trackpoint modules
-  - Dual pointing device configurations
-- ✅ **VIA Compatibility** - Works with both VIA and Vial configurators
-- ✅ **Automated Builds** - GitHub Actions automatically build firmware for multiple configurations
-- ✅ **Regular Updates** - Synced with upstream holykeebs changes
+| Feature | Details |
+|---|---|
+| 🔴 **Full Vial Support** | Configure keys, layers, macros, and RGB in real-time — no reflashing |
+| 🖱️ **Holykeebs Pointing Devices** | Pimoroni Trackball (RGB), Azoteq IQS5xx TPS43 Touchpad, PS2 Trackpoint, dual-device configs |
+| ⚡ **VIA + Vial Compatibility** | Works with both VIA and Vial configurators |
+| 🤖 **Automated CI Builds** | GitHub Actions builds `.uf2` firmware on every tagged release |
+| 🔄 **Regular Upstream Sync** | Auto-merges from holykeebs and vial-qmk when CI is green |
+| 📊 **Driver Call Graph** | Azoteq IQS5xx call graph generated automatically in CI |
 
-## 🔧 What We Changed
+---
 
-To enable Vial support on the holykeebs firmware, we made the following modifications:
+## 📦 Getting Started — Flash Pre-built Firmware
 
-### 1. **Vial Core Integration**
-- Backported Vial's quantum layer modifications from [vial-qmk](https://github.com/vial-kb/vial-qmk)
-- Added Vial-specific keycodes and configuration structures
-- Integrated the Vial communication protocol
+No build environment needed — just grab a `.uf2` from Releases!
 
-### 2. **Build System Updates**
-- Modified the build system to support Vial's additional features
-- Added Vial-specific build flags and configurations
-- Created automated build scripts for common configurations
+1. **Download** the right `.uf2` from [Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases):
 
-### 3. **Keymap Modifications**
-- Updated VIA keymaps to include Vial's additional configuration options
-- Added proper Vial keyboard definitions (`.vil` files)
-- Maintained backward compatibility with existing VIA configurations
+   ```
+   lily58_rev1_vial_<pointing_config>_<side>.uf2
+   ```
 
-### 4. **Memory Optimizations**
-- Optimized firmware size to accommodate Vial's additional features
-- Carefully balanced features to fit within RP2040 constraints
+   | Part | Meaning |
+   |---|---|
+   | `pointing_config` | e.g. `trackball_tps43` |
+   | `side` | `left` or `right` |
 
-## 📦 Pre-built Firmware
+2. **Enter bootloader** — double-tap the RESET button on your controller; a `RPI-RP2` drive appears.
+3. **Copy the `.uf2`** onto the drive — it flashes and reboots automatically.
+4. **Repeat for the other half** of your split keyboard.
 
-Don't want to build from source? No problem! Check our [Releases](https://github.com/alliecatowo/allie-cat-keeb/releases) page for pre-built firmware files.
+---
 
-Each release includes:
-- **Standard builds** - Basic Vial-enabled firmware
-- **Debug builds** - With console output for troubleshooting
-- **Configuration variants** - Different pointing device combinations
+## 🎛️ Configure with Vial
 
-### Firmware Naming Convention:
-```
-lily58_rev1_via_[configuration]_[side].uf2
-```
-- `configuration`: The pointing device setup (e.g., `trackball_tps43`)
-- `side`: Either `left` or `right` for split keyboards
+Once flashed, open [Vial](https://get.vial.today) and start customising in real-time:
 
-## 🛠️ Building Your Own Firmware
+- 🗺️ Key mappings & layers
+- ⌨️ Macros & tap-dance
+- 🖱️ Pointing device sensitivity & scroll speed
+- 🌈 RGB lighting & effects
+
+No reflashing needed — all changes apply instantly over USB.
+
+---
+
+## 🛠️ Build From Source
 
 ### Prerequisites
 
-1. **Fork this repository** (not the base QMK or holykeebs repo)
-2. Install QMK dependencies:
-   ```bash
-   # macOS
-   brew install qmk/qmk/qmk
-   
-   # Linux/WSL
-   sudo apt-get update
-   sudo apt-get install -y git python3-pip
-   pip3 install qmk
-   qmk setup -y
-   ```
+```bash
+# macOS
+brew install qmk/qmk/qmk
 
-### Quick Build
+# Linux / WSL
+sudo apt-get update && sudo apt-get install -y git python3-pip
+pip3 install qmk
+qmk setup -y
+```
+
+### Clone & Quick Build
 
 ```bash
-# Clone your fork
-git clone --recurse-submodules https://github.com/YOUR_USERNAME/allie-cat-keeb.git
-cd allie-cat-keeb
+# Clone THIS fork (not base QMK or holykeebs)
+git clone --recurse-submodules https://github.com/alliecatowo/allie-cat-keeb-vial.git
+cd allie-cat-keeb-vial
 
-# Build firmware with our convenient build script
+# Install Python helpers
+pip install -r requirements-dev.txt
+
+# Build the default trackball + TPS43 Vial firmware
 python build.py
 ```
 
-### Build Options
-
-The `build.py` script supports various configurations:
+### build.py Options
 
 ```bash
-# Build specific configuration
+# Build a specific single configuration
 python build.py --build-single \
   --keyboard lily58/rev1 \
-  --keymap via \
+  --keymap vial \
   --left-device trackball \
   --right-device tps43
 
-# Build all configurations
+# Build all supported configurations
 python build.py --build-all
 
-# Build with Vial only (no debug)
-python build.py --vial-only
-
-# Build for release (all variants)
+# Build for release (all variants, optimised)
 python build.py --release
 ```
 
-### Manual Build Commands
-
-For direct QMK commands:
+### Manual QMK Command
 
 ```bash
-# Dual pointing devices with Vial
-make lily58/rev1:via -e USER_NAME=holykeebs \
+make lily58/rev1:vial \
+  -e USER_NAME=holykeebs \
   -e POINTING_DEVICE=trackball_tps43 \
   -e SIDE=left \
   -e TRACKBALL_RGB_RAINBOW=yes \
-  -e VIAL_ENABLE=yes
+  -e VIAL_ENABLE=yes \
+  -j8
 ```
 
-## 🤖 Codex Setup
+### Codex / Copilot Setup
 
-Automating with Codex (or bootstrapping a fresh machine)? Follow `docs/codex.md` for a fast start:
+See `docs/codex.md` for a fast machine-bootstrap. Quick summary:
 
-- Install Python deps: `python -m pip install -r requirements-dev.txt`
-- Add the local CLI to your PATH: `export PATH=\"$PWD/bin:$PATH\" && export ORIG_CWD=\"$PWD\" && export PYTHONPATH=\"$PWD/lib/python\"`
-- Run `flake8 lib/python` and `python -m nose2 -v` for quick validation
-
-## 🔄 Using GitHub Actions in Your Fork
-
-When you fork this repository, you get automated firmware builds for free!
-
-### Setting Up Actions:
-1. Go to your fork's Settings → Actions
-2. Enable GitHub Actions if not already enabled
-3. The build workflow triggers on:
-   - Pull requests to `main`
-   - Tags matching `v*` pattern
-   - Manual triggers via GitHub UI
-
-### Creating a Release:
 ```bash
-# Tag your version
-git tag v1.0.0
-git push origin v1.0.0
+python -m pip install -r requirements-dev.txt
+export PATH="$PWD/bin:$PATH"
+export ORIG_CWD="$PWD"
+export PYTHONPATH="$PWD/lib/python"
+
+# Quick validation
+flake8 lib/python
+python -m nose2 -v
 ```
 
-The workflow will automatically:
-- Build all firmware variants
-- Create a GitHub release
-- Attach the firmware files
+---
 
-## 🤝 Contributing
+## 🤖 GitHub Actions in Your Fork
 
-We welcome contributions! Whether you want to:
-- Add support for new pointing devices
-- Improve Vial integration
-- Fix bugs or optimize code
-- Add new keyboard layouts
+Fork this repo and you get automated firmware builds for free!
 
-### How to Contribute:
-1. Fork this repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to your branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Setup
 
-### Testing Your Changes:
-- Build and test firmware locally first
-- Include before/after comparisons for significant changes
-- Document any new features or configurations
+1. Go to **Settings → Actions** in your fork and enable GitHub Actions.
+2. The build workflow triggers on:
+   - Tags matching `v*` (creates a Release with `.uf2` attachments)
+   - `workflow_dispatch` (manual run from the Actions tab)
 
-## 🎮 Getting Your Keyboard Working
+### Creating a Release
 
-### 1. Flash the Firmware
-1. Download the appropriate `.uf2` file from [Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)
-2. Enter bootloader mode (double-tap RESET)
-3. Copy the `.uf2` file to the `RPI-RP2` drive
-4. Repeat for both halves (if split keyboard)
+```bash
+git tag v1.2.0
+git push origin v1.2.0
+```
 
-### 2. Configure with Vial
-1. Download [Vial](https://get.vial.today)
-2. Connect your keyboard
-3. Customize everything in real-time:
-   - Key mappings
-   - Layers
-   - Macros
-   - Pointing device settings
-   - RGB lighting
+The workflow will:
+- Build all configured firmware variants in parallel
+- Create a GitHub Release
+- Attach all `.uf2` files automatically
+
+---
+
+## 🔧 What We Changed
+
+<details>
+<summary>Click to expand technical details</summary>
+
+### 1. Vial Core Integration
+- Backported Vial's quantum-layer modifications from [vial-qmk](https://github.com/vial-kb/vial-qmk)
+- Added Vial-specific keycodes, configuration structures, and the Vial USB communication protocol
+
+### 2. Build System Updates
+- Modified the build system to support Vial's extra features and flags
+- Added `build.py` — a convenient wrapper for common configurations and CI matrix generation
+
+### 3. Keymap Modifications
+- Updated keymaps to expose Vial's extended configuration surface
+- Added proper Vial keyboard definition (`.vil`) files
+- Maintained backward compatibility with existing VIA configurations
+
+### 4. Memory Optimisations
+- Carefully balanced features to keep firmware within RP2040 flash constraints while including Vial overhead
+
+### 5. CI / Automation
+- GitHub Actions workflow for matrix builds, releases, upstream syncing, and call-graph generation
+- Auto-merge from holykeebs and vial-qmk upstreams when CI passes
+
+</details>
+
+---
 
 ## 🚨 Troubleshooting
 
-### Common Issues:
+<details>
+<summary><strong>"Vial doesn't detect my keyboard"</strong></summary>
 
-**"Vial doesn't detect my keyboard"**
-- Ensure you flashed the Vial-enabled firmware (not base holykeebs)
+- Make sure you flashed the **Vial-enabled** firmware from this repo (not the base holykeebs build)
 - Try a different USB cable or port
-- Check that both halves are flashed (for split keyboards)
+- Ensure **both halves** are flashed for split keyboards
 
-**"Pointing device not working"**
-- Verify the correct firmware variant for your hardware
-- Check wiring connections (see [docs.holykeebs.com](https://docs.holykeebs.com))
-- Try the debug firmware build for console output
+</details>
 
-**"Build fails"**
-- Make sure you're building from this fork, not base QMK
-- Run `qmk doctor` to check your environment
-- Ensure submodules are initialized: `git submodule update --init`
+<details>
+<summary><strong>"Pointing device not working"</strong></summary>
+
+- Verify you flashed the right `pointing_config` variant for your hardware
+- Double-check wiring — see [docs.holykeebs.com](https://docs.holykeebs.com) for pinouts
+- Flash a debug build (`--debug` flag in `build.py`) and open a serial console for logs
+
+</details>
+
+<details>
+<summary><strong>"Build fails"</strong></summary>
+
+- Make sure you're building **from this fork**, not base QMK or holykeebs
+- Run `qmk doctor` to validate your environment
+- Initialise submodules: `git submodule update --init --recursive`
+
+</details>
+
+---
 
 ## 📊 Driver Call Graph
 
-The Azoteq IQS5xx touchpad driver call graph is generated automatically during
-the CI workflow. You can view the latest graph below:
+The Azoteq IQS5xx touchpad driver call graph is regenerated automatically in CI:
 
 ![Azoteq driver call graph](docs/azoteq_callgraph.svg)
 
-## 📈 Project Status
+---
 
-This project is actively maintained and regularly synced with upstream holykeebs changes. We aim to:
-- Keep Vial support up-to-date
-- Maintain compatibility with all holykeebs hardware
-- Provide timely firmware releases
-- Support the community
+## 🤝 Contributing
+
+Contributions are welcome! Whether it's new pointing-device support, Vial improvements, bug fixes, or new keyboard layouts — open a PR.
+
+1. Fork → branch → commit (use [Conventional Commits](https://www.conventionalcommits.org))
+2. Build and test locally: `python build.py --build-single ...`
+3. Push and open a Pull Request against `main`
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+---
 
 ## 🙏 Acknowledgments
 
-- **[idank](https://github.com/idank)** - Creator of the holykeebs firmware and hardware
-- **[Vial Contributors](https://github.com/vial-kb/vial-qmk)** - For the amazing real-time configuration system
-- **[QMK Community](https://qmk.fm)** - For the incredible keyboard firmware framework
-- **All Contributors** - Who help make this project better
+- **[idank](https://github.com/idank)** — Creator of holykeebs firmware and hardware
+- **[Vial Contributors](https://github.com/vial-kb/vial-qmk)** — For the amazing real-time configuration system
+- **[QMK Community](https://qmk.fm)** — For the incredible keyboard firmware framework
+- **All Contributors** — Everyone who opens issues, PRs, and helps the community
+
+---
 
 ## 📄 License
 
-This firmware is based on QMK and includes modifications from holykeebs and Vial. Licensed under GPL-2.0+ with the same terms as QMK firmware.
+GPL-2.0+ — same terms as QMK firmware. See [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
-  
-**[Get Hardware](https://holykeebs.com)** • **[Documentation](https://docs.holykeebs.com)** • **[Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)** • **[Report Bug](https://github.com/alliecatowo/allie-cat-keeb/issues)**
 
-Made with ❤️ for the mechanical keyboard community
+Made with ❤️ and 🐾 for the mechanical keyboard community
+
+**[📦 Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)** • **[🛍️ Hardware](https://holykeebs.com)** • **[📖 Docs](https://docs.holykeebs.com)** • **[🐛 Issues](https://github.com/alliecatowo/allie-cat-keeb-vial/issues)**
 
 </div>
