@@ -1,9 +1,16 @@
 # 🐾 Allie Cat Keeb - Vial-Enabled QMK Firmware for Holykeebs
 
-[![Current Version](https://img.shields.io/github/tag/alliecatowo/allie-cat-keeb.svg)](https://github.com/alliecatowo/allie-cat-keeb/tags)
-[![Build Status](https://github.com/alliecatowo/allie-cat-keeb/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb/actions)
-[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord)](https://discord.gg/qmk)
-[![License](https://img.shields.io/badge/license-GPL2+-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb/blob/main/LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/alliecatowo/allie-cat-keeb-vial?label=release&logo=github)](https://github.com/alliecatowo/allie-cat-keeb-vial/releases/latest)
+[![Build Firmware](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml)
+[![Quick Tests](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/quick-tests.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/quick-tests.yml)
+[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord&logo=discord&logoColor=white)](https://discord.gg/qmk)
+[![License](https://img.shields.io/badge/license-GPL2+-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/blob/main/LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/alliecatowo/allie-cat-keeb-vial?style=flat&logo=github&logoColor=white)](https://github.com/alliecatowo/allie-cat-keeb-vial/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/alliecatowo/allie-cat-keeb-vial?style=flat&logo=github&logoColor=white)](https://github.com/alliecatowo/allie-cat-keeb-vial/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/alliecatowo/allie-cat-keeb-vial?logo=github)](https://github.com/alliecatowo/allie-cat-keeb-vial/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/alliecatowo/allie-cat-keeb-vial?logo=github)](https://github.com/alliecatowo/allie-cat-keeb-vial/commits/main)
+[![Vial Compatible](https://img.shields.io/badge/Vial-compatible-7B61FF?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyek0xMCAxN2wtNS01IDEuNDEtMS40MUwxMCAxNC4xN2w3LjU5LTcuNTlMMTkgOGwtOSA5eiIvPjwvc3ZnPg==)](https://get.vial.today)
+[![QMK Firmware](https://img.shields.io/badge/QMK-compatible-11B5E4?logo=qmk)](https://qmk.fm)
 
 This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository, bringing modern Vial support to holykeebs' amazing pointing device implementations for keyboards like the Lily58.
 
@@ -16,7 +23,7 @@ Visit the **[Holykeebs Store](https://holykeebs.com)** to purchase trackballs, t
 - **[Holykeebs Documentation](https://docs.holykeebs.com)** - Complete guides for hardware installation and configuration
 - **[Holykeebs Repository](https://github.com/idank/qmk_firmware)** - The original holykeebs QMK firmware (branch: `holykeebs-master`)
 - **[Vial](https://get.vial.today)** - Real-time keyboard configuration without flashing
-- **[Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)** - Pre-built firmware with Vial support
+- **[Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)** - Pre-built firmware with Vial support
 
 ## 🎯 Why This Fork Exists
 
@@ -64,7 +71,7 @@ To enable Vial support on the holykeebs firmware, we made the following modifica
 
 ## 📦 Pre-built Firmware
 
-Don't want to build from source? No problem! Check our [Releases](https://github.com/alliecatowo/allie-cat-keeb/releases) page for pre-built firmware files.
+Don't want to build from source? No problem! Check our [Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases) page for pre-built firmware files.
 
 Each release includes:
 - **Standard builds** - Basic Vial-enabled firmware
@@ -146,7 +153,7 @@ make lily58/rev1:via -e USER_NAME=holykeebs \
 Automating with Codex (or bootstrapping a fresh machine)? Follow `docs/codex.md` for a fast start:
 
 - Install Python deps: `python -m pip install -r requirements-dev.txt`
-- Add the local CLI to your PATH: `export PATH=\"$PWD/bin:$PATH\" && export ORIG_CWD=\"$PWD\" && export PYTHONPATH=\"$PWD/lib/python\"`
+- Add the local CLI to your PATH: `export PATH="$PWD/bin:$PATH" && export ORIG_CWD="$PWD" && export PYTHONPATH="$PWD/lib/python"`
 - Run `flake8 lib/python` and `python -m nose2 -v` for quick validation
 
 ## 🔄 Using GitHub Actions in Your Fork
@@ -196,7 +203,7 @@ We welcome contributions! Whether you want to:
 ## 🎮 Getting Your Keyboard Working
 
 ### 1. Flash the Firmware
-1. Download the appropriate `.uf2` file from [Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)
+1. Download the appropriate `.uf2` file from [Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)
 2. Enter bootloader mode (double-tap RESET)
 3. Copy the `.uf2` file to the `RPI-RP2` drive
 4. Repeat for both halves (if split keyboard)
@@ -260,7 +267,7 @@ This firmware is based on QMK and includes modifications from holykeebs and Vial
 
 <div align="center">
   
-**[Get Hardware](https://holykeebs.com)** • **[Documentation](https://docs.holykeebs.com)** • **[Releases](https://github.com/alliecatowo/allie-cat-keeb/releases)** • **[Report Bug](https://github.com/alliecatowo/allie-cat-keeb/issues)**
+**[Get Hardware](https://holykeebs.com)** • **[Documentation](https://docs.holykeebs.com)** • **[Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)** • **[Report Bug](https://github.com/alliecatowo/allie-cat-keeb-vial/issues)**
 
 Made with ❤️ for the mechanical keyboard community
 
