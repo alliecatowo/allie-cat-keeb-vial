@@ -30,6 +30,12 @@ The holykeebs QMK repository provides excellent support for various pointing dev
 ## 🚀 Key Features
 
 - ✅ **Full Vial Support** - Configure your keyboard in real-time using the Vial GUI
+- ✅ **Supported Keyboards** - Including:
+  - Lily58 Rev1 (primary target)
+  - Sofle
+  - Holykeebs Aztec42
+  - Holykeebs Spankbd
+  - Holykeebs Sweeq
 - ✅ **Holykeebs Pointing Devices** - Complete support for:
   - Pimoroni Trackball with RGB
   - Azoteq IQS5xx TPS43 Touchpad
@@ -111,21 +117,22 @@ python build.py
 The `build.py` script supports various configurations:
 
 ```bash
-# Build specific configuration
+# Build specific configuration (--side is required for split keyboards)
 python build.py --build-single \
   --keyboard lily58/rev1 \
-  --keymap via \
+  --keymap vial \
   --left-device trackball \
-  --right-device tps43
+  --right-device tps43 \
+  --side left
 
 # Build all configurations
 python build.py --build-all
 
-# Build with Vial only (no debug)
-python build.py --vial-only
+# Generate CI release matrix (JSON)
+python build.py --generate-matrix-release
 
-# Build for release (all variants)
-python build.py --release
+# Generate CI debug matrix (JSON)
+python build.py --generate-matrix-debug
 ```
 
 ### Manual Build Commands
@@ -141,13 +148,27 @@ make lily58/rev1:via -e USER_NAME=holykeebs \
   -e VIAL_ENABLE=yes
 ```
 
-## 🤖 Codex Setup
+## 🤖 Codex / Agent Setup
 
-Automating with Codex (or bootstrapping a fresh machine)? Follow `docs/codex.md` for a fast start:
+Automating with Codex, Copilot, or any coding agent? Follow `docs/codex.md` for a fast start:
 
-- Install Python deps: `python -m pip install -r requirements-dev.txt`
-- Add the local CLI to your PATH: `export PATH=\"$PWD/bin:$PATH\" && export ORIG_CWD=\"$PWD\" && export PYTHONPATH=\"$PWD/lib/python\"`
-- Run `flake8 lib/python` and `python -m nose2 -v` for quick validation
+```bash
+# 1. Install Python dependencies
+python3 -m pip install -r requirements-dev.txt
+
+# 2. Set environment variables (required before any qmk / make / python command)
+export ORIG_CWD="$PWD"
+export QMK_HOME="$PWD"
+export QMK_FIRMWARE="$PWD"
+export PYTHONPATH="$PWD/lib/python"
+export PATH="$PWD/bin:$PATH"
+
+# 3. Quick validation (no ARM toolchain needed)
+python3 -m unittest tests.test_build_py -v    # unit tests for build logic
+python3 build.py --generate-matrix-release     # validate CI matrix JSON
+flake8 build.py tools/callgraph.py tests/test_build_py.py --max-line-length=120
+python3 -m nose2 -v                            # QMK CLI smoke tests
+```
 
 ## 🔄 Using GitHub Actions in Your Fork
 
@@ -160,6 +181,18 @@ When you fork this repository, you get automated firmware builds for free!
    - Pull requests to `main`
    - Tags matching `v*` pattern
    - Manual triggers via GitHub UI
+
+### Active Workflows:
+| Workflow | Purpose |
+|---|---|
+| `build-firmware.yml` | Build all firmware variants on tag push |
+| `pr-checks.yml` | Validate PRs with builds and code-quality checks |
+| `quick-tests.yml` | Fast unit tests and lint on every push/PR |
+| `sync-upstreams.yml` | Automated sync with upstream holykeebs / Vial / QMK |
+| `pr-assistant.yml` | Bot-assisted PR triage and labelling |
+| `release-drafter.yml` | Auto-draft release notes from merged PRs |
+| `changelog.yml` | Generate changelog on release |
+| `copilot-setup-steps.yml` | Bootstrap environment for GitHub Copilot Coding Agent |
 
 ### Creating a Release:
 ```bash
