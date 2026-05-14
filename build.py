@@ -1,3 +1,4 @@
+# Entry point for keymap firmware builds.
 import sys
 import subprocess
 import os
