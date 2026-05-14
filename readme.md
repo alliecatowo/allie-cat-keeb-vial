@@ -1,9 +1,21 @@
 # 🐾 Allie Cat Keeb - Vial-Enabled QMK Firmware for Holykeebs
 
-[![Current Version](https://img.shields.io/github/tag/alliecatowo/allie-cat-keeb.svg)](https://github.com/alliecatowo/allie-cat-keeb/tags)
-[![Build Status](https://github.com/alliecatowo/allie-cat-keeb/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb/actions)
-[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord)](https://discord.gg/qmk)
-[![License](https://img.shields.io/badge/license-GPL2+-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb/blob/main/LICENSE)
+<!-- CI -->
+[![Build Firmware](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml)
+[![PR Checks](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/pr-checks.yml)
+[![Quick Tests](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/quick-tests.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/quick-tests.yml)
+
+<!-- Release / Version -->
+[![Latest Release](https://img.shields.io/github/v/release/alliecatowo/allie-cat-keeb-vial?label=latest%20release&color=brightgreen&logo=github)](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)
+[![GitHub Tag](https://img.shields.io/github/v/tag/alliecatowo/allie-cat-keeb-vial?label=version&color=blue)](https://github.com/alliecatowo/allie-cat-keeb-vial/tags)
+[![Last Commit](https://img.shields.io/github/last-commit/alliecatowo/allie-cat-keeb-vial?color=informational&logo=git&logoColor=white)](https://github.com/alliecatowo/allie-cat-keeb-vial/commits)
+
+<!-- Community / Info -->
+[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord&color=7289da&logo=discord&logoColor=white)](https://discord.gg/qmk)
+[![License](https://img.shields.io/badge/license-GPL2+-blue.svg?logo=opensourceinitiative&logoColor=white)](https://github.com/alliecatowo/allie-cat-keeb-vial/blob/main/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?logo=github)](https://github.com/alliecatowo/allie-cat-keeb-vial/pulls)
+[![Vial Compatible](https://img.shields.io/badge/Vial-compatible-blueviolet?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNGwtNC00IDEuNDEtMS40MUwxMCAxMy4xN2w2LjU5LTYuNTlMMTggOGwtOCA4eiIvPjwvc3ZnPg==)](https://get.vial.today)
+[![Stars](https://img.shields.io/github/stars/alliecatowo/allie-cat-keeb-vial?style=flat&logo=github&color=yellow)](https://github.com/alliecatowo/allie-cat-keeb-vial/stargazers)
 
 This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository, bringing modern Vial support to holykeebs' amazing pointing device implementations for keyboards like the Lily58.
 
@@ -146,7 +158,7 @@ make lily58/rev1:via -e USER_NAME=holykeebs \
 Automating with Codex (or bootstrapping a fresh machine)? Follow `docs/codex.md` for a fast start:
 
 - Install Python deps: `python -m pip install -r requirements-dev.txt`
-- Add the local CLI to your PATH: `export PATH=\"$PWD/bin:$PATH\" && export ORIG_CWD=\"$PWD\" && export PYTHONPATH=\"$PWD/lib/python\"`
+- Add the local CLI to your PATH: `export PATH="$PWD/bin:$PATH" && export ORIG_CWD="$PWD" && export PYTHONPATH="$PWD/lib/python"`
 - Run `flake8 lib/python` and `python -m nose2 -v` for quick validation
 
 ## 🔄 Using GitHub Actions in Your Fork
