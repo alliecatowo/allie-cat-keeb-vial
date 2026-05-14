@@ -1,9 +1,24 @@
 # 🐾 Allie Cat Keeb - Vial-Enabled QMK Firmware for Holykeebs
 
-[![Current Version](https://img.shields.io/github/tag/alliecatowo/allie-cat-keeb.svg)](https://github.com/alliecatowo/allie-cat-keeb/tags)
-[![Build Status](https://github.com/alliecatowo/allie-cat-keeb/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb/actions)
-[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord)](https://discord.gg/qmk)
-[![License](https://img.shields.io/badge/license-GPL2+-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb/blob/main/LICENSE)
+<!-- CI & Build -->
+[![Build Firmware](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/build-firmware.yml)
+[![PR Checks](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/pr-checks.yml)
+[![Quick Tests](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/quick-tests.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/quick-tests.yml)
+[![Sync Upstreams](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/sync-upstreams.yml/badge.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/actions/workflows/sync-upstreams.yml)
+
+<!-- Release & Repo Stats -->
+[![Latest Release](https://img.shields.io/github/v/release/alliecatowo/allie-cat-keeb-vial?include_prereleases&label=latest%20release&color=blueviolet)](https://github.com/alliecatowo/allie-cat-keeb-vial/releases)
+[![GitHub Stars](https://img.shields.io/github/stars/alliecatowo/allie-cat-keeb-vial?style=flat&color=yellow)](https://github.com/alliecatowo/allie-cat-keeb-vial/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/alliecatowo/allie-cat-keeb-vial?style=flat&color=orange)](https://github.com/alliecatowo/allie-cat-keeb-vial/forks)
+[![Open Issues](https://img.shields.io/github/issues/alliecatowo/allie-cat-keeb-vial?color=red)](https://github.com/alliecatowo/allie-cat-keeb-vial/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/alliecatowo/allie-cat-keeb-vial?color=informational)](https://github.com/alliecatowo/allie-cat-keeb-vial/commits/main)
+[![License](https://img.shields.io/badge/license-GPL2%2B-blue.svg)](https://github.com/alliecatowo/allie-cat-keeb-vial/blob/main/LICENSE)
+
+<!-- Community & Tech Stack -->
+[![Discord](https://img.shields.io/discord/440868230475677696.svg?label=QMK%20Discord&logo=discord&logoColor=white&color=5865F2)](https://discord.gg/qmk)
+[![Powered by QMK](https://img.shields.io/badge/powered%20by-QMK-1a6b36?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMSAxNEg5VjhoMnY4em00IDBoLTJWOGgydjh6Ii8+PC9zdmc+)](https://qmk.fm)
+[![Vial Compatible](https://img.shields.io/badge/Vial-compatible-ff69b4?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0yMCA0SDRjLTEuMSAwLTIgLjktMiAydjEyYzAgMS4xLjkgMiAyIDJoMTZjMS4xIDAgMi0uOSAyLTJWNmMwLTEuMS0uOS0yLTItMnptLTUgMTFINXYtMmgxMHYyem0zLTRINXYtMmgxM3YyeiIvPjwvc3ZnPg==)](https://get.vial.today)
+[![Holykeebs Hardware](https://img.shields.io/badge/hardware-holykeebs-ff6b35)](https://holykeebs.com)
 
 This repository is a **Vial-enabled fork** of the [holykeebs/qmk_firmware](https://github.com/idank/qmk_firmware) repository, bringing modern Vial support to holykeebs' amazing pointing device implementations for keyboards like the Lily58.
 
@@ -146,7 +161,7 @@ make lily58/rev1:via -e USER_NAME=holykeebs \
 Automating with Codex (or bootstrapping a fresh machine)? Follow `docs/codex.md` for a fast start:
 
 - Install Python deps: `python -m pip install -r requirements-dev.txt`
-- Add the local CLI to your PATH: `export PATH=\"$PWD/bin:$PATH\" && export ORIG_CWD=\"$PWD\" && export PYTHONPATH=\"$PWD/lib/python\"`
+- Add the local CLI to your PATH: `export PATH="$PWD/bin:$PATH" && export ORIG_CWD="$PWD" && export PYTHONPATH="$PWD/lib/python"`
 - Run `flake8 lib/python` and `python -m nose2 -v` for quick validation
 
 ## 🔄 Using GitHub Actions in Your Fork
