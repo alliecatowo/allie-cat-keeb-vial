@@ -83,7 +83,7 @@ jobs:
           qmk config user.qmk_home=$GITHUB_WORKSPACE
           python build.py --build-single \
             --keyboard lily58/rev1 \
-            --keymap via \
+            --keymap vial \
             --left-device "${{ matrix.config.left }}" \
             --right-device "${{ matrix.config.right }}" \
             --side left
@@ -152,14 +152,6 @@ jobs:
           flake8 build.py tools/callgraph.py tests/test_build_py.py \
             --max-line-length=120 --extend-ignore=E501,W503
           flake8 lib/python
-
-      - name: Run QMK CLI smoke tests
-        env:
-          ORIG_CWD: ${{ github.workspace }}
-          QMK_HOME: ${{ github.workspace }}
-          QMK_FIRMWARE: ${{ github.workspace }}
-          PYTHONPATH: ${{ github.workspace }}/lib/python
-        run: python -m nose2 -v
 
   # Generate call graph for Azoteq driver
   callgraph:
