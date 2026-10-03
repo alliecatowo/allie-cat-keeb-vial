@@ -200,23 +200,24 @@ files = [
 
 [[package]]
 name = "milc"
-version = "1.8.0"
+version = "2.1.0"
 description = "Opinionated Batteries-Included Python 3 CLI Framework."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "milc-1.8.0-py2.py3-none-any.whl", hash = "sha256:faee16fe92ce13eb1b0b4e24ac5b5003d7234880a8d21e4210016d70512bc921"},
-    {file = "milc-1.8.0.tar.gz", hash = "sha256:cabe658de07ab97f937c7672b8a604cc825174c28d66d3afd047a9b4b2770bbe"},
+    {file = "milc-2.1.0-py3-none-any.whl", hash = "sha256:016fb1349ecccd002e6bbeaf8a204260ccc28992f26e11fd685c8a52cc5f5027"},
+    {file = "milc-2.1.0.tar.gz", hash = "sha256:a496efffa49f38c84e069646248d4141e2c60bf91a8d1c7fd0945c02863e5302"},
 ]
 
 [package.dependencies]
-appdirs = "*"
 argcomplete = "*"
 colorama = "*"
 halo = "*"
+platformdirs = "*"
 spinners = "*"
 types-colorama = "*"
+typing_extensions = "*"
 
 [[package]]
 name = "nose2"
@@ -341,7 +342,7 @@ version = "4.2.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 optional = false
 python-versions = ">=3.8"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "platformdirs-4.2.0-py3-none-any.whl", hash = "sha256:0614df2a2f37e1a662acbd8e2b25b92ccf8632929bc6d43467e17fe89c75e068"},
     {file = "platformdirs-4.2.0.tar.gz", hash = "sha256:ef0cc731df711022c174543cb70a9b5bd22e5a9337c8624ef2c2ceb8ddad8768"},
@@ -649,6 +650,18 @@ groups = ["main"]
 files = [
     {file = "types-colorama-0.4.15.20240205.tar.gz", hash = "sha256:7ae4f58d407d387f4f98b24d81e1b7657ec754ea1dc4619ae5bd27f0c367637e"},
     {file = "types_colorama-0.4.15.20240205-py3-none-any.whl", hash = "sha256:3ab26dcd76d2f13b1b795ed5c87a1a1a29331ea64cf614bb6ae958a3cebc3a53"},
+]
+
+[[package]]
+name = "typing-extensions"
+version = "4.16.0"
+description = "Backported and Experimental Type Hints for Python 3.9+"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "typing_extensions-4.16.0-py3-none-any.whl", hash = "sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"},
+    {file = "typing_extensions-4.16.0.tar.gz", hash = "sha256:dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5"},
 ]
 
 [[package]]
