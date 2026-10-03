@@ -1,36 +1,50 @@
 # Configuration for PR auto-labeling
 
 documentation:
-  - "**/*.md"
-  - "docs/**"
+  - changed-files:
+    - any-glob-to-any-file:
+      - "**/*.md"
+      - "docs/**"
 
 firmware:
-  - "keyboards/**"
-  - "quantum/**"
-  - "tmk_core/**"
-  - "drivers/**"
+  - changed-files:
+    - any-glob-to-any-file:
+      - "keyboards/**"
+      - "quantum/**"
+      - "tmk_core/**"
+      - "drivers/**"
 
 build:
-  - "builddefs/**"
-  - "build.py"
-  - "Makefile"
-  - "**/*.mk"
+  - changed-files:
+    - any-glob-to-any-file:
+      - "builddefs/**"
+      - "build.py"
+      - "Makefile"
+      - "**/*.mk"
 
 ci/cd:
-  - ".github/workflows/**"
-  - ".github/actions/**"
+  - changed-files:
+    - any-glob-to-any-file:
+      - ".github/workflows/**"
+      - ".github/actions/**"
 
 dependencies:
-  - "requirements*.txt"
-  - "lib/**"
-  - ".gitmodules"
+  - changed-files:
+    - any-glob-to-any-file:
+      - "requirements*.txt"
+      - "lib/**"
+      - ".gitmodules"
 
 pointing-device:
-  - "**/pointing_device*"
-  - "**/trackball*"
-  - "**/tps43*"
-  - "**/trackpoint*"
+  - changed-files:
+    - any-glob-to-any-file:
+      - "**/pointing_device*"
+      - "**/trackball*"
+      - "**/tps43*"
+      - "**/trackpoint*"
 
 vial:
-  - "**/vial*"
-  - "**/via*"
+  - changed-files:
+    - any-glob-to-any-file:
+      - "**/vial*"
+      - "**/via*"
