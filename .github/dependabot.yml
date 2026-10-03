@@ -49,18 +49,8 @@ updates:
       prefix: "chore"
       include: "scope"
 
-  # Git submodules
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    groups:
-      minor-and-patch:
-        update-types: ["minor", "patch"]
-    labels:
-      - "dependencies"
-      - "submodules"
-      - "automated"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
+  # Git submodules (lib/chibios, lib/pico-sdk, ...) are intentionally NOT
+  # tracked: they must stay on the exact commits the QMK/Vial base expects.
+  # Bumping one to its upstream HEAD breaks the firmware build (for example
+  # ChibiOS HEAD dropped chlib.h, see closed PR #92). Move them together
+  # with a vial-qmk merge instead.
