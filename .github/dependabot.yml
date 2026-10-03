@@ -5,6 +5,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
     labels:
       - "dependencies"
       - "automated"
@@ -14,12 +17,33 @@ updates:
 
   # Python dependencies
   - package-ecosystem: "pip"
-    directory: "/"
+    directories:
+      - "/"
+      - "/util/ci"
+      - "/util/nix"
     schedule:
       interval: "weekly"
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
     labels:
       - "dependencies"
       - "python"
+      - "automated"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # Docs generator
+  - package-ecosystem: "npm"
+    directory: "/builddefs/docsgen"
+    schedule:
+      interval: "weekly"
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+    labels:
+      - "dependencies"
       - "automated"
     commit-message:
       prefix: "chore"
@@ -29,7 +53,10 @@ updates:
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
     labels:
       - "dependencies"
       - "submodules"
