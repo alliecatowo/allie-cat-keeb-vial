@@ -22,7 +22,7 @@ jobs:
       # Copilot will re-checkout the repo after these steps, but we need it now
       # to install Python dependencies from requirements-dev.txt.
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # -----------------------------------------------------------------------
       # Python toolchain
