@@ -66,10 +66,10 @@ To enable Vial support on the holykeebs firmware, we made the following modifica
 
 Don't want to build from source? No problem! Check our [Releases](https://github.com/alliecatowo/allie-cat-keeb-vial/releases) page for pre-built firmware files.
 
-Each release includes:
-- **Standard builds** - Basic Vial-enabled firmware
-- **Debug builds** - With console output for troubleshooting
-- **Configuration variants** - Different pointing device combinations
+Each release includes a left and a right `.uf2` for the Lily58 rev1 with a trackball on the left half and
+an Azoteq TPS43 trackpad on the right (`build.py --generate-matrix-release` lists exactly what CI builds). Other
+pointing-device combinations and a console-enabled debug build are available from source with
+`build.py --build-single` (see below); they are not part of the release matrix.
 
 ### Firmware Naming Convention:
 ```
@@ -153,8 +153,7 @@ When you fork this repository, you get automated firmware builds for free!
 1. Go to your fork's Settings → Actions
 2. Enable GitHub Actions if not already enabled
 3. The build workflow triggers on:
-   - Pull requests to `main`
-   - Tags matching `v*` pattern
+   - Tags matching `v*` pattern (the `Build Firmware` workflow; pull requests run `PR Checks` build tests)
    - Manual triggers via GitHub UI
 
 ### Creating a Release:
@@ -165,7 +164,7 @@ git push origin v1.0.0
 ```
 
 The workflow will automatically:
-- Build all firmware variants
+- Build the release matrix (left and right `.uf2` for the trackball + TPS43 Lily58)
 - Create a GitHub release
 - Attach the firmware files
 

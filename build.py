@@ -51,7 +51,10 @@ class Command:
 
 
 def generate_matrix(matrix_type='all'):
-    """Generate CI matrix for trackball_tsp43 only"""
+    """Print the CI/release matrix: the left and right halves of the trackball + TPS43 Lily58 build.
+
+    `matrix_type` is accepted for CLI compatibility; every type currently yields the same matrix.
+    """
     matrix = {'include': [
         {
             "keyboard": "lily58/rev1",

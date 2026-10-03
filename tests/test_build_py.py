@@ -18,6 +18,8 @@ _spec.loader.exec_module(_build)
 
 Command = _build.Command
 generate_matrix = _build.generate_matrix
+_configure_device = _build._configure_device
+_build_single = _build._build_single
 
 
 # ---------------------------------------------------------------------------
@@ -189,6 +191,95 @@ class TestGenerateMatrix(unittest.TestCase):
         # Must be parseable JSON with no trailing garbage
         obj = json.loads(buf.getvalue())
         self.assertIsInstance(obj, dict)
+
+
+# ---------------------------------------------------------------------------
+# _configure_device() / _build_single() tests
+# ---------------------------------------------------------------------------
+
+def _args(**over):
+    from argparse import Namespace
+    base = dict(keyboard='lily58/rev1', keymap='vial', user_name='alliecatowo',
+                left_device='None', right_device='None', side=None, debug=False)
+    base.update(over)
+    return Namespace(**base)
+
+
+def _flags(cmd):
+    """The -e values of a Command, as a list."""
+    return [a for a in cmd.arguments if a != '-e']
+
+
+class TestConfigureDevice(unittest.TestCase):
+    def _configured(self, **over):
+        cmd = Command('lily58/rev1', 'vial')
+        _configure_device(cmd, _args(**over))
+        return _flags(cmd)
+
+    def test_no_devices_adds_nothing(self):
+        self.assertEqual(self._configured(), [])
+
+    def test_dual_devices_set_pair_and_side(self):
+        flags = self._configured(left_device='trackball', right_device='tps43', side='right')
+        self.assertIn('POINTING_DEVICE=trackball_tps43', flags)
+        self.assertIn('SIDE=right', flags)
+
+    def test_trackball_rgb_only_on_the_trackball_side(self):
+        left = self._configured(left_device='trackball', right_device='tps43', side='left')
+        right = self._configured(left_device='trackball', right_device='tps43', side='right')
+        self.assertIn('TRACKBALL_RGB_RAINBOW=yes', left)
+        self.assertNotIn('TRACKBALL_RGB_RAINBOW=yes', right)
+
+    def test_left_only_device(self):
+        flags = self._configured(left_device='trackball')
+        self.assertEqual(flags, ['POINTING_DEVICE=trackball', 'POINTING_DEVICE_POSITION=left',
+                                 'TRACKBALL_RGB_RAINBOW=yes'])
+
+    def test_right_only_device(self):
+        flags = self._configured(right_device='tps43')
+        self.assertEqual(flags, ['POINTING_DEVICE=tps43', 'POINTING_DEVICE_POSITION=right'])
+
+
+class TestBuildSingle(unittest.TestCase):
+    def _run(self, **over):
+        """Run _build_single with subprocess/os stubbed; return the make argv."""
+        calls = []
+        with patch.object(_build, 'run_command_check_output', side_effect=calls.append), \
+                patch.object(_build.os, 'makedirs'), \
+                patch.object(_build.os, 'rename') as rename:
+            _build_single(_args(**over))
+        return calls[0], rename
+
+    def test_builds_the_requested_keyboard_and_keymap(self):
+        argv, _ = self._run(left_device='trackball', right_device='tps43', side='left')
+        self.assertEqual(argv[:2], ['make', 'lily58/rev1:vial'])
+        self.assertIn('USER_NAME=alliecatowo', argv)
+        self.assertIn('POINTING_DEVICE=trackball_tps43', argv)
+        self.assertEqual(argv[-1], '-j8')
+
+    def test_firmware_is_moved_into_the_per_keyboard_build_dir(self):
+        _, rename = self._run(left_device='trackball', right_device='tps43', side='right')
+        src, dst = rename.call_args.args
+        self.assertTrue(src.endswith('.uf2'))
+        self.assertEqual(dst, f'build_lily58/{src}')
+
+    def test_debug_flag_enables_console(self):
+        argv, _ = self._run(debug=True)
+        self.assertIn('CONSOLE=yes', argv)
+
+    def test_oled_is_enabled_and_flipped_when_paired_with_another_device(self):
+        argv, _ = self._run(left_device='oled', right_device='tps43', side='left')
+        self.assertIn('OLED=yes', argv)
+        self.assertIn('OLED_FLIP=yes', argv)
+
+    def test_a_failed_make_exits_nonzero(self):
+        import subprocess
+        with patch.object(_build, 'run_command_check_output',
+                          side_effect=subprocess.CalledProcessError(2, 'make')), \
+                patch.object(_build.os, 'makedirs'), \
+                self.assertRaises(SystemExit) as ctx:
+            _build_single(_args())
+        self.assertEqual(ctx.exception.code, 1)
 
 
 if __name__ == '__main__':
