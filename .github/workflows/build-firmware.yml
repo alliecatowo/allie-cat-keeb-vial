@@ -127,7 +127,7 @@ jobs:
           find firmware -type f -name "*.uf2" | head -20
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: firmware/*/*.uf2
           generate_release_notes: true
